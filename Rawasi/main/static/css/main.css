@@ -1,0 +1,92 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.navbar-toggler{
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+    
+}
+nav{
+    position: fixed;
+    background: linear-gradient(to bottom, rgb(0, 0, 0), transparent); 
+    transition: background-color 0.3s ease;
+    color: rgb(255, 255, 255) !important; 
+  
+}
+.navbar-brand{
+    color: white;
+}
+.navbar-brand.scrolled{
+    color: black;
+}
+
+.navbar-toggler{
+    border: white 0.7px solid;
+}
+.navbar-toggler.scrolled{
+    border: rgb(0, 0, 0) 0.7px solid;
+}
+
+
+#navbar-toggler-icon{
+    color: white;
+}
+#navbar-toggler-icon.scrolled{
+    color: black;
+}
+
+nav.scrolled {
+    background:none;
+    background-color: white; 
+    color: black;
+  }
+
+
+
+
+main{
+    min-height: 100vh;
+}
+
+.carousel-inner {
+    background-color: #000;
+    height: 100vh;
+  }
+  
+  .carousel-item img,
+  .carousel-item video {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  
+  .carousel-video {
+    position: relative;
+    height: 500px;
+  }
+  
+  .carousel-caption {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    text-align: center;
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: none;
+    border: white 0.5px solid;
+  }
+  
+  .featurs{
+    background-color: #FAF6EE;
+    
+  }
+
+  .featur-icon{
+    color: #0f2e29;
+  }
