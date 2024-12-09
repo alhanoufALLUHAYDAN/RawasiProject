@@ -1,8 +1,6 @@
 # RawasiProject
 ## Rawasi 
-description : Rawasi is an innovative digital solution designed for families to collectively manage and grow their wealth through a private investment fund. The platform is a centralized hub where family members pool resources into an investment portfolio, with opportunities to invest in stocks, real estate, commodities or mutual funds.
-The platform presents vetted investment opportunities to family members, allowing them to review details and participate in collective decision-making. Decisions are based on a voting system, where majority approval determines whether to proceed with an investment. This ensures transparency and inclusiveness in financial decisions while maximizing the potential for profitable returns.
-By streamlining the process of collective investing and providing tools for tracking contributions, returns, and portfolio performance, the Family Investment Fund Platform empowers families to achieve their shared financial goals efficiently and collaboratively.
+description : Rawasi is a digital platform that enables families to pool resources and invest together in stocks, real estate, commodities, and more. It offers vetted investment opportunities and uses a voting system for collective decision-making, ensuring transparency. Rawasi simplifies family investing, helping families achieve their financial goals collaboratively.
 
 ## Group Members
 - Alhanouf Alluhaydan (leader)
