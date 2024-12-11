@@ -1,144 +1,107 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/c2e6ab3d91.js" crossorigin="anonymous"></script>
+{% extends 'main/base.html'%}
+{%load static%}
 
-    <link href="{% static 'css/main.css' %}" rel="stylesheet" />
-    <title>Home</title>
-</head>
-<body>
-    <nav class="navbar  fixed-top" id="navbar">
-        <div class="container-fluid">
-          <a class="navbar-brand" id="navbar-brand" href="#">رواسي</a>
-          <button id="navbar-toggler" class="navbar-toggler rounded-circle px-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-            <i id="navbar-toggler-icon" class="fs-6 fa-solid fa-bars mb-1"></i>
-          </button>
-          <div class="offcanvas offcanvas-end d-flex flex-column" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-            <div class="offcanvas-header d-flex justify-content-between">
-              <button type="button" class="btn-close m-0" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-              <h5 class="offcanvas-title" id="offcanvasNavbarLabel">رواسي</h5>
+{%block title%}<title>الرئيسية</title>{%endblock%}
+{%block content%}
 
-            </div>
-            <div class="offcanvas-body">
-              <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                <li class="nav-item text-end">
-                  <a class="nav-link active" aria-current="page" href="#">الرئيسية</a>
-                </li>
-                <li class="nav-item text-end">
-                  <a class="nav-link" href="#">نبذة عنا</a>
-                </li>
-               
-              </ul>
-            </div>
-          </div>
+<div class="carousel-video">
+    <video class="w-100" autoplay loop muted>
+        <source src="{% static 'videos/introductionvideo.mp4' %}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="carousel-caption">
+        <h5>رواسي لادارة صناديق العائلة الاستثمارية</h5>
+        <p>منصة تسهل عميلة ادارة الصناديق الاستثمارية للعائلة .</p>
+    </div>
+</div>
+<section class="container">
+    <div class="section-title text-center mb-5">
+      <h2>كيف يعمل Rawasi؟</h2>
+    </div>
+  
+    <div class="how-it-works-description text-center mb-5">
+      <h4>
+        تهدف Rawasi إلى تبسيط عملية الاستثمار العائلي ومساعدة العائلات في تحقيق أهدافها المالية بشكل تعاوني.
+      </h4>
+      <p>
+        نحن نوفر لك الأدوات لإدارة محفظتك العائلية بذكاء وفعالية لتحقيق أهدافك المالية معًا.
+      </p>
+    </div>
+  
+    <div class="row">
+      <div class="col-md-6 mb-4 card-cover">
+        <div class="step-number">1</div>
+        <div class="step-card shadow-lg p-4 rounded position-relative">
+          <h5 class="step-title">إنشاء وإدارة المحفظة العائلية</h5>
+          <p class="step-description">
+            كقائد عائلة، يمكنك إنشاء المحفظة العائلية وإضافة أموال إلى المحفظة لضمان وجود الأموال الكافية للاستثمار في الفرص المناسبة.
+          </p>
         </div>
-      </nav>
+      </div>
+  
+      <div class="col-md-6 mb-4 card-cover">
+        <div class="step-number">2</div>
+        <div class="step-card shadow-lg p-4 rounded position-relative">
+          <h5 class="step-title">إضافة فرص استثمار مختارة</h5>
+          <p class="step-description">
+            يمكنك إضافة الفرص الاستثمارية المُختارة إلى المنصة، حيث يمكن لجميع أعضاء العائلة التصويت عليها ومناقشتها.
+          </p>
+        </div>
+      </div>
+    </div>
+  
+    <div class="row mt-4">
+      <div class="col-md-6 mb-4 card-cover">
+        <div class="step-number">3</div>
+        <div class="step-card shadow-lg p-4 rounded position-relative">
+          <h5 class="step-title">التصويت على الفرص الاستثمارية</h5>
+          <p class="step-description">
+            كعضو مساهم، يمكنك التصويت على الفرص الاستثمارية التي تختارها، مما يؤثر في اتخاذ القرارات الجماعية.
+          </p>
+        </div>
+      </div>
+  
+      <div class="col-md-6 mb-4 card-cover">
+        <div class="step-number">4</div>
+        <div class="step-card shadow-lg p-4 rounded position-relative">
+          <h5 class="step-title">مراقبة الأداء والمشاركة</h5>
+          <p class="step-description">
+            يمكنك متابعة أدائك المالي والمشاركة في العديد من الفرص الاستثمارية لتوسيع محفظتك الشخصية وتنمية أموالك.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  
+  
 
+    <div class="container-fluid  mt-3">
+        <div class="row d-flex justify-content-center pt-2 pb-5">
+            <div class="col-md-2 bg-dark">
+            </div>
+            <div class="col-md-1 bg-primary"></div>
 
-
-      <main>
-        <div id="carouselExample" class="carousel slide carousel-fade" data-bs-ride="carousel">
-            <div class="carousel-inner">
-              <div class="carousel-item active">
-                <div class="carousel-video">
-                  <video class="d-block w-100" autoplay loop muted>
-                    <source src="{% static 'videos/introductionvideo.mp4' %}" type="video/mp4">
-                    Your browser does not support the video tag.
-                  </video>
-                  <div class="carousel-caption">
-                    <h5>Video Slide Title</h5>
-                    <p>Description of the video slide.</p>
+            <div class="col-md-3 bg-body-tertiary d-flex flex-column justify-content-center align-items-center gap-3">
+                <h1>مميزاتنا</h1>
+                <p>تتميز خدماتنا بالاتي: </p>
+            </div>
+            <div class="cube-container col-md-6 ">             
+                  <div class="container-cube ">
+                    <div class="cube ">
+                      <div class="face front  text-white">الموثوقية</div>
+                      <div class="face back text-white">الامان</div>
+                      <div class="face top  text-white"></div>
+                      <div class="face right  text-white">
+                        
+                        <p><i class="fa fa-thumbs-up"></i>  <span class="mt-2">التصويت</span></p>
+                      </div>
+                      <div class="face left  text-white">التحكم الكامل</div>
+                      <div class="face bottom text-white"></div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="carousel-item">
-                <img src="{% static 'images/money-2696229_1280.jpg' %}" class="d-block w-100" alt="Image 1">
-                <div class="carousel-caption">
-                  <h5>Image Slide 1</h5>
-                  <p>Description of Image 1.</p>
-                </div>
-              </div>
-              <div class="carousel-item">
-                <img src="{% static 'images/building-66375_1280.jpg' %}" class="d-block w-100" alt="Image 2">
-                <div class="carousel-caption">
-                  <h5>Image Slide 2</h5>
-                  <p>Description of Image 2.</p>
-                </div>
-              </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon rounded-circle" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-              <span class="carousel-control-next-icon rounded-circle" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
-            </button>
-          </div>
+    </div>
+  </div>
 
-          <div class="d-flex flex-column gap-3 justify-content-center align-items-center py-5 featurs">
-            <h5>مميزاتنا</h5>
-            <div class="container-fluid">
-                <div class="row d-flex justify-content-center gap-4">
-                    <div class="col-md-4 d-flex flex-column justify-content-end align-items-end gap-3 p-4 border rounded-3">
-                        <i class="fa-solid fa-dollar-sign fs-3 featur-icon"></i>
-                        <h6>استثمار اموال بمرونة</h6>
-                        <p class="text-end">استثمار امن مع عائلتك مع مرونة في اتخاذ القرارات المالية</p>
-                    </div>
-                    <div class="col-md-4 d-flex flex-column justify-content-end align-items-end gap-3 p-4 border rounded-3">
-                        <i class="fa-solid fa-dollar-sign fs-3 featur-icon"></i>
-                        <h6>استثمار اموال بمرونة</h6>
-                        <p class="text-end">استثمار امن مع عائلتك مع مرونة في اتخاذ القرارات المالية</p>
-                    </div>
-                    <div class="col-md-4 d-flex flex-column justify-content-end align-items-end gap-3 p-4 border rounded-3">
-                        <i class="fa-solid fa-dollar-sign fs-3 featur-icon"></i>
-                        <h6>استثمار اموال بمرونة</h6>
-                        <p class="text-end">استثمار امن مع عائلتك مع مرونة في اتخاذ القرارات المالية</p>
-                    </div>
-                    <div class="col-md-4 d-flex flex-column justify-content-end align-items-end gap-3 p-4 border rounded-3">
-                        <i class="fa-solid fa-dollar-sign fs-3 featur-icon"></i>
-                        <h6>استثمار اموال بمرونة</h6>
-                        <p class="text-end">استثمار امن مع عائلتك مع مرونة في اتخاذ القرارات المالية</p>
-                    </div>
-                </div>
-            </div>
-          </div>
-
-
-      </main>
-
-
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-      <script>
-            const navbar = document.getElementById('navbar');
-            const brand = document.getElementById('navbar-brand');
-            const toggler = document.getElementById('navbar-toggler');
-            const icon = document.getElementById('navbar-toggler-icon');
-
-            function handleScroll() {
-            if (window.scrollY > 50) { 
-                navbar.classList.add('scrolled');
-                brand.classList.add('scrolled');
-                toggler.classList.add('scrolled');
-                icon.classList.add('scrolled');
-
-            } else {
-                navbar.classList.remove('scrolled');
-                brand.classList.remove('scrolled');
-                toggler.classList.remove('scrolled');
-                icon.classList.remove('scrolled');
-
-
-            }
-            }
-            window.addEventListener('scroll', handleScroll);
-
-      </script>
-
-</body>
-</html>
+  {%endblock%}
