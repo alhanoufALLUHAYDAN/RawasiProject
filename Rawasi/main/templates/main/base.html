@@ -15,7 +15,7 @@
 <body>
     <nav class="navbar  fixed-top" id="navbar">
         <div class="container-fluid">
-          <a class="navbar-brand" id="navbar-brand" href="#">رواسي</a>
+          <a class="navbar-brand" id="navbar-brand" href="/">رواسي</a>
           <button id="navbar-toggler" class="navbar-toggler rounded-circle px-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
             <i id="navbar-toggler-icon" class="fs-6 fa-solid fa-bars mb-1"></i>
           </button>
@@ -28,18 +28,24 @@
             <div class="offcanvas-body">
               <ul class="navbar-nav flex-grow-1 pe-3">
                 <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">الرئيسية</a>
+                  <a class="nav-link active" aria-current="page" href="/">الرئيسية</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">نبذة عنا</a>
+                  <a class="nav-link" href="{%url 'main:about_view'%}">نبذة عنا</a>
                 </li>
+                {% if request.user.is_authenticated%}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">تسجيل دخول</a>
+                    <a class="nav-link text-danger" href="{%url 'accounts:logout_view'%}">تسجيل خروج</a>
+                  </li>
+
+                {%else%}
+                <li class="nav-item">
+                    <a class="nav-link" href="{%url 'accounts:login'%}">تسجيل دخول</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#">تسجيل جديد</a>
+                    <a class="nav-link" href="{%url 'accounts:choose_role'%}">تسجيل جديد</a>
                   </li>
-               
+                  {%endif%}
               </ul>
             </div>
           </div>
@@ -109,14 +115,19 @@
                   <h5>الرئيسية</h5>
                   <ul class="list-unstyled">
                     <li class="mb-2"><a class="footer-link-text" href="/">الصفحة الرئيسية</a></li>
-                    <li class="mb-2"><a class="footer-link-text" href="/docs/5.3/">نبذة عنا</a></li>
+                    <li class="mb-2"><a class="footer-link-text" href="{%url 'main:about_view'%}">نبذة عنا</a></li>
                   </ul>
                 </div>
                 <div class="col-6 col-lg-2 mb-3">
                   <h5>وصول سريع</h5>
                   <ul class="list-unstyled">
-                    <li class="mb-2"><a class="footer-link-text" href="/docs/5.3/getting-started/">تسجيل جديد</a></li>
-                    <li class="mb-2"><a class="footer-link-text" href="/docs/5.3/examples/starter-template/">تسجيل دخول</a></li>
+                    {% if request.user.is_authenticated%}
+                    <li class="mb-2"><a class="footer-link-text text-danger" href="{%url 'accounts:logout_view'%}">تسجيل خروج</a></li>
+                    {%else%}
+                    <li class="mb-2"><a class="footer-link-text" href="{%url 'accounts:choose_role'%}">تسجيل جديد</a></li>
+                    <li class="mb-2"><a class="footer-link-text" href="{%url 'accounts:login'%}">تسجيل دخول</a></li>
+                    {%endif%}
+
                   </ul>
                 </div>
                 

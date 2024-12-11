@@ -223,7 +223,9 @@ main{
   .featur-icon{
     color: #0f2e29;
   }
-
+  .featurs-col-color{
+    background-color: #0f2e29;
+  }
   :root {
     --size: 300px;
   }
@@ -242,7 +244,6 @@ main{
     height: var(--size);
   }
   
-  /* Cube itself */
   .cube {
     position: relative;
     width: 100%;
@@ -252,7 +253,6 @@ main{
     transition: all 0.85s cubic-bezier(1, -0.75, 0.5, 1.2);
   }
   
-  /* Define the cube's faces */
   .face {
     position: absolute;
     border: 1px solid #0f2e29c6;
@@ -396,7 +396,6 @@ main{
     z-index: 1;
 }
 
-/* Section Titles */
 .section-title h2 {
     font-weight: bold;
     color: #761305;
