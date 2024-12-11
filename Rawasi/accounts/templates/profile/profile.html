@@ -3,74 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بيانات حسابك</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>بيانات الحساب</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        .bg-primary-custom {
-            background-color: #761305; 
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 40%;
+            margin: auto;
         }
-        .text-primary-custom {
-            color: #faf6eeca; 
+
+        h2 {
+            color: #0f2e29; 
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
         }
-        .btn-warning-custom {
-            background-color: #0f2e29; 
-            border-color: #0f2e29;
+
+        .btn-save, .btn-edit {
+            font-size: 16px;
+            border-radius: 8px;
+            padding: 10px 20px;
+        }
+
+        .btn-save {
+            background-color: #0f2e29;
             color: white;
+            border: none;
+            transition: background-color 0.3s ease;
         }
-        .btn-warning-custom:hover {
-            background-color: #0f2e29; 
-            color: #faf6eeca;
-        }
-        .btn-danger-custom {
+
+        .btn-save:hover {
             background-color: #761305;
-            border-color: #761305;
         }
-        .btn-danger-custom:hover {
-            background-color: #761305;
-            color: #faf6eeca;
-        }
-        .card-header-custom {
-            background-color: #761305;
+
+        .btn-edit {
+            background-color: #e4b42d;
             color: white;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            background-color: #e67e22;
+        }
+
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .profile-image-container {
+            position: absolute;
+            top: -80px; 
+            right: 20px; 
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #0f2e29;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            font-size: 18px;
+            font-weight: 500;
+            color: #0f2e29;
+            width: 100%;
+            margin-top: 80px; 
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-control {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #e4b42d;
+            box-shadow: 0 0 5px rgba(228, 180, 45, 0.5);
+        }
+
+        .form-control:disabled {
+            background-color: #f7f7f7;
+            border-color: #ddd;
+        }
+
+        .alert {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .card-footer {
+            text-align: center;
+        }
+
+        .edit-icon {
+            position: absolute;
+            top: 5px;
+            left: 10px; 
+            background-color: #e4b42d;
+            color: white;
+            border-radius: 50%;
+            padding: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .edit-icon:hover {
+            background-color: #761305;
+        }
+
+        .check-icon {
+            position: absolute;
+            top: 5px;
+            left: 10px; 
+            background-color: #0f2e29; 
+            color: white;
+            border-radius: 50%;
+            padding: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .check-icon:hover {
+            background-color: #218838;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                max-width: 95%;
+            }
+
+            .profile-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .profile-image-container {
+                position: relative;
+                top: 0;
+                margin-bottom: 20px;
+            }
+
+            .profile-info {
+                margin-top: 0;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="container mt-5">
-        {% if messages %}
-            <div class="alert alert-info">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-        <div class="card">
-            <div class="card-header card-header-custom">
-                <h3>بيانات حسابك</h3>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>الاسم الكامل:</strong> {{ user.full_name }}</p>
-                        <p><strong>اسم المستخدم:</strong> {{ user.username }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>البريد الإلكتروني:</strong> {{ user.email }}</p>
-                        <p><strong>رقم الهاتف:</strong> {{ user.phone_number }}</p>
-                        <p><strong>تاريخ الميلاد:</strong> {{ user.date_of_birth }}</p>
-                    </div>
-                </div>
-                <a href="{% url 'accounts:update_profile' %}" class="btn btn-warning btn-warning-custom">تحديث البيانات</a>
-                <form action="{% url 'accounts:logout' %}" method="POST" class="mt-3">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-danger-custom">تسجيل الخروج</button>
-                </form>
-            </div>
+<div class="container">
+    <div id="alert-container"></div>
+    <h2> بيانات الحساب  </h2>
+    <div class="profile-container">
+        <div class="profile-image-container">
+            <img src="{{ user.profile_picture.url }}" alt="Profile Image" class="profile-image" id="profile-img">
         </div>
+        
+        <span class="edit-icon" id="edit-image-icon"><i class="fas fa-pencil-alt"></i></span>
+        
+        <span class="check-icon hidden" id="check-icon"><i class="fas fa-check"></i></span>
+
+        <div class="profile-info">
+            <form id="profile-form" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="full_name">الاسم الكامل</label>
+                    <input type="text" class="form-control" value="{{ user.full_name }}" name="full_name" id="full-name" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">اسم المستخدم</label>
+                    <input type="text" class="form-control" value="{{ user.username }}" name="username" id="username" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" class="form-control" value="{{ user.email }}" name="email" id="email" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone_number">رقم الجوال</label>
+                    <input type="text" class="form-control" value="{{ user.phone_number }}" name="phone_number" id="phone-number" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="dob">تاريخ الميلاد</label>
+                    <input type="date" class="form-control" value="{{ user.date_of_birth|date:'Y-m-d' }}" name="date_of_birth" id="dob" disabled>
+                </div>
+
+                <div class="form-group hidden" id="profile-picture-group">
+                    <label for="profile_picture">الصورة الشخصية</label>
+                    <input type="file" class="form-control" name="profile_picture" id="profile-picture">
+                </div>
+
+                <div class="form-group hidden" id="password-group">
+                    <label for="password">كلمة المرور الجديدة</label>
+                    <input type="password" class="form-control" placeholder="أدخل كلمة المرور الجديدة" name="password" id="password">
+                </div>
+
+                <div class="form-group hidden" id="password-confirm-group">
+                    <label for="password_confirm">تأكيد كلمة المرور</label>
+                    <input type="password" class="form-control" placeholder="تأكيد كلمة المرور" name="password_confirm" id="password_confirm">
+                </div>
+            </form>
+        </div>
+        <form method="POST" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button type="submit">تسجيل الخروج</button>
+        </form>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#edit-image-icon').click(function () {
+            $('input').prop('disabled', false);
+            $('#profile-picture-group, #password-group, #password-confirm-group').removeClass('hidden');
+            $('#save-btn-container').removeClass('hidden');
+            $('#check-icon').removeClass('hidden'); 
+            $('#edit-image-icon').hide();
+        });
+
+        $('#check-icon').click(function () {
+            $('#profile-form').submit(); 
+        });
+
+        $('#profile-form').submit(function (e) {
+            e.preventDefault(); 
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '{% url "accounts:update_profile" %}',  
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+
+                    $('#full-name').val(response.full_name);
+                    $('#username').val(response.username);
+                    $('#email').val(response.email);
+                    $('#phone-number').val(response.phone_number);
+                    $('#dob').val(response.date_of_birth);
+                    $('#profile-img').attr('src', response.profile_picture_url);
+
+                    $('input').prop('disabled', true);
+                    $('#profile-picture-group, #password-group, #password-confirm-group').addClass('hidden');
+                    $('#save-btn-container').addClass('hidden');
+                    $('#edit-image-icon').show();
+                    $('#check-icon').addClass('hidden'); 
+
+                    $('#alert-container').html('<div class="alert alert-success">تم تحديث البيانات بنجاح!</div>');
+                    setTimeout(function() {
+                        $('.alert').fadeOut();
+                    }, 3000);
+                },
+                error: function(xhr, status, error) {
+                    $('#alert-container').html('<div class="alert alert-danger">حدث خطأ أثناء التحديث.</div>');
+                    setTimeout(function() {
+                        $('.alert').fadeOut();
+                    }, 3000);
+                }
+            });
+        });
+    });
+</script>
+
 </body>
 </html>
