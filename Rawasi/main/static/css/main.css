@@ -1,6 +1,30 @@
+/* home css*/
 *{
     margin: 0;
     padding: 0;
+}
+body{
+    font-family: "Noto Sans Arabic", sans-serif;
+}
+
+.sevice-icon1{
+    color: #761305;
+}
+.sevice-icon2{
+    color: #0f2e29;
+}
+.sevice-icon3{
+    color: #E4b42d;
+}
+.sevice-icon4{
+    color: #dfd6c4;
+}
+
+.noto-kufi-arabic-font {
+  font-family: "Noto Kufi Arabic", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
 }
 .navbar-toggler{
     padding-top: 0.7rem;
@@ -48,39 +72,168 @@ nav.scrolled {
 main{
     min-height: 100vh;
 }
-
-.carousel-inner {
-    background-color: #000;
-    height: 100vh;
-  }
   
-  .carousel-item img,
-  .carousel-item video {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-  }
-  
-  .carousel-video {
+.carousel-video {
     position: relative;
-    height: 500px;
-  }
-  
-  .carousel-caption {
+    height: 100%;
+    
+}
+
+.carousel-video video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  
+}
+
+.carousel-caption {
     position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 30%;
+    right: 0;
     color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     text-align: center;
+    width: 100%;
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .carousel-caption {
+        top: 25%;  
+        font-size: 14px;
+        padding: 0 10px;
+    }
+
+    .carousel-video video {
+        object-fit: contain;
+        height: auto;  
+    }
+}
+
+@media (max-width: 576px) {
+    .carousel-caption h5 {
+        font-size: 16px;
+    }
+
+    .carousel-caption p {
+        font-size: 12px;
+    }
+} 
+.section-title h2 {
+    font-weight: bold;
+    color: #761305;
   }
   
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    background-color: none;
-    border: white 0.5px solid;
+  .how-it-works-description h4 {
+    color: #761305;
+    font-size: 1.3rem;
   }
+  
+  .how-it-works-description p {
+    color: #0f2e29;
+    font-size: 1.1rem;
+  }
+  .card-cover{
+    position: relative;
+  }
+  .step-number {
+    position: absolute;
+    background-color: #faf6ee;
+    color: #0f2e29;
+    font-size: 2.5rem;
+    left: 5%;
+    bottom: 60%;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    z-index: 10; 
+    transition: transform 0.3s ease, background-color 0.3s ease; 
+  }
+  .step-card:hover .step-number {
+    background-color: #E4b42d; /* Change the background color */
+  }
+  /* Step card styling */
+  .step-card {
+    position: relative;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+    margin-top: 40px; /* Adjust margin for positioning */
+    background-color: white;
+  }
+  
+  /* Hover effect for the step card */
+  .step-card:hover {
+    transform: translateY(-10px);
+  }
+  
+  /* Hover effect for step number */
+  .step-card:hover .step-number {
+    background-color: #e4b42d;
+  }
+  
+  /* Title and description styling */
+  .step-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #761305;
+  }
+  
+  .step-description {
+    color: #0f2e29;
+    font-size: 1.1rem;
+    margin-top: 15px;
+  }
+  
+  /* Responsive styling */
+  @media (max-width: 768px) {
+    .step-number {
+      font-size: 2rem;
+      width: 60px;
+      height: 60px;
+
+    }
+  
+    .step-card {
+      padding: 15px;
+    }
+  
+    .step-title {
+      font-size: 1.3rem;
+    }
+  
+    .step-description {
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .step-number {
+      font-size: 1.8rem;
+      width: 50px;
+      height: 50px;
+
+    }
+  
+    .step-card {
+      padding: 10px;
+    }
+  
+    .step-title {
+      font-size: 1.2rem;
+    }
+  
+    .step-description {
+      font-size: 0.9rem;
+    }
+  }
+  
+  
   
   .featurs{
     background-color: #FAF6EE;
@@ -90,3 +243,216 @@ main{
   .featur-icon{
     color: #0f2e29;
   }
+  .featurs-col-color2{
+    background-color: #FAF6EE;
+  }
+  .featurs-col-color1{
+    background-color: #0f2e29;
+  }
+  :root {
+    --size: 300px;
+  }
+  
+  .cube-container {
+    display: grid;
+    place-content: center;
+    min-height: 80vh;
+  }
+  
+  /* container */
+  .container-cube {
+    margin-top: 50px;
+    perspective: 1000px;
+    width: var(--size);
+    height: var(--size);
+  }
+  
+  .cube {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    animation: rotateCube 24s infinite; 
+    transition: all 0.85s cubic-bezier(1, -0.75, 0.5, 1.2);
+  }
+  
+  .face {
+    position: absolute;
+    border: 1px solid #3c0903;
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.151);
+    width: var(--size);
+    height: var(--size);
+    line-height: var(--size);
+    text-align: center;
+    font-size: 1.25rem;
+    background-color: #5d0e04;
+    opacity: 0.99;
+  }
+  
+  .front {
+    transform: translateZ(150px);
+
+  }
+  
+  .back {
+    transform: rotateY(180deg) translateZ(150px);
+  }
+  
+  .top {
+    transform: rotateX(90deg) translateZ(150px);
+  }
+  
+  .right {
+    transform: rotateY(90deg) translateZ(150px);
+  }
+  
+  .left {
+    transform: rotateY(-90deg) translateZ(150px);
+  }
+  
+  .bottom {
+    transform: rotateX(-90deg) translateZ(150px);
+  }
+  
+  @keyframes rotateCube {
+    0% {
+      transform: rotateY(0deg); /* Front face */
+    }
+    25% {
+      transform: rotateY(90deg); /* Right face */
+    }
+    50% {
+      transform: rotateY(180deg); /* Back face */
+    }
+    75% {
+      transform: rotateY(270deg); /* Left face */
+    }
+    100% {
+      transform: rotateY(360deg); /* Back to Front face */
+    }
+  }
+ 
+  
+ 
+  
+
+  .contact-button {
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+    height: 4rem;
+    width: 4rem;
+    transform: scale(1);
+    transition: transform ease-in 0.3s;
+    background-color: #761305;
+    border: none;
+    z-index: 2;
+
+}
+
+.contact-button:hover {
+    transform: scale(1.1);  
+}
+.contact-button-container{
+    position: fixed;
+    z-index: 2;
+    right: 7rem;
+    bottom: 1rem;
+}
+.contact-form{
+    position: fixed;
+    z-index:3;
+    right: 2rem;
+    bottom: 2rem;
+    background-color: #FAF6EE;
+    border: #E4b42d solid 1px;
+}
+
+.btn-darkgreen{
+    background-color: #0f2e29;
+    color: white;
+}
+.btn-darkgreen:hover{
+    background-color: #194d45;
+    color: white;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.20rem #1d574e67; 
+    border-color: #22665ba9; 
+}
+.btn-close:focus {
+    box-shadow: 0 0 0 0.20rem #1d574e67; 
+    border-color: #22665ba9; 
+}
+.footer-link-text{
+    color: #761305;
+    text-decoration: none;
+    transition: color 0.3s ease-in;
+}
+  .footer-link-text:hover {
+    text-decoration: underline; 
+  }
+.footer-content{
+    margin-right: 7rem;
+}
+
+/*----- about css ------*/
+/* Image with Dark Overlay */
+
+.image-section {
+    position: relative;
+    background: url('../images/money-2696229_1280.jpg') no-repeat center center;
+    background-size: cover;
+    height: 100vh; /* يمكنك تعديل هذه القيمة حسب احتياجك */
+  }
+  
+  .dark-overlay {
+    background-color: rgba(0, 0, 0, 0.5); /* هذا يضيف التعتيم على الصورة */
+  }
+  
+  .text-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start; /* التأكد من محاذاة النص بشكل صحيح */
+    height: 100%; /* التأكد من أن المحتوى يأخذ كامل ارتفاع الحاوية */
+  }
+
+
+.section-title h2 {
+    font-weight: bold;
+    color: #761305;
+}
+
+.about-text h3 {
+    font-weight: bold;
+    color: #761305;
+ }
+
+.about-text p {
+    font-size: 1.1rem;
+    color: #0f2e29;
+    
+}
+.team-photo{
+    height:10rem;
+    border-radius: 10px 10px 0 0;
+    object-fit: cover;
+}
+.social-icon{
+    color: #761305;
+    font-size: smaller;
+    transition: transform ease 0.3s;
+}
+
+.social-icon:hover{
+    transform: scale(0.8);
+}
+.team-name {
+    font-size: small;
+    font-weight: 600;
+}
+.service-title{
+    font-weight: 600;
+}
