@@ -1,0 +1,11 @@
+<h1>Investment Funds</h1>
+<ul>
+    {% for fund in funds %}
+    <li>
+        <a href="{% url 'investment_fund_detail' fund.pk %}">{{ fund.name }}</a>
+        <a href="{% url 'update_investment_fund' fund.pk %}">Edit</a>
+        <a href="{% url 'delete_investment_fund' fund.pk %}">Delete</a>
+    </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'create_investment_fund' %}">Create New Fund</a>

@@ -8,7 +8,7 @@ from datetime import date , datetime
 
 class CustomUser(AbstractUser):
     full_name = models.CharField(max_length=100)
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(null=True, blank=True)
     phone_number = models.CharField(
         max_length=12, 
         blank=True, 
