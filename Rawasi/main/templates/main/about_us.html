@@ -3,11 +3,22 @@
 
 {%block title%}<title>نبذة عنا</title>{%endblock%}
 {%block content%}
-<section class="container-fluid p-0 ">
-    <div class="image-section position-relative">
-        <div class="dark-overlay"></div>
-    </div>
+    <section class="container-fluid p-0">
+        <div class="image-section position-relative">
+          <!-- Dark overlay covering the entire image -->
+          <div class="dark-overlay container-fluid  position-absolute top-0 left-0 w-100 h-100 d-flex justify-content-end align-items-center">
+            <div class="text-content row d-flex flex-column px-3 py-5 w-100">
+              <h1 class="text-white  text-center">من نحن؟</h1>
+              <h4 class="my-5 text-white rounded-3 mx-3 px-5 py-2 text-center" >
+                رواسي هي منصة رقمية تتيح للعائلات تجميع الموارد والاستثمار معًا في الأسهم والعقارات والسلع وغيرها. وهي توفر فرص استثمارية معتمدة وتستخدم نظام تصويت لاتخاذ القرارات الجماعية، مما يضمن الشفافية. تعمل رواسي على تبسيط الاستثمار العائلي
+                ، مما يساعد العائلات على تحقيق أهدافها المالية بشكل تعاوني.
+              </h4>
+            </div>
+          </div>
+        </div>
 
+      
+    
     
     <div class="about-text my-5 text-center rounded-3 shadow mx-3 px-2 py-2">
       <h3 style="color: #761305; font-size: 2rem;">مهمتنا</h3>
@@ -19,6 +30,136 @@
         إن رؤيتنا هي تحقيق الاستقلال المالي للعائلات عبر توفير الأدوات اللازمة لإدارة الأموال بذكاء وثقة.
       </p>
     </div>
+
+    <section class="services-team-section container my-5">
+        <!-- قسم الخدمات -->
+         <div class="row">
+            <div class="section-title text-end d-flex flex-column align-items-start justify-content-center col-md-4 mb-5">
+                <h2>خدماتنا</h2>
+                <p>نحن نقدم مجموعة من الخدمات المتميزة التي تلبي احتياجات عملائنا وتساعدهم في تحقيق أهدافهم.</p>
+              </div>
+              
+              <div class="row  col-md-8">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="service-card  p-4 text-center">
+                            <div class="d-flex gap-3 mb-4 justify-content-start align-items-center">
+                                <i class="fa-solid fa-money-bill-wheat fs-1 sevice-icon4"></i>
+                                <h5 class="service-title"> إدارة المحفظة العائلية</h5>      
+                            </div>
+                          <p class="service-description">أداة لإدارة وتوزيع الاستثمارات بين أفراد العائلة بشكل ذكي وفعال.</p>
+                        </div>
+                      </div>
+                     <div class="col-md-6 mb-4">
+                        <div class="service-card  p-4 text-center">
+                            <div class="d-flex gap-3 mb-4 justify-content-start align-items-center">
+                                <i class="fa-solid fa-dice fs-1 sevice-icon3"></i>
+                                <h5 class="service-title">فرص استثمار موثوقة</h5>      
+                            </div>
+                          <p class="service-description">توفير فرص استثمارية مدروسة ومؤمنة بعناية، مع ضمان الشفافية.</p>
+                        </div>
+                      </div>
+                </div>
+               
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="service-card  p-4 text-center">
+                            <div class="d-flex gap-3 mb-4 justify-content-start align-items-center">
+                                <i class="fa-solid fa-check-to-slot fs-1 sevice-icon1"></i>
+                                <h5 class="service-title"> نظام التصويت الجماعي</h5>      
+                            </div>
+                          <p class="service-description">تمكين أفراد العائلة من التصويت على القرارات الاستثمارية بشكل جماعي.</p>
+                        </div>
+                      </div>
+                     <div class="col-md-6 mb-4">
+                        <div class="service-card  p-4 text-center">
+                            <div class="d-flex gap-3 mb-4 justify-content-start align-items-center">
+                                <i class="fa-solid fa-chart-simple fs-1 sevice-icon2"></i>
+                                <h5 class="service-title">مراقبة الأداء وتقارير مفصلة</h5>      
+                            </div>
+                          <p class="service-description">متابعة أداء الاستثمارات من خلال تقارير ورسوم بيانية واضحة.
+
+
+
+                          </p>
+                        </div>
+                      </div>
+                </div>
+      
+         </div>
+      
+        <!-- قسم فريق العمل -->
+         <div class="row">
+            <div class="row col-md-8">
+                <div class="col-md-4 mb-4">
+                    <div class="team-member shadow  text-center rounded-3">
+                      <img src="{% static 'images/image.png'%}" alt="Team Member 2" class="team-photo  w-100">
+                      <div class="p-4">
+                        <h6 class="team-name text-end">حصة المسعد</h6>
+                        <div class="d-flex gap-2 text-start">
+                            <a href="https://www.facebook.com" target="_blank" class="social-icon facebook-icon">
+                                <i class="fab fa-facebook-f"></i> <!-- أيقونة فيسبوك -->
+                              </a>
+                              <a href="https://www.twitter.com" target="_blank" class="social-icon twitter-icon">
+                                <i class="fab fa-twitter"></i> <!-- أيقونة تويتر -->
+                              </a>
+                              <a href="https://www.linkedin.com" target="_blank" class="social-icon linkedin-icon">
+                                <i class="fab fa-linkedin-in"></i> <!-- أيقونة لينكد إن -->
+                              </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <div class="col-md-4 mb-4">
+                  <div class="team-member shadow  text-center rounded-3">
+                    <img src="{% static 'images/default-avatar-profile-picture-female-icon.webp'%}" alt="Team Member 2" class="team-photo  w-100">
+                    <div class="p-4">
+                      <h6 class="team-name text-end">الهنوف اللحيدان</h6>
+                      <div class="d-flex gap-2 text-start">
+                          <a href="https://www.facebook.com" target="_blank" class="social-icon facebook-icon">
+                              <i class="fab fa-facebook-f"></i> <!-- أيقونة فيسبوك -->
+                            </a>
+                            <a href="https://www.twitter.com" target="_blank" class="social-icon twitter-icon">
+                              <i class="fab fa-twitter"></i> <!-- أيقونة تويتر -->
+                            </a>
+                            <a href="https://www.linkedin.com" target="_blank" class="social-icon linkedin-icon">
+                              <i class="fab fa-linkedin-in"></i> <!-- أيقونة لينكد إن -->
+                            </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="team-member shadow  text-center rounded-3">
+                      <img src="{% static 'images/default-avatar-profile-picture-female-icon.webp'%}" alt="Team Member 2" class="team-photo  w-100">
+                      <div class="p-4">
+                        <h6 class="team-name text-end">أريج شريفي</h6>
+                        <div class="d-flex gap-2 text-start">
+                            <a href="https://www.facebook.com" target="_blank" class="social-icon facebook-icon">
+                                <i class="fab fa-facebook-f"></i> <!-- أيقونة فيسبوك -->
+                              </a>
+                              <a href="https://www.twitter.com" target="_blank" class="social-icon twitter-icon">
+                                <i class="fab fa-twitter"></i> <!-- أيقونة تويتر -->
+                              </a>
+                              <a href="https://www.linkedin.com" target="_blank" class="social-icon linkedin-icon">
+                                <i class="fab fa-linkedin-in"></i> <!-- أيقونة لينكد إن -->
+                              </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+
+              <div class="section-title text-center mb-5 col-md-4 d-flex flex-column justify-content-center align-items-end ">
+                <h2>فريق العمل</h2>
+                <p class="text-start">تعرف على أعضاء فريقنا المبدعين الذين يعملون جاهدين لتحقيق أهدافكم.</p>
+              </div>
+      
+         </div>
+        
+        
+      </section>
+      
   
 
 </section>

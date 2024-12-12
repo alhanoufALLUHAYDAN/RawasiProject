@@ -4,7 +4,27 @@
     padding: 0;
 }
 body{
-    font-family: Arial, sans-serif;
+    font-family: "Noto Sans Arabic", sans-serif;
+}
+
+.sevice-icon1{
+    color: #761305;
+}
+.sevice-icon2{
+    color: #0f2e29;
+}
+.sevice-icon3{
+    color: #E4b42d;
+}
+.sevice-icon4{
+    color: #dfd6c4;
+}
+
+.noto-kufi-arabic-font {
+  font-family: "Noto Kufi Arabic", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
 }
 .navbar-toggler{
     padding-top: 0.7rem;
@@ -223,7 +243,10 @@ main{
   .featur-icon{
     color: #0f2e29;
   }
-  .featurs-col-color{
+  .featurs-col-color2{
+    background-color: #FAF6EE;
+  }
+  .featurs-col-color1{
     background-color: #0f2e29;
   }
   :root {
@@ -255,19 +278,20 @@ main{
   
   .face {
     position: absolute;
-    border: 1px solid #0f2e29c6;
-    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.243);
+    border: 1px solid #3c0903;
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.151);
     width: var(--size);
     height: var(--size);
     line-height: var(--size);
     text-align: center;
     font-size: 1.25rem;
-    background-color: #0f2e29;
-    opacity: 0.95;
+    background-color: #5d0e04;
+    opacity: 0.99;
   }
   
   .front {
     transform: translateZ(150px);
+
   }
   
   .back {
@@ -369,32 +393,32 @@ main{
   .footer-link-text:hover {
     text-decoration: underline; 
   }
-
+.footer-content{
+    margin-right: 7rem;
+}
 
 /*----- about css ------*/
 /* Image with Dark Overlay */
+
 .image-section {
     position: relative;
-    height: 40vh;
-    width: 100%;
-    background-image: url("../images/money-2696229_1280.jpg");
-    background-position: center;
-    background-repeat: no-repeat;
+    background: url('../images/money-2696229_1280.jpg') no-repeat center center;
     background-size: cover;
-    object-fit: cover;
-}
+    height: 100vh; /* يمكنك تعديل هذه القيمة حسب احتياجك */
+  }
+  
+  .dark-overlay {
+    background-color: rgba(0, 0, 0, 0.5); /* هذا يضيف التعتيم على الصورة */
+  }
+  
+  .text-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start; /* التأكد من محاذاة النص بشكل صحيح */
+    height: 100%; /* التأكد من أن المحتوى يأخذ كامل ارتفاع الحاوية */
+  }
 
-
-
-.dark-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 12, 0, 0.6);
-    z-index: 1;
-}
 
 .section-title h2 {
     font-weight: bold;
@@ -409,5 +433,26 @@ main{
 .about-text p {
     font-size: 1.1rem;
     color: #0f2e29;
+    
+}
+.team-photo{
+    height:10rem;
+    border-radius: 10px 10px 0 0;
+    object-fit: cover;
+}
+.social-icon{
+    color: #761305;
+    font-size: smaller;
+    transition: transform ease 0.3s;
 }
 
+.social-icon:hover{
+    transform: scale(0.8);
+}
+.team-name {
+    font-size: small;
+    font-weight: 600;
+}
+.service-title{
+    font-weight: 600;
+}
