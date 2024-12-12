@@ -29,7 +29,7 @@ class CustomUser(AbstractUser):
 
 class Leader(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='leader')  # link to CustomUser
-    #managed_fund = models.OneToOneField('InvestmentFund', on_delete=models.CASCADE, related_name='leader', null=True, blank=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
