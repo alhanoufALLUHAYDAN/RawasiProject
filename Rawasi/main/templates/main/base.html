@@ -35,7 +35,7 @@
                 </li>
                 {% if request.user.is_authenticated%}
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="{%url 'accounts:logout_view'%}">تسجيل خروج</a>
+                    <a class="nav-link text-danger" href="{%url 'accounts:logout'%}">تسجيل خروج</a>
                   </li>
 
                 {%else%}
@@ -122,7 +122,7 @@
                   <h5>وصول سريع</h5>
                   <ul class="list-unstyled">
                     {% if request.user.is_authenticated%}
-                    <li class="mb-2"><a class="footer-link-text text-danger" href="{%url 'accounts:logout_view'%}">تسجيل خروج</a></li>
+                    <li class="mb-2"><a class="footer-link-text text-danger" href="{%url 'accounts:logout'%}">تسجيل خروج</a></li>
                     {%else%}
                     <li class="mb-2"><a class="footer-link-text" href="{%url 'accounts:choose_role'%}">تسجيل جديد</a></li>
                     <li class="mb-2"><a class="footer-link-text" href="{%url 'accounts:login'%}">تسجيل دخول</a></li>

@@ -69,7 +69,7 @@
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            border: 5px solid #0f2e29;
+            border: 5px solid #0f2e29c2;
             overflow: hidden;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
@@ -133,14 +133,13 @@
             background-color: #e4b42d;
             color: white;
             border-radius: 50%;
-            padding: 10px;
+            padding: 12px;
             font-size: 20px;
             cursor: pointer;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
         .edit-icon:hover {
-            background-color: #761305;
+            background-color: #e4b32d7e;
         }
 
         .check-icon {
@@ -150,14 +149,14 @@
             background-color: #0f2e29; 
             color: white;
             border-radius: 50%;
-            padding: 10px;
+            padding: 12px;
             font-size: 20px;
             cursor: pointer;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
         .check-icon:hover {
-            background-color: #218838;
+            background-color: #0f2e2984;
         }
 
         @media (max-width: 768px) {
@@ -241,12 +240,7 @@
                 </div>
             </form>
         </div>
-        <form method="POST" action="{% url 'accounts:logout' %}">
-            {% csrf_token %}
-            <button type="submit">تسجيل الخروج</button>
-        </form>
     </div>
-
 </div>
 
 <script>
@@ -254,9 +248,9 @@
         $('#edit-image-icon').click(function () {
             $('input').prop('disabled', false);
             $('#profile-picture-group, #password-group, #password-confirm-group').removeClass('hidden');
-            $('#save-btn-container').removeClass('hidden');
+            $('#save-btn-container').removeClass('hidden'); 
             $('#check-icon').removeClass('hidden'); 
-            $('#edit-image-icon').hide();
+            $('#edit-image-icon').hide(); 
         });
 
         $('#check-icon').click(function () {
@@ -264,18 +258,17 @@
         });
 
         $('#profile-form').submit(function (e) {
-            e.preventDefault(); 
+            e.preventDefault();
 
-            var formData = new FormData(this);
+            var formData = new FormData(this); 
 
             $.ajax({
-                url: '{% url "accounts:update_profile" %}',  
+                url: '{% url "accounts:update_profile" %}',
                 type: 'POST',
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function(response) {
-
                     $('#full-name').val(response.full_name);
                     $('#username').val(response.username);
                     $('#email').val(response.email);
@@ -290,6 +283,7 @@
                     $('#check-icon').addClass('hidden'); 
 
                     $('#alert-container').html('<div class="alert alert-success">تم تحديث البيانات بنجاح!</div>');
+
                     setTimeout(function() {
                         $('.alert').fadeOut();
                     }, 3000);

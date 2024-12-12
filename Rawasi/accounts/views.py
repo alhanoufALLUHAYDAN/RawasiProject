@@ -2,15 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from accounts.models import CustomUser , Investor , Leader
-from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from datetime import datetime , date
-from django.core.mail import send_mail
-from django.urls import reverse
-from django.template.loader import render_to_string
-
-
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -125,7 +120,7 @@ def update_profile(request):
         password = request.POST.get('password')
         password_confirm = request.POST.get('password_confirm')
 
-        user = request.user 
+        user = request.user
 
         if full_name:
             user.full_name = full_name
@@ -136,16 +131,22 @@ def update_profile(request):
         if date_of_birth:
             user.date_of_birth = date_of_birth
         if profile_picture:
-            user.profile_picture = profile_picture 
+            user.profile_picture = profile_picture
 
         if password and password == password_confirm:
-            user.set_password(password)  
+            user.set_password(password)
 
-        user.save()
+        user.save()  
 
-        messages.success(request, 'تم حفظ التعديلات بنجاح!')
-        return redirect('accounts:profile') 
-
-    return render(request, 'profile/update_profile.html')
-
-
+        return JsonResponse({
+            'full_name': user.full_name,
+            'username': user.username,
+            'email': user.email,
+            'phone_number': user.phone_number,
+            'date_of_birth': user.date_of_birth,
+            'profile_picture_url': user.profile_picture.url if user.profile_picture else None
+        })
+    
+    return render(request, 'profile/profile.html', {
+        'user': request.user
+    })
