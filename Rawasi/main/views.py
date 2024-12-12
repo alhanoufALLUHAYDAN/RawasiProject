@@ -3,6 +3,9 @@ from django.http import HttpRequest
 from django.contrib import messages
 from django.core.paginator import Paginator
 from .forms import ContactForm
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from django.conf import settings
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -13,13 +16,14 @@ def home_view(request:HttpRequest):
         if contact_form.is_valid():
               contact_form.save()
               #send confirmation email
-              #content_html = render_to_string("main/mail/confirmation.html")
-              #send_to = contact_form.cleaned_data['email']
-              #print(send_to)
-              #email_message = EmailMessage("confiramation", content_html, settings.EMAIL_HOST_USER, [send_to])
-              #email_message.content_subtype = "html"
+              content_html = render_to_string("main/confirmation.html")
+              send_to = contact_form.cleaned_data['email']
+              print(send_to)
+              print(settings.EMAIL_HOST_USER)
+              email_message = EmailMessage("confiramation", content_html, settings.EMAIL_HOST_USER, [send_to])
+              email_message.content_subtype = "html"
               #email_message.connection = email_message.get_connection(True)
-              #email_message.send()
+              email_message.send()
  
               messages.success(request, 'شكرا لتواصلك معنا')
               return redirect('main:home_view')
