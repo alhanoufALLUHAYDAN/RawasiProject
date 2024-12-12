@@ -1,0 +1,7 @@
+<h1>Delete {{ fund.name }}</h1>
+<p>Are you sure you want to delete this investment fund?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, Delete</button>
+</form>
+<a href="{% url 'investment_fund_list' %}">Cancel</a>

@@ -1,0 +1,11 @@
+{% if not user.is_authenticated %}
+    <p>You must be logged in to create an investment fund.</p>
+{% elif not user.leader %}
+    <p>You do not have permission to create an investment fund.</p>
+{% else %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+{% endif %}
