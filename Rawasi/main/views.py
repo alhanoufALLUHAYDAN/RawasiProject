@@ -36,3 +36,12 @@ def home_view(request:HttpRequest):
 
 def about_view(request:HttpRequest):
     return render(request,'main/about_us.html')
+
+
+
+def leader_dashboard_view(request:HttpRequest):
+    if not request.user.is_authenticated :
+        messages.error(request, 'مصرح فقط للاعضاء المسجلين',"danger")
+        return redirect("main:home_view")
+    
+    return render(request,'dashboard/leader_dashboard.html',{"leader":request.user})
