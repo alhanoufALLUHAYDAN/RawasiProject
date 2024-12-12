@@ -5,6 +5,7 @@ from .forms import InvestmentFundForm
 from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 
+
 @login_required
 def create_investment_fund(request):
     # Ensure the logged-in user is a Leader
