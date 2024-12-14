@@ -24,4 +24,5 @@ urlpatterns = [
     path('',include("main.urls")),
     path('accounts/',include("accounts.urls")),
     path('investment_fund/',include("investment_fund.urls")),
+    path('investments/', include("investments.urls"))
 ]  +static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
