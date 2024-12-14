@@ -1,55 +1,17 @@
 {% extends 'main/base.html' %}
 {% load static %}
 {%block head%}
-<style>
-    body{
-        background-color: rgba(250, 246, 238, 0.794);
-    }
-  .invalid {
-      color: red;
-  }
+<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{% static 'css/accounts.css' %}">
+{% endblock %}
 
-  .valid {
-      color: green;
-  }
-
-  #password-requirements {
-      font-size: 12px;
-      margin-top: 10px;
-      list-style-type: none;
-      padding: 0;
-  }
-
-  #password-requirements li {
-      padding-left: 20px;
-  }
-
-  .btn-darkgreen {
-      background-color: #0f2e29;
-      color: white;
-  }
-
-  .btn-darkgreen:hover {
-      opacity: 0.8;
-  }
-
-  .alert {
-      margin-bottom: 20px;
-  }
- 
-
-  @media (max-width: 576px) {
-      .card {
-          width: 90%; 
-      }
-  }
-</style>
-{%endblock%}
-{% block title %}<title>تسجيل جديد</title>{% endblock %}
+{% block title %}
+<title>تسجيل جديد</title>
+{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center">
-    <div class="card p-4 shadow-lg" style="max-width: 700px; width: 100%; margin-top: 10%;">
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card p-4 shadow-lg" style="max-width: 700px; width: 100%; margin-top: 5%;">
         <h2 class="text-center mb-4" style="color: #761305;">تسجيل حساب</h2>
         {% if messages %}
           {% for message in messages %}
@@ -62,32 +24,42 @@
             {% csrf_token %}
             <div class="mb-3">
                 <label for="full_name" class="form-label" style="color: #761305;">الاسم الكامل</label>
+                <span class="text-danger">*</span>
                 <input type="text" class="form-control" id="full_name" name="full_name" required>
             </div>
 
             <div class="mb-3">
                 <label for="username" class="form-label" style="color: #761305;">اسم المستخدم</label>
+                <span class="text-danger">*</span>
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label" style="color: #761305;">البريد الإلكتروني</label>
+                <span class="text-danger">*</span>
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
 
             <div class="mb-3">
                 <label for="date_of_birth" class="form-label" style="color: #761305;">تاريخ الميلاد</label>
-                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" required>
+                <span class="text-danger">*</span>
+                <input type="date" class="form-control custom-date" id="date_of_birth" name="date_of_birth" required>
             </div>
-
+            
             <div class="mb-3">
-                <label for="phone_number" class="form-label" style="color: #761305;">رقم الهاتف</label>
-                <input type="text" class="form-control" id="phone_number" name="phone_number" required>
+                <label for="phone_number" class="form-label" style="color: #761305;">رقم الجوال</label>
+                <input type="text" class="form-control" id="phone_number" name="phone_number">
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label" style="color: #761305;">كلمة المرور</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <span class="text-danger">*</span>
+                <div class="input-wrapper">
+                    <input type="password" class="form-control" id="password" name="password" required>
+                    <button class="btn btn-outline-secondary toggle-password" type="button" id="togglePassword1">
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
             </div>
 
             <div id="password-requirements">
@@ -100,12 +72,10 @@
             </div>
 
             <div class="mb-3">
-                <label for="profile_image" class="form-label" style="color: #761305;">الصورة الشخصية</label>
-                <input type="file" class="form-control" id="profile_image" name="profile_image">
+                <label for="profile_image" class="form-label" style="color: #761305;">الصورة الشخصية : </label>
+                <input type="file" class="form-control-file" id="profile_image" name="profile_image" accept=".jpg, .jpeg, .png" placeholder="اختر صورة">
             </div>
-
             <button type="submit" class="btn btn-darkgreen w-100">تسجيل</button>
-
             <div class="mt-3 text-center">
                 <a href="{% url 'accounts:login' %}" style="color: #761305;">إذا كان لديك حساب، سجل دخولك هنا</a>
             </div>
@@ -114,48 +84,7 @@
 </div>
 {% endblock %}
 
-{%block script%}
-<script>
-    const passwordInput = document.getElementById('password');
-    const lengthRequirement = document.getElementById('length');
-    const uppercaseRequirement = document.getElementById('uppercase');
-    const numberRequirement = document.getElementById('number');
-    const specialRequirement = document.getElementById('special');
-
-    passwordInput.addEventListener('input', function() {
-        const password = passwordInput.value;
-
-        if (password.length >= 8) {
-            lengthRequirement.classList.remove('invalid');
-            lengthRequirement.classList.add('valid');
-        } else {
-            lengthRequirement.classList.remove('valid');
-            lengthRequirement.classList.add('invalid');
-        }
-
-        if (/[A-Z]/.test(password)) {
-            uppercaseRequirement.classList.remove('invalid');
-            uppercaseRequirement.classList.add('valid');
-        } else {
-            uppercaseRequirement.classList.remove('valid');
-            uppercaseRequirement.classList.add('invalid');
-        }
-
-        if (/\d/.test(password)) {
-            numberRequirement.classList.remove('invalid');
-            numberRequirement.classList.add('valid');
-        } else {
-            numberRequirement.classList.remove('valid');
-            numberRequirement.classList.add('invalid');
-        }
-
-        if (/[!@#$%^&*]/.test(password)) {
-            specialRequirement.classList.remove('invalid');
-            specialRequirement.classList.add('valid');
-        } else {
-            specialRequirement.classList.remove('valid');
-            specialRequirement.classList.add('invalid');
-        }
-    });
-</script>
-{%endblock%}
+{% block script %}
+<script src="{% static 'js/script.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %}

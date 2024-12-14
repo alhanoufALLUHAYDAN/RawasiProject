@@ -1,0 +1,68 @@
+body {
+    background-image: url("/static/images/Background.png");
+    background-size: cover;
+    font-family: "Noto Sans Arabic", sans-serif;
+    
+}
+
+.invalid {
+    color: red;
+}
+
+.valid {
+    color: green;
+}
+
+#password-requirements {
+    font-size: 12px;
+    margin-top: 10px;
+    list-style-type: none;
+    padding: 0;
+}
+
+#password-requirements li {
+    padding-left: 20px;
+}
+
+.btn-darkgreen {
+    background-color: #0f2e29;
+    color: white;
+}
+
+.btn-darkgreen:hover {
+    opacity: 0.8;
+}
+
+.alert {
+    margin-bottom: 20px;
+}
+
+
+.card {
+    background: rgba(255, 255, 255, 0.8); 
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.card h2 {
+    color: #761305;
+}
+.input-wrapper {
+    position: relative;
+}
+
+
+.input-wrapper .toggle-password {
+    position: absolute;
+    top: 50%;
+    left: 10px; 
+    transform: translateY(-50%);
+    border: none;
+    background-color: transparent;
+    color: #761305;
+    font-size: 18px;
+    cursor: pointer;
+}
+.input-wrapper .toggle-password:hover {
+    opacity: 0.7;
+}

@@ -1,11 +1,16 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login ,logout , get_user_model
 from django.contrib import messages
 from accounts.models import CustomUser , Investor , Leader
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
 from datetime import datetime , date
 from django.http import JsonResponse
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+from django.conf import settings
 
 # Create your views here.
 
@@ -150,3 +155,60 @@ def update_profile(request):
     return render(request, 'profile/profile.html', {
         'user': request.user
     })
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = get_user_model().objects.get(email=email)
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(str(user.pk).encode())
+
+            reset_link = request.build_absolute_uri(
+                reverse('accounts:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+            )
+
+            subject = 'إعادة تعيين كلمة المرور'
+            message = render_to_string('accounts/reset_password/password_reset_email.html', {
+                'user': user,
+                'reset_link': reset_link,
+            })
+            
+            send_mail(
+                subject, 
+                message, 
+                settings.EMAIL_HOST_USER, 
+                [email], 
+                fail_silently=False,
+                html_message=message  
+            )
+
+            return redirect('accounts:reset_password_done')
+
+        except get_user_model().DoesNotExist:
+            return render(request, 'accounts/reset_password/password_reset.html', {'error': 'البريد الإلكتروني غير موجود في النظام.'})
+    
+    return render(request, 'accounts/reset_password/password_reset.html')
+
+
+def password_reset_confirm(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = get_user_model().objects.get(pk=uid)
+    except Exception as e:
+        return redirect('accounts:reset_password')
+
+    if default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            password = request.POST.get('password')
+            user.set_password(password)
+            user.save()
+            return redirect('accounts:login')
+        
+        return render(request, 'accounts/reset_password/password_reset_confirm.html', {'uid': uid, 'token': token})
+    return redirect('accounts:reset_password')
+    
+
+def reset_password_done(request):
+    return render(request, 'accounts/reset_password/password_reset_done.html')
