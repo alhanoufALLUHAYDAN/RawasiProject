@@ -1,0 +1,133 @@
+{% extends 'main/base.html'%}
+{%load static%}
+
+{%block title%}<title>لوحة التحكم - المستثمر</title>{%endblock%}
+{%block content%}
+    
+<section class="container bg-body-tertiary rounded-3 dashboard">
+  <div class="row dashboard-row">
+      <!-- Sidebar -->
+      <div class="col-md-3 p-3 d-flex flex-column justify-content-between dashboard-side">
+        <div>
+          <h4 class=" mb-4 text-center ">مرحبا <span>{{investor.full_name}}</span></h4>
+          <ul class="nav flex-column dashboard-links">
+              <li class="nav-item">
+                  <a class="nav-link-dashboard active" href="#" data-content="section1">الصناديق</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link-dashboard" href="#" data-content="section2">التصويت</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link-dashboard" href="#" data-content="section3">الأرباح</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link-dashboard" href="#" data-content="section4">المحفظة </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link-dashboard" href="#" data-content="section5">حسابي</a>
+              </li>
+          </ul>
+        </div>
+        <div class="d-flex justify-content-center">
+       
+      
+     
+      <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#codeModal">
+        انضمام   </button>
+
+
+          <!-- Modal Structure -->
+          <div class="modal fade" id="codeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header border-white d-flex justify-content-between">
+                  <h5 class="modal-title" id="exampleModalLabel">الرمز</h5>
+                  <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body ">
+                 
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="text" maxlength="6" class="form-control"/>
+                        <div class="modal-footer border-white ">
+                            <button type="submit" name="new_code" class="btn btn-darkgreen">ارسال</button>
+                          </div>
+                    </form>
+                
+
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+         
+      </div>
+
+      <!-- Content Area -->
+      <div class="col-md-9 p-3">
+          <div id="section1" class="dashboard-section">
+            <div class="text-center dashboard-section1  d-flex flex-column justify-content-center align-items-center">
+              <h3>لا يوجد صناديق حاليا</h3>
+              <p class="text-muted"> انضم الان </p>
+              <button class="btn btn-darkgreen">انضمام</button>
+            </div>
+          </div>
+          <div id="section2" class="dashboard-section" style="display: none;">
+              <h3>Content for Section 2</h3>
+              <p>This is where the content for Section 2 will be displayed.</p>
+          </div>
+          <div id="section3" class="dashboard-section" style="display: none;">
+              <h3>Content for Section 3</h3>
+              <p>This is where the content for Section 3 will be displayed.</p>
+          </div>
+          <div id="section4" class="dashboard-section" style="display: none;">
+              <h3>Content for Section 4</h3>
+              <p>This is where the content for Section 4 will be displayed.</p>
+          </div>
+          <div id="section5" class="dashboard-section" style="display: none;">
+              <h3>Content for Section 5</h3>
+              <p>This is where the content for Section 5 will be displayed.</p>
+          </div>
+         
+      </div>
+  </div>
+</section>
+
+
+  
+
+  {%endblock%}
+  {%block script%}
+  <script>
+    // Handle the section content change
+    const navLinks = document.querySelectorAll('.nav-link-dashboard');
+    const sections = document.querySelectorAll('.dashboard-section');
+
+    // Set the default visible section
+    const defaultSection = 'section1'; // This can be any section you want to show by default
+    document.getElementById(defaultSection).style.display = 'block';
+    document.querySelector(`.nav-link-dashboard[data-content="${defaultSection}"]`).classList.add('active');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Remove the 'active' class from all nav links
+            navLinks.forEach(link => link.classList.remove('active'));
+            // Add 'active' class to the clicked link
+            link.classList.add('active');
+
+            // Hide all sections
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show the content corresponding to the clicked section
+            const sectionId = link.getAttribute('data-content');
+            const activeSection = document.getElementById(sectionId);
+            activeSection.style.display = 'block';
+        });
+    });
+</script>
+{%endblock%}
