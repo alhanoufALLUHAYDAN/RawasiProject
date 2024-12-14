@@ -6,6 +6,8 @@ from .forms import ContactForm
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
+import random
+import string
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -26,7 +28,7 @@ def home_view(request:HttpRequest):
               email_message.send()
  
               messages.success(request, 'شكرا لتواصلك معنا')
-              return redirect('main:home_view')
+              return redirect(request.GET.get("next", "/"))
         else:
             print("form is not valid")
             print(contact_form.errors)   
@@ -39,9 +41,33 @@ def about_view(request:HttpRequest):
 
 
 
-def leader_dashboard_view(request:HttpRequest):
-    if not request.user.is_authenticated :
+def generate_unique_code(length=6):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
+
+
+
+def fund_dashboard_view(request:HttpRequest):
+    if not request.user.is_authenticated and request.user.leader :
         messages.error(request, 'مصرح فقط للاعضاء المسجلين',"danger")
         return redirect("main:home_view")
     
-    return render(request,'dashboard/leader_dashboard.html',{"leader":request.user})
+    unique_code = None
+    if request.method == "POST" and "new_code" in request.POST:
+        unique_code = generate_unique_code()
+        print("Generated unique code:", unique_code)
+
+    return render(request,'dashboard/fund_dashboard.html',
+                  {"leader":request.user,
+                   "unique_code":unique_code})
+
+
+def investor_dashboard_view(request:HttpRequest):
+    if not request.user.is_authenticated:
+        messages.error(request, 'مصرح فقط للاعضاء المسجلين',"danger")
+        return redirect("main:home_view")
+    
+
+    return render(request,'dashboard/investor_dashboard.html',
+                  {"investor":request.user,
+                   })

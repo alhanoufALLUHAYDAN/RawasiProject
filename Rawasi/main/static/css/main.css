@@ -1,4 +1,4 @@
-/* home css*/
+/* home and base css*/
 *{
     margin: 0;
     padding: 0;
@@ -65,12 +65,24 @@ nav.scrolled {
     background-color: white; 
     color: black;
   }
+#userlinks{
+    color: white !important;
+    transition: color ease 0.3s;
+}
+#userlinks:hover{
+    color: #E4b42d!important;
+}
+#userlinks.scrolled{
+    color: black!important;
+    transition: color ease 0.3s;
 
-
-
+}
+#userlinks.scrolled:hover{
+    color: #E4b42d!important;
+}
 
 main{
-    min-height: 100vh;
+    min-height: 80vh;
 }
   
 .carousel-video {
@@ -455,4 +467,50 @@ main{
 }
 .service-title{
     font-weight: 600;
+}
+
+/*----- dashboard css ------*/
+.dashboard{
+    background-color: #194d45;
+    min-height: 85vh;
+    margin-top: 5rem;
+    width: 100%;
+}
+.dashboard-row{
+    min-height: 85vh;
+}
+.dashboard-side{
+}
+.dashboard-side a{
+    color: black;
+    background-color: none;
+    transition: background-color ease 0.3s, color ease 0.3s;
+    border-radius: 9px;
+    margin-top:0.1rem;
+    margin-bottom: 0.1rem;
+    text-decoration: none;
+    width: 100%;
+    display: block;
+    padding: 6px;
+}
+.dashboard-links{
+    border-left: 0.5px solid rgb(209, 209, 209) ;
+    padding-left: 0.6rem;
+
+}
+.dashboard-side a:hover{
+    background-color: #5d0e04;
+    color: rgb(255, 255, 255);
+}
+
+.nav-link-dashboard.active {
+    background-color: #5d0e04;
+    color: rgb(255, 255, 255);
+    width: 100%;
+}
+.dashboard-section{
+    height: 100%;
+}
+.dashboard-section1{
+    height: 100%;
 }
