@@ -14,7 +14,7 @@
     <p><strong>Created At:</strong> {{ fund.created_at }}</p>
     <p><strong>Updated At:</strong> {{ fund.updated_at }}</p>
 
-    <a href="{% url 'update_investment_fund' fund.pk %}">Edit</a>
-    <a href="{% url 'investment_fund_list' %}">Back to List</a>
+    <a href="{% url 'investment_fund:update_investment_fund' fund.pk %}">Edit</a>
+    <a href="{% url 'investment_fund:investment_fund_list' %}">Back to List</a>
 </body>
 </html>

@@ -4,13 +4,18 @@ from .models import InvestmentFund
 from .forms import InvestmentFundForm  
 from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
-
+from django.contrib import messages
 
 @login_required
 def create_investment_fund(request):
     # Ensure the logged-in user is a Leader
     if not hasattr(request.user, 'leader'):
         return HttpResponseForbidden("You are not authorized to create an investment fund.")  # Return a 403 Forbidden response
+
+    # Check if the leader already has an associated investment fund
+    if hasattr(request.user.leader, 'managed_fund'):
+        messages.error(request, "You already have an investment fund.")
+        return redirect('investment_fund:investment_fund_list')  # Redirect to the fund list or existing fund
 
     if request.method == "POST":
         form = InvestmentFundForm(request.POST)
@@ -19,7 +24,8 @@ def create_investment_fund(request):
             investment_fund = form.save(commit=False)
             investment_fund.leader = request.user.leader  # Assign the logged-in leader
             investment_fund.save()
-            return redirect('investment_fund_list')  # Redirect to the list view
+            messages.success(request, "Investment fund created successfully!")
+            return redirect('investment_fund:investment_fund_list')  # Redirect to the list view
     else:
         form = InvestmentFundForm()
 
@@ -29,7 +35,6 @@ def create_investment_fund(request):
 def investment_fund_detail(request, pk):
     # Get the specific investment fund by primary key (pk)
     fund = get_object_or_404(InvestmentFund, pk=pk)
-    
     # Pass the fund object to the template
     return render(request, 'investment_fund/detail.html', {'fund': fund})
 
@@ -44,7 +49,10 @@ def update_investment_fund(request, pk):
         form = InvestmentFundForm(request.POST, instance=fund)
         if form.is_valid():
             form.save()
-            return redirect('investment_fund_list')
+            messages.success(request, f'Investment fund "{fund.name}" has been updated successfully.')
+            return redirect('investment_fund:investment_fund_list')
+        else:
+            messages.error(request, "There was an error updating the investment fund. Please correct the errors below.")
     else:
         form = InvestmentFundForm(instance=fund)
     return render(request, 'investment_fund/update.html', {'form': form, 'fund': fund})
@@ -53,6 +61,8 @@ def update_investment_fund(request, pk):
 def delete_investment_fund(request, pk):
     fund = get_object_or_404(InvestmentFund, pk=pk)
     if request.method == "POST":
+        fund_name = fund.name  # Save the name before deletion for the success message
         fund.delete()
-        return redirect('investment_fund_list')
+        messages.success(request, f'Investment fund "{fund_name}" has been deleted successfully.')
+        return redirect('investment_fund:investment_fund_list')
     return render(request, 'investment_fund/delete.html', {'fund': fund})
