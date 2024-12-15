@@ -1,11 +1,71 @@
-{% if not user.is_authenticated %}
-    <p>You must be logged in to create an investment fund.</p>
-{% elif not user.leader %}
-    <p>You do not have permission to create an investment fund.</p>
-{% else %}
-    <form method="post">
+{% extends 'main/base.html' %}
+
+{% block title %}<title>Create Wallet</title>{% endblock %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+    {% if not user.is_authenticated %}
+        <p class="alert alert-warning text-center">You must be logged in to create a wallet.</p>
+    {% elif not user.leader %}
+        <p class="alert alert-danger text-center">You do not have permission to create a wallet.</p>
+    {% else %}
+    <form method="post" class="p-5" style="max-width: 600px; background-color: #faf6ee; border: 3px solid #0f2e29; border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Create</button>
+        <h3 class="text-center mb-4" style="color: #761305; font-weight: bold;">Create Your Wallet</h3>
+        <hr style="border: 2px solid #E4B42D;">
+        <div class="form-group mb-3">
+            {{ form.name.label_tag }} 
+            {{ form.name }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.description.label_tag }} 
+            {{ form.description }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.total_balance.label_tag }} 
+            {{ form.total_balance }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.is_active.label_tag }} 
+            {{ form.is_active }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.status.label_tag }} 
+            {{ form.status }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.category.label_tag }} 
+            {{ form.category }}
+        </div>
+        <button type="submit" class="btn btn-block mt-4" style="background-color: #E4B42D; color: #0f2e29; font-weight: bold; width: 100%; padding: 12px; border-radius: 8px; border: none;">
+            Create Wallet
+        </button>
     </form>
-{% endif %}
+    {% endif %}
+</div>
+<style>
+    input, textarea, select {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 20px;
+        display: block;
+        border: 2px solid #0f2e29;
+        border-radius: 8px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+        background-color: #faf6ee;
+        font-size: 16px;
+        color: #0f2e29;
+    }
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: #E4B42D;
+        box-shadow: 0 0 5px #E4B42D;
+    }
+    label {
+        font-weight: bold;
+        color: #761305;
+        margin-bottom: 5px;
+        display: block;
+    }
+</style>
+{% endblock %}

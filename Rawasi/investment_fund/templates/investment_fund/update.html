@@ -1,7 +1,13 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Delete Investment Fund{% endblock %}
+
+{% block content %}
 <h1>Update Investment Fund</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Update</button>
 </form>
-<a href="{% url 'investment_fund_list' %}">Cancel</a>
+<a href="{% url 'investment_fund:investment_fund_list' %}">Cancel</a>
+{% endblock %}
