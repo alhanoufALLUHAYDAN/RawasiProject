@@ -6,30 +6,42 @@ from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-@login_required
 def create_investment_fund(request):
-    # Ensure the logged-in user is a Leader
-    if not hasattr(request.user, 'leader'):
-        return HttpResponseForbidden("You are not authorized to create an investment fund.")  # Return a 403 Forbidden response
-
-    # Check if the leader already has an associated investment fund
-    if hasattr(request.user.leader, 'managed_fund'):
-        messages.error(request, "You already have an investment fund.")
-        return redirect('investment_fund:investment_fund_list')  # Redirect to the fund list or existing fund
-
     if request.method == "POST":
-        form = InvestmentFundForm(request.POST)
-        if form.is_valid():
-            # Save the form without committing to assign the leader
-            investment_fund = form.save(commit=False)
-            investment_fund.leader = request.user.leader  # Assign the logged-in leader
-            investment_fund.save()
-            messages.success(request, "Investment fund created successfully!")
-            return redirect('investment_fund:investment_fund_list')  # Redirect to the list view
-    else:
-        form = InvestmentFundForm()
+        name = request.POST.get("name")
+        description = request.POST.get("description")
+        total_balance = request.POST.get("total_balance")
+        is_active = request.POST.get("is_active") == "True"  # Convert string to boolean
+        category = request.POST.get("category")
 
-    return render(request, 'investment_fund/create.html', {'form': form})
+        # Check if the leader already has an investment fund
+        if hasattr(request.user, 'leader') and hasattr(request.user.leader, 'managed_fund'):
+            messages.error(request, "لا يمكنك إنشاء أكثر من صندوق استثماري.")
+            return redirect("main:fund_dashboard_view")
+
+        # Validate the inputs
+        if not all([name, description, total_balance, category]):
+            messages.error(request, "الرجاء ملء جميع الحقول المطلوبة.")
+            return redirect("main:fund_dashboard_view")
+
+        # Create the investment fund
+        try:
+            InvestmentFund.objects.create(
+                name=name,
+                description=description,
+                total_balance=total_balance,
+                is_active=is_active,
+                category=category,
+                leader=request.user.leader  # Link the fund to the current leader
+            )
+            messages.success(request, "تم إنشاء الصندوق الاستثماري بنجاح!")
+        except Exception as e:
+            messages.error(request, f"حدث خطأ: {e}")
+        
+        return redirect("main:fund_dashboard_view")
+    else:
+        return redirect("main:fund_dashboard_view")
+
 
 
 def investment_fund_detail(request, pk):
@@ -42,7 +54,6 @@ def investment_fund_list(request):
     funds = InvestmentFund.objects.all()
     return render(request, 'investment_fund/list.html', {'funds': funds})
 
-
 def update_investment_fund(request, pk):
     fund = get_object_or_404(InvestmentFund, pk=pk)
     if request.method == "POST":
@@ -50,19 +61,19 @@ def update_investment_fund(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, f'Investment fund "{fund.name}" has been updated successfully.')
-            return redirect('investment_fund:investment_fund_list')
+            return redirect('main:fund_dashboard_view')  # Redirect to the dashboard
         else:
+            print("Form errors:", form.errors)  # Debug form errors
             messages.error(request, "There was an error updating the investment fund. Please correct the errors below.")
     else:
-        form = InvestmentFundForm(instance=fund)
+        form = InvestmentFundForm(instance=fund)  # Handle GET request and populate the form
     return render(request, 'investment_fund/update.html', {'form': form, 'fund': fund})
 
 
 def delete_investment_fund(request, pk):
     fund = get_object_or_404(InvestmentFund, pk=pk)
     if request.method == "POST":
-        fund_name = fund.name  # Save the name before deletion for the success message
         fund.delete()
-        messages.success(request, f'Investment fund "{fund_name}" has been deleted successfully.')
-        return redirect('investment_fund:investment_fund_list')
-    return render(request, 'investment_fund/delete.html', {'fund': fund})
+        messages.success(request, "تم حذف الصندوق بنجاح.")
+        return redirect('main:fund_dashboard_view')
+    return redirect('main:fund_dashboard_view')

@@ -1,13 +1,156 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
-{% block title %}Delete Investment Fund{% endblock %}
+{% block head %}
+<style>
+    body {
+        background-image: url("{% static 'accounts/images/background.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: 'Tajawal', sans-serif;
+    }
 
+    .update-container {
+        max-width: 700px;
+        margin: 50px auto;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+    }
+
+    .update-header {
+        background-color: #761305;
+        color: #fff;
+        padding: 15px;
+        text-align: center;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #761305;
+        text-align: right;
+    }
+
+    .form-control, .form-select, textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        direction: rtl;
+        text-align: right;
+    }
+
+    .btn-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .btn-primary {
+        background-color: #3b6e4e;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #2a4a35;
+    }
+
+    .btn-secondary {
+        background-color: #ccc;
+        color: #333;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background-color: #aaa;
+    }
+    .form-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    direction: rtl; /* Ensures right-to-left layout */
+    text-align: right;
+    -webkit-appearance: none; /* Removes default arrow in Webkit browsers */
+    -moz-appearance: none; /* Removes default arrow in Firefox */
+    appearance: none; /* Standard way to remove the default arrow */
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><polygon points='0,0 20,0 10,10' style='fill:%23761305;' /></svg>") no-repeat;
+    background-position: left 10px center; /* Position arrow on the left */
+    background-size: 12px;
+    padding-right: 20px; /* Adds spacing for the arrow */
+}
+
+</style>
+{% endblock %}
+
+{% block title %}<title>تحديث بيانات الصندوق الاستثماري</title>{% endblock %}
 {% block content %}
-<h1>Update Investment Fund</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Update</button>
-</form>
-<a href="{% url 'investment_fund:investment_fund_list' %}">Cancel</a>
+<div class="update-container">
+    <div class="update-header">تحديث بيانات الصندوق الاستثماري</div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name" class="form-label">اسم الصندوق</label>
+            <input type="text" name="name" id="name" class="form-control" value="{{ form.name.value }}">
+            {% if form.name.errors %}
+                <div class="text-danger">{{ form.name.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="description" class="form-label">وصف الصندوق</label>
+            <textarea name="description" id="description" class="form-control">{{ form.description.value }}</textarea>
+            {% if form.description.errors %}
+                <div class="text-danger">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="total_balance" class="form-label">الرصيد الكلي</label>
+            <input type="number" name="total_balance" id="total_balance" class="form-control" value="{{ form.total_balance.value }}">
+            {% if form.total_balance.errors %}
+                <div class="text-danger">{{ form.total_balance.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="is_active" class="form-label">الحالة</label>
+            <select name="is_active" id="is_active" class="form-select">
+                <option value="Active" {% if form.instance.is_active == 'Active' %}selected{% endif %}>نشط</option>
+                <option value="Inactive" {% if form.instance.is_active == 'Inactive' %}selected{% endif %}>غير نشط</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="category" class="form-label">الفئة</label>
+            {{ form.category }}
+        </div>
+        <div class="btn-container">
+            <button type="submit" class="btn-primary">تحديث البيانات</button>
+            <a href="{% url 'main:fund_dashboard_view' %}" class="btn-secondary">إلغاء</a>
+        </div>
+    </form>
+</div>
 {% endblock %}
