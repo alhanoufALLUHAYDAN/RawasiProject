@@ -388,8 +388,19 @@ main{
     background-color: #194d45;
     color: white;
 }
-
+.btn-darkred{
+    background-color: #761305;
+    color: white;
+}
+.btn-darkred:hover{
+    background-color: #991908;
+    color: white;
+}
 .form-control:focus {
+    box-shadow: 0 0 0 0.20rem #1d574e67; 
+    border-color: #22665ba9; 
+}
+.form-select:focus {
     box-shadow: 0 0 0 0.20rem #1d574e67; 
     border-color: #22665ba9; 
 }
@@ -469,7 +480,7 @@ main{
     font-weight: 600;
 }
 
-/*----- dashboard css ------*/
+/*----- fund dashboard css ------*/
 .dashboard{
     background-color: #194d45;
     min-height: 85vh;
@@ -514,3 +525,126 @@ main{
 .dashboard-section1{
     height: 100%;
 }
+
+.investment-card img{
+    border-radius: 7px 7px 0 0;
+}
+.person-card img{
+    border-radius: 0 7px 7px 0 ;
+
+}
+
+.delete-member-btn{
+    font-size: smaller;
+    padding-right: 0.2rem;
+    padding-left: 0.2rem;
+    padding-top:  0.1rem;
+    padding-bottom:  0.1rem;
+
+}
+
+
+  .card-wallet {
+    border-radius: 15px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .wallet-header {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+  }
+  .balance {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .balance span {
+    color: #5d0e04;
+  }
+  
+  .btn-action {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 15px;
+  }
+
+
+  .investment-list-container {
+    max-height: 400px; /* Maximum height for scroll */
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin-top: 20px;
+  }
+  .investment-card-wallet-wrapper {
+    margin-bottom: 15px;
+  }
+  .investment-card-wallet {
+    border: 1px solid #ddd;
+    width: 20rem;
+    border-radius: 10px;
+    padding: 5px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+  .investment-card-wallet:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  }
+  .investment-card-wallet-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+  }
+  .investment-card-wallet-info {
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+  .investment-card-wallet-status {
+    font-weight: bold;
+  }
+
+
+
+  .fund-container {
+    margin-top: 30px;
+  }
+  
+  .fund-table th, .fund-table td {
+    text-align: center;
+  }
+  
+  .fund-row {
+    cursor: pointer;
+    transition: transform ease 0.3s;
+  }
+  .fund-row:hover{
+    transform: scale(1.03);
+  }
+  
+  #fund-details {
+    padding: 20px;
+    border-left: 2px solid #ddd;
+    background-color: #f8f9fa;
+  }
+  
+  .details-placeholder {
+    font-size: 1.25rem;
+    color: #888;
+  }
+  
+  
+  .modal-header .btn-close {
+    font-size: 1.5rem;
+  }
+  
+  @media (max-width: 768px) {
+    .fund-container .row {
+      flex-direction: column-reverse;
+    }
+  }
+  
