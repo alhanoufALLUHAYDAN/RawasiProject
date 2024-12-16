@@ -8,6 +8,8 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import random
 import string
+from investment_fund.models import InvestmentFund
+from investment_fund.forms import InvestmentFundForm 
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -18,7 +20,7 @@ def home_view(request:HttpRequest):
         if contact_form.is_valid():
               contact_form.save()
               #send confirmation email
-              content_html = render_to_string("main/confirmation.html")
+              content_html = render_to_string("main/confirmation.html",{"username":contact_form.cleaned_data['full_name']})
               send_to = contact_form.cleaned_data['email']
               print(send_to)
               print(settings.EMAIL_HOST_USER)
@@ -26,8 +28,8 @@ def home_view(request:HttpRequest):
               email_message.content_subtype = "html"
               #email_message.connection = email_message.get_connection(True)
               email_message.send()
- 
               messages.success(request, 'شكرا لتواصلك معنا')
+              request.session['show_message'] = 'success'  # Store the message type in session
               return redirect(request.GET.get("next", "/"))
         else:
             print("form is not valid")
@@ -46,22 +48,39 @@ def generate_unique_code(length=6):
     return ''.join(random.choice(characters) for _ in range(length))
 
 
-
-def fund_dashboard_view(request:HttpRequest):
-    if not request.user.is_authenticated and request.user.leader :
-        messages.error(request, 'مصرح فقط للاعضاء المسجلين',"danger")
+def fund_dashboard_view(request):
+    # Ensure user is authenticated
+    if not request.user.is_authenticated or not hasattr(request.user, 'leader'):
+        messages.error(request, 'مصرح فقط للأعضاء المسجلين', "danger")
         return redirect("main:home_view")
-    
-    unique_code = None
+
+    # Fetch the related leader instance
+    leader_instance = request.user.leader
+
+    # Check if an investment fund exists for the leader
+    try:
+        investment_fund = InvestmentFund.objects.get(leader=leader_instance)
+    except InvestmentFund.DoesNotExist:
+        investment_fund = None
+
+    # Handle new join code generation
     if request.method == "POST" and "new_code" in request.POST:
-        unique_code = generate_unique_code()
-        print("Generated unique code:", unique_code)
+        new_code = generate_unique_code()
+        if investment_fund:
+            investment_fund.join_code = new_code
+            investment_fund.save()
+            messages.success(request, f"تم إنشاء رمز الانضمام: {new_code}")
+    else:
+        new_code = investment_fund.join_code if investment_fund else None
 
-    return render(request,'dashboard/fund_dashboard.html',
-                  {"leader":request.user,
-                   "unique_code":unique_code})
+    context = {
+        "leader": leader_instance,
+        "investment_fund": investment_fund,
+        "unique_code": new_code,
+    }
+    return render(request, 'dashboard/fund_dashboard.html', context)
 
-
+    
 def investor_dashboard_view(request:HttpRequest):
     if not request.user.is_authenticated:
         messages.error(request, 'مصرح فقط للاعضاء المسجلين',"danger")

@@ -1,17 +1,23 @@
-{% extends 'main/base.html' %}
-
+<!-- {% extends 'main/base.html' %}
 {% block title %}<title>Create Wallet</title>{% endblock %}
-
 {% block content %}
 <div class="container mt-5 d-flex justify-content-center">
     {% if not user.is_authenticated %}
-        <p class="alert alert-warning text-center">You must be logged in to create a wallet.</p>
-    {% elif not user.leader %}
-        <p class="alert alert-danger text-center">You do not have permission to create a wallet.</p>
+<div class="alert alert-warning alert-dismissible fade show text-center" role="alert" 
+    style="background-color: #E4B42D; color: #0f2e29; font-weight: bold; border: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    You must be logged in to create a wallet.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% elif not user.leader %}
+<div class="alert alert-danger alert-dismissible fade show text-center" role="alert" 
+    style="background-color: #761305; color: #faf6ee; font-weight: bold; border: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    You do not have permission to create a wallet.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
     {% else %}
     <form method="post" class="p-5" style="max-width: 600px; background-color: #faf6ee; border: 3px solid #0f2e29; border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);">
         {% csrf_token %}
-        <h3 class="text-center mb-4" style="color: #761305; font-weight: bold;">Create Your Wallet</h3>
+        <h3 class="text-center mb-4" style="color: #761305; font-weight: bold;">Create investment fund wallet</h3>
         <hr style="border: 2px solid #E4B42D;">
         <div class="form-group mb-3">
             {{ form.name.label_tag }} 
@@ -68,4 +74,4 @@
         display: block;
     }
 </style>
-{% endblock %}
+{% endblock %} -->

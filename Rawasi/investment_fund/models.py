@@ -1,14 +1,16 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 # Family Investment Fund
 class InvestmentFund(models.Model):
     STATUS_CHOICES = [
-        ('Active', 'Active'),
-        ('Inactive', 'Inactive'),
-    ]
-
+    ('Active', 'نشط'),
+    ('Inactive', 'غير نشط'),
+]
+    
     name = models.CharField(max_length=255)
     description = models.TextField(default='')
     total_balance = models.FloatField(default=0.0)
@@ -25,12 +27,12 @@ class InvestmentFund(models.Model):
     )
     category = models.CharField(
         max_length=50,
-        choices=[('Stocks', 'Stocks'), ('Real Estate', 'Real Estate')],
+        choices=[('Stocks', 'أسهم'), ('Real Estate', 'عقارات')],
         default='Stocks'
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    join_code = models.CharField(max_length=10, unique=True, blank=True, null=True) 
     def __str__(self):
         return self.name
 
