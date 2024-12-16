@@ -5,6 +5,7 @@ from .forms import InvestmentFundForm
 from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .models import Wallet
 
 def create_investment_fund(request):
     if request.method == "POST":
@@ -12,7 +13,6 @@ def create_investment_fund(request):
         description = request.POST.get("description")
         total_balance = request.POST.get("total_balance")
         is_active = request.POST.get("is_active") == "True"  # Convert string to boolean
-        category = request.POST.get("category")
 
         # Check if the leader already has an investment fund
         if hasattr(request.user, 'leader') and hasattr(request.user.leader, 'managed_fund'):
@@ -20,7 +20,7 @@ def create_investment_fund(request):
             return redirect("main:fund_dashboard_view")
 
         # Validate the inputs
-        if not all([name, description, total_balance, category]):
+        if not all([name, description, total_balance]):
             messages.error(request, "الرجاء ملء جميع الحقول المطلوبة.")
             return redirect("main:fund_dashboard_view")
 
@@ -31,7 +31,6 @@ def create_investment_fund(request):
                 description=description,
                 total_balance=total_balance,
                 is_active=is_active,
-                category=category,
                 leader=request.user.leader  # Link the fund to the current leader
             )
             messages.success(request, "تم إنشاء الصندوق الاستثماري بنجاح!")
@@ -77,3 +76,18 @@ def delete_investment_fund(request, pk):
         messages.success(request, "تم حذف الصندوق بنجاح.")
         return redirect('main:fund_dashboard_view')
     return redirect('main:fund_dashboard_view')
+
+#------------------------------------------ Wallet login 
+@login_required
+def wallet_view(request):
+    try:
+        # Fetch the wallet for the logged-in user
+        wallet = Wallet.objects.get(user=request.user)
+    except Wallet.DoesNotExist:
+        # If the wallet doesn't exist, create one automatically
+        wallet = Wallet.objects.create(user=request.user)
+        messages.info(request, "تم إنشاء محفظة جديدة لك.")
+    context = {
+        'wallet': wallet,
+    }
+    return render(request, 'investment_fund/wallet_detail.html', context)

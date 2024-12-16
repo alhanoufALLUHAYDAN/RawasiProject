@@ -46,16 +46,6 @@
         box-shadow: 0 0 5px rgba(118, 19, 5, 0.5);
     }
 
-    .btn-darkgreen {
-        background-color: #3b6e4e;
-        border-color: #3b6e4e;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-darkgreen:hover {
-        background-color: #2a4a35;
-        border-color: #2a4a35;
-    }
 
     .modal-footer .btn-secondary {
         background-color: #ccc;
@@ -227,24 +217,15 @@
                                 <option value="False">غير نشط</option>
                             </select>
                         </div>
-                    
-                        <div class="mb-3">
-                            <label for="category" class="form-label" style="color: #761305;">الفئة</label>
-                            <select class="form-select" id="category" name="category" required>
-                                <option value="Stocks">أسهم</option>
-                                <option value="Real Estate">عقارات</option>
-                            </select>
-                        </div>
-                    
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
                             <button type="submit" class="btn btn-darkgreen">إنشاء الصندوق</button>
                         </div>
                     </form>
-              </div>
-          </div>
-      </div>
-  </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 <!-- Delete Confirmation Modal -->
 {% if investment_fund %}
@@ -270,6 +251,7 @@
     </div>
 {% else %}
 {% endif %}
+
 
 
           <div id="section2" class="dashboard-section" style="display: none;">
@@ -376,6 +358,12 @@
             </div>
           </div>
           <div id="section6" class="dashboard-section" style="display: none;">
+            <div class="container p-0">
+                <div class="row justify-content-center">
+                    <!-- Wallet Section -->
+                    
+                </div>
+            </div>
 
             <div class="container p-0">
               <div class="row justify-content-center">
@@ -384,92 +372,34 @@
                   <div class="card-wallet">
                     <div class="wallet-header">
                       <h2>محفظة الصندوق</h2>
+                      <hr>
                     </div>
-            
-            
-                    <!-- Wallet Balance -->
-                    <div class="balance mt-4">
-                      <p>إجمالي قيمة الصندوق <span>١,٢٣٤.٥٦ ر.س</span></p>
-                    </div>
+                    <div class="wallet-container">
+                     
+                      {% if wallet %}
+                           <!-- Wallet Balance -->
+                      <div class="balance ">
+                        <p>الاجمالي:  <span>١,٢٣٤.٥٦ ر.س</span></p>
+                      </div>
+                          <div class="text-center mt-3">
+                              <a href="{% url 'investment_fund:wallet_view' %}" class="btn btn-darkgreen">عرض المحفظة</a>
+                          </div>
+                          <small class="text-start text-muted">آخر تحديث: {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</small>
+                      {% else %}
+                          <p class="text-center">سيتم إنشاء محفظتك خلال ثواني...</p>
+                      {% endif %}
                   </div>
-                </div>
-                  <div class="col-md-12 mt-4">
-                  <div class="container">
-                    <h5>الاستثمارات المشارك فيها</h5>
-                    
-                    <!-- Filter and Search Controls -->
-                    <div class="d-flex justify-content-between">
-                      <div class="d-flex gap-1">
-                        <button class="btn btn-darkgreen">تصفية</button>
-                      <select class="form-select" aria-label="Default select example">
-                        <option selected>menu</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                      </select>
-                      </div>
-                      
-                      <div class="d-flex gap-1">
-                        <input type="text" class="form-control"/>
-                        <button class="btn btn-secondry"><i class="fa-solid fa-magnifying-glass"></i></button>
-                      </div>
-                    </div>
-                     <!-- Horizontal Scroll for Opportunities -->
-                     <div class="opportunities-section mt-4">
-                      <h6>الفرص المستثمر فيها</h6>
-                      <div class="d-flex overflow-auto gap-2">
-                        <!-- Opportunity 1 -->
-                        <div class="investment-card-wallet-wrapper">
-                          <div class="investment-card-wallet">
-                            <div class="investment-card-wallet-title">الاستثمار اسمه</div>
-                            <div class="investment-card-wallet-info">
-                              <div class="row">
-                                <div class="col-md-6">
-                                  <p>الشركة: <strong>اسمها</strong></p>
-                                </div>
-                                <div class="col-md-6">
-                                  <p>المبلغ: <strong>١٠٠,٠ ر.س</strong></p>    
-                                </div>
-                              </div>
-                              <p class="investment-card-wallet-status">الحالة: <span class="text-success">قيد التنفيذ</span></p>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- Opportunity 1 -->
-                        <div class="investment-card-wallet-wrapper">
-                          <div class="investment-card-wallet">
-                            <div class="investment-card-wallet-title">الاستثمار اسمه</div>
-                            <div class="investment-card-wallet-info">
-                              <div class="row">
-                                <div class="col-md-6">
-                                  <p>الشركة: <strong>اسمها</strong></p>
-                                </div>
-                                <div class="col-md-6">
-                                  <p>المبلغ: <strong>١٠٠,٠ ر.س</strong></p>    
-                                </div>
-                              </div>
-                              <p class="investment-card-wallet-status">الحالة: <span class="text-success">قيد التنفيذ</span></p>
-                            </div>
-                          </div>
-                        </div>
-                        
-
-                        <!-- More Opportunities can be added here -->
-                      </div>
-                    </div>
-                   
-            
                    
                   </div>
                 </div>
+                
             
                
             
               </div>
             </div>
-
-
-          </div>
+        </div>
+        
       </div>
   </div>
 </section>

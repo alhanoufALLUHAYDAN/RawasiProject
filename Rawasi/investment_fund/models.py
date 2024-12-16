@@ -36,7 +36,6 @@ class InvestmentFund(models.Model):
     def __str__(self):
         return self.name
 
-
 # Base Wallet Model
 class Wallet(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wallet")
