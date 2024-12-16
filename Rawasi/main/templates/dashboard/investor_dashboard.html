@@ -148,9 +148,26 @@
               <p>This is where the content for Section 3 will be displayed.</p>
           </div>
           <div id="section4" class="dashboard-section" style="display: none;">
-              <h3>Content for Section 4</h3>
-              <p>This is where the content for Section 4 will be displayed.</p>
-          </div>
+            <div class="container p-0">
+                <!-- Section 4 Header -->
+                <h3 class="text-center mb-4" style="color: #761305;">محفظتك</h3>
+                <h1></h1>
+                <!-- Wallet Container -->
+                <div class="wallet-container mt-4 p-3 bg-white shadow-sm rounded">
+                    <h4 class="text-center" style="color: #761305;">محفظتك</h4>
+                    {% if wallet %}
+                        <p class="text-right"><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
+                        <p class="text-right"><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
+                    {% else %}
+                        <p class="text-center">سيتم انشأ محفظتك خلال ثواني...</p>
+                    {% endif %}
+                    <!-- Wallet Actions -->
+                    <div class="text-center mt-3">
+                        <a href="{% url 'investment_fund:wallet_view' %}" class="btn btn-darkgreen">عرض المحفظة</a>
+                    </div>
+                </div>
+            </div>
+        </div>        
           <div id="section5" class="dashboard-section" style="display: none;">
               <h3>Content for Section 5</h3>
               <p>This is where the content for Section 5 will be displayed.</p>

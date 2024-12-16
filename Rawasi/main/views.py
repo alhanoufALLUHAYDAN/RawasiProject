@@ -8,7 +8,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import random
 import string
-from investment_fund.models import InvestmentFund
+from investment_fund.models import InvestmentFund, Wallet
 from investment_fund.forms import InvestmentFundForm 
 # Create your views here.
 
@@ -83,12 +83,19 @@ def fund_dashboard_view(request):
     return render(request, 'dashboard/fund_dashboard.html', context)
 
     
-def investor_dashboard_view(request: HttpRequest):
+def investor_dashboard_view(request):
     if not request.user.is_authenticated:
-        messages.error(request, 'مصرح فقط للاعضاء المسجلين',"danger")
+        messages.error(request, 'مصرح فقط للأعضاء المسجلين', "danger")
         return redirect("main:home_view")
-    
 
-    return render(request,'dashboard/investor_dashboard.html',
-                  {"investor":request.user,
-                   })
+    # Ensure wallet exists for the user
+    wallet, created = Wallet.objects.get_or_create(user=request.user)
+
+    return render(
+        request,
+        'dashboard/investor_dashboard.html',
+        {
+            "investor": request.user,
+            "wallet": wallet,
+        }
+    )
