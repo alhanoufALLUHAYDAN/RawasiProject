@@ -1,9 +1,81 @@
 {% extends 'main/base.html'%}
 {%load static%}
+{% block head %}
+<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{% static 'css/accounts.css' %}">
+<style>
+    .modal-content {
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-dialog {
+        max-width: 900px;
+    }
+
+    .modal-header {
+        background-color: #761305;
+        color: white;
+        font-weight: bold;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        padding-left: 60px;
+    }
+
+    .modal-header .btn-close {
+        position: absolute;
+        left: 10px;
+        top: 20px;
+        background-color: #761305;
+        border-radius: 50%;
+    }
+
+    .modal-footer {
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #761305;
+        box-shadow: 0 0 5px rgba(118, 19, 5, 0.5);
+    }
+
+    .btn-darkgreen {
+        background-color: #3b6e4e;
+        border-color: #3b6e4e;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-darkgreen:hover {
+        background-color: #2a4a35;
+        border-color: #2a4a35;
+    }
+
+    .modal-footer .btn-secondary {
+        background-color: #ccc;
+        border-color: #ccc;
+        border-radius: 8px;
+    }
+
+    .modal-footer .btn-secondary:hover {
+        background-color: #aaa;
+        border-color: #aaa;
+    }
+
+    .modal-body {
+        padding: 30px;
+    }
+</style>
+{% endblock %}
 
 {%block title%}<title>لوحة التحكم - الصندوق</title>{%endblock%}
 {%block content%}
-    
 <section class="container bg-body-tertiary rounded-3 dashboard">
   <div class="row dashboard-row">
       <!-- Sidebar -->
@@ -32,19 +104,19 @@
           </ul>
         </div>
         <div class="d-flex justify-content-center">
-       
-      
+     {% if investment_fund %}
       {% if unique_code %}
       <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#codeModal">
         استعراض الرمز
       </button>
       {%else%}
+      لم يتم إنشاء رمز الانضمام حتى الآن.
       <form method="POST">
         {% csrf_token %}
         <button type="submit" name="new_code" class="btn btn-darkgreen">إنشاء كود</button>
     </form>
       {% endif %}
-
+      {% endif %}
           <!-- Modal Structure -->
           <div class="modal fade" id="codeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -66,18 +138,140 @@
           </div>
           
         </div>
-         
       </div>
 
       <!-- Content Area -->
       <div class="col-md-9 p-3">
-          <div id="section1" class="dashboard-section">
-            <div class="text-center dashboard-section1  d-flex flex-column justify-content-center align-items-center">
-              <h3>لا يوجد صندوق حاليا</h3>
-              <p class="text-muted">قم بانشاء الصندوق الان</p>
-              <button class="btn btn-darkgreen">انشاء الصندوق</button>
-            </div>
+        <div id="section1" class="dashboard-section">
+            {% if investment_fund %}
+                <!-- Display Investment Fund Details -->
+                <div class="p-4" style="background-color: #faf6ee; border: 2px solid #0f2e29; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+                    <h3 class="text-center mb-4" style="color: #761305; font-weight: bold;">تفاصيل الصندوق الاستثماري</h3>
+                    <hr style="border-top: 2px solid #0f2e29;">
+                    
+                    <!-- Display Fund Data -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>اسم الصندوق:</strong> {{ investment_fund.name }}</p>
+                            <p><strong>الوصف:</strong> {{ investment_fund.description }}</p>
+                            <p><strong>الرصيد الكلي:</strong> {{ investment_fund.total_balance }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>الحالة:</strong> 
+                                {% if investment_fund.is_active == 'Active' %}
+                                    نشط
+                                {% elif investment_fund.is_active == 'Inactive' %}
+                                    غير نشط
+                                {% else %}
+                                    غير معروف
+                                {% endif %}
+                            </p>                            
+                            <p><strong>الفئة:</strong> {{ investment_fund.get_category_display }}</p>
+                            <p><strong>رمز الانضمام:</strong> {{ unique_code }}</p>
+                        </div>
+                    </div>
+        
+                    <!-- Action Buttons -->
+                    <div class="text-center mt-4">
+                        <a href="{% url 'investment_fund:update_investment_fund' investment_fund.pk %}" class="btn btn-darkgreen">
+                            تعديل الصندوق
+                        </a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteFundModal">
+                            حذف الصندوق
+                        </button>                        
+                    </div>
+                </div>
+            {% else %}
+                <!-- If No Fund Exists -->
+                <div class="text-center dashboard-section1 d-flex flex-column justify-content-center align-items-center">
+                    <h3>لا يوجد صندوق حاليا</h3>
+                    <p class="text-muted">قم بإنشاء الصندوق الآن</p>
+                    <!-- Create Fund Button -->
+                    <button type="button" class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#createFundModal">
+                        إنشاء الصندوق
+                    </button>
+                </div>
+            {% endif %}
+        </div>        
+          <!-- Modal -->
+    <div class="modal fade" id="createFundModal" tabindex="-1" aria-labelledby="createFundModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+              <div class="modal-header" >
+                  <h5 class="modal-title" id="createFundModalLabel">إنشاء صندوق جديد</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="container mt-5 d-flex justify-content-center">
+                    <form method="POST" action="{% url 'investment_fund:create_investment_fund' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="name" class="form-label" style="color: #761305;">اسم الصندوق</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="أدخل اسم الصندوق" required>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <label for="description" class="form-label" style="color: #761305;">وصف الصندوق</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="أدخل وصف الصندوق" required></textarea>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <label for="total_balance" class="form-label" style="color: #761305;">الرصيد الكلي</label>
+                            <input type="number" class="form-control" id="total_balance" name="total_balance" placeholder="0.0" required>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <label for="is_active" class="form-label" style="color: #761305;">الحالة</label>
+                            <select class="form-select" id="is_active" name="is_active" required>
+                                <option value="True">نشط</option>
+                                <option value="False">غير نشط</option>
+                            </select>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <label for="category" class="form-label" style="color: #761305;">الفئة</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="Stocks">أسهم</option>
+                                <option value="Real Estate">عقارات</option>
+                            </select>
+                        </div>
+                    
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                            <button type="submit" class="btn btn-darkgreen">إنشاء الصندوق</button>
+                        </div>
+                    </form>
+              </div>
           </div>
+      </div>
+  </div>
+</div>
+<!-- Delete Confirmation Modal -->
+{% if investment_fund %}
+    <div class="modal fade" id="deleteFundModal" tabindex="-1" aria-labelledby="deleteFundModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteFundModalLabel">تأكيد الحذف</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                    هل أنت متأكد أنك تريد حذف هذا الصندوق الاستثماري؟ لا يمكن التراجع عن هذا الإجراء.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <form method="POST" action="{% url 'investment_fund:delete_investment_fund' investment_fund.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">نعم، حذف</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+{% endif %}
+
+{%endblock%}
           <div id="section2" class="dashboard-section" style="display: none;">
               <h3>Content for Section 2</h3>
               <p>This is where the content for Section 2 will be displayed.</p>
@@ -102,10 +296,6 @@
   </div>
 </section>
 
-
-  
-
-  {%endblock%}
   {%block script%}
   <script>
     // Handle the section content change
@@ -137,5 +327,6 @@
             activeSection.style.display = 'block';
         });
     });
+
 </script>
 {%endblock%}
