@@ -34,32 +34,28 @@
      
       <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#codeModal">
         انضمام   </button>
-
-
           <!-- Modal Structure -->
           <div class="modal fade" id="codeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header border-white d-flex justify-content-between">
-                  <h5 class="modal-title" id="exampleModalLabel">الرمز</h5>
-                  <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-content">
+                    <div class="modal-header border-white d-flex justify-content-between">
+                        <h5 class="modal-title" id="exampleModalLabel">الرمز</h5>
+                        <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="text" name="join_code" maxlength="10" class="form-control" placeholder="أدخل رمز الانضمام" required/>
+                            <div class="modal-footer border-white">
+                                <button type="submit" name="submit_code" class="btn btn-darkgreen">ارسال</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="modal-body ">
-                 
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="text" maxlength="6" class="form-control"/>
-                        <div class="modal-footer border-white ">
-                            <button type="submit" name="new_code" class="btn btn-darkgreen">ارسال</button>
-                          </div>
-                    </form>
-                
-
-                </div>
-              </div>
             </div>
-          </div>
-          
+        </div>
+        
+
         </div>
          
       </div>
