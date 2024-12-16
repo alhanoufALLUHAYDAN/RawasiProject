@@ -13,7 +13,6 @@ def create_investment_fund(request):
         description = request.POST.get("description")
         total_balance = request.POST.get("total_balance")
         is_active = request.POST.get("is_active") == "True"  # Convert string to boolean
-        category = request.POST.get("category")
 
         # Check if the leader already has an investment fund
         if hasattr(request.user, 'leader') and hasattr(request.user.leader, 'managed_fund'):
@@ -21,7 +20,7 @@ def create_investment_fund(request):
             return redirect("main:fund_dashboard_view")
 
         # Validate the inputs
-        if not all([name, description, total_balance, category]):
+        if not all([name, description, total_balance]):
             messages.error(request, "الرجاء ملء جميع الحقول المطلوبة.")
             return redirect("main:fund_dashboard_view")
 
@@ -32,7 +31,6 @@ def create_investment_fund(request):
                 description=description,
                 total_balance=total_balance,
                 is_active=is_active,
-                category=category,
                 leader=request.user.leader  # Link the fund to the current leader
             )
             messages.success(request, "تم إنشاء الصندوق الاستثماري بنجاح!")
