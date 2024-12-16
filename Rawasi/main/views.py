@@ -18,7 +18,7 @@ def home_view(request:HttpRequest):
         if contact_form.is_valid():
               contact_form.save()
               #send confirmation email
-              content_html = render_to_string("main/confirmation.html")
+              content_html = render_to_string("main/confirmation.html",{"username":contact_form.cleaned_data['full_name']})
               send_to = contact_form.cleaned_data['email']
               print(send_to)
               print(settings.EMAIL_HOST_USER)
@@ -26,8 +26,8 @@ def home_view(request:HttpRequest):
               email_message.content_subtype = "html"
               #email_message.connection = email_message.get_connection(True)
               email_message.send()
- 
               messages.success(request, 'شكرا لتواصلك معنا')
+              request.session['show_message'] = 'success'  # Store the message type in session
               return redirect(request.GET.get("next", "/"))
         else:
             print("form is not valid")

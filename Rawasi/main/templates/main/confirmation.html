@@ -1,16 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>البريد الإلكتروني للتأكيد</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .email-header img {
+            max-width: 150px;
+            border-radius: 50%;
+        }
+
+        .email-header h1 {
+            color: #333;
+            font-size: 24px;
+            margin: 15px 0;
+        }
+
+        .email-content {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .email-footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #999;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #5d0e04;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .button:hover {
+            background-color: #7a1205;
+        }
+
+        @media (max-width: 600px) {
+            .email-container {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .email-header h1 {
+                font-size: 20px;
+            }
+
+            .email-content {
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>
-        Thank you for your messaage 
-    </h1>
-    <h1>
-        we will communicate soon
-    </h1>
+
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <img src="https://static.vecteezy.com/system/resources/previews/000/623/284/non_2x/mountain-logo-vector-illustration.jpg" alt="شعار الشركة">
+            <h1>شكرًا لك على رسالتك</h1>
+        </div>
+
+        <!-- Email Content -->
+        <div class="email-content">
+            <p style="color: #0f2e29;">عزيزي ,{{username}}</p>
+            <p>شكرًا لك على تواصلك معنا. لقد استلمنا رسالتك وسيتواصل معك فريقنا قريبًا.</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="email-footer">
+            <p>مع أطيب التحيات</p>
+            <p style="color: #7a1205;">فريق رواسي</p>
+        </div>
+    </div>
+
 </body>
 </html>
