@@ -10,7 +10,6 @@ import random
 import string
 from investment_fund.models import InvestmentFund
 from investment_fund.forms import InvestmentFundForm 
-from investment_fund.models import Wallet  
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -86,24 +85,10 @@ def fund_dashboard_view(request):
     
 def investor_dashboard_view(request: HttpRequest):
     if not request.user.is_authenticated:
-        messages.error(request, 'مصرح فقط للأعضاء المسجلين', "danger")
+        messages.error(request, 'مصرح فقط للاعضاء المسجلين',"danger")
         return redirect("main:home_view")
+    
 
-    # Fetch the user's wallet
-    try:
-        wallet, created = Wallet.objects.get_or_create(user=request.user)
-        if created:
-            messages.info(request, "تم إنشاء محفظة جديدة لك.")
-    except Exception as e:
-        wallet = None
-        messages.error(request, f"حدث خطأ: {e}")
-
-    # Pass wallet to the template
-    return render(
-        request,
-        'dashboard/investor_dashboard.html',
-        {
-            "investor": request.user,
-            "wallet": wallet,
-        }
-    )
+    return render(request,'dashboard/investor_dashboard.html',
+                  {"investor":request.user,
+                   })

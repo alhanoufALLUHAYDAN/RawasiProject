@@ -40,6 +40,7 @@
                   <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body ">
+                 
                     <form method="POST">
                         {% csrf_token %}
                         <input type="text" maxlength="6" class="form-control"/>
@@ -47,11 +48,14 @@
                             <button type="submit" name="new_code" class="btn btn-darkgreen">ارسال</button>
                           </div>
                     </form>
+                
+
                 </div>
               </div>
             </div>
-          </div>
-          
+        </div>
+        
+
         </div>
       </div>
       <!-- Content Area -->
