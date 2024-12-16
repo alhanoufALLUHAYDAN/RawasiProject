@@ -257,9 +257,6 @@
                         <span>المبلغ الإجمالي للاستثمار:</span> {{ investment_opportunity.total_investment }} ريال سعودي
                     </div>
                     <div class="investment-detail-item">
-                        <span>النسبة المطلوبة للموافقة:</span> {{ investment_opportunity.required_approval_percentage }}%
-                    </div>
-                    <div class="investment-detail-item">
                         <span>العائد المتوقع:</span> {{ investment_opportunity.expected_return }}
                     </div>
                     <div class="investment-detail-item">
@@ -354,10 +351,6 @@
                     <div class="mb-3">
                         <label for="total_investment" class="form-label">المبلغ الإجمالي للاستثمار</label>
                         <input type="number" class="form-control" id="total_investment" name="total_investment" value="{{ investment_opportunity.total_investment }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="required_approval_percentage" class="form-label">النسبة المطلوبة للموافقة</label>
-                        <input type="number" class="form-control" id="required_approval_percentage" name="required_approval_percentage" value="{{ investment_opportunity.required_approval_percentage }}" required>
                     </div>
                     <div class="mb-3">
                         <label for="expected_return" class="form-label">العائد المتوقع</label>

@@ -64,7 +64,6 @@ def add_investment_opportunity(request):
             company_name=company_name,
             investment_type=investment_type,
             total_investment=total_investment,
-            required_approval_percentage=required_approval_percentage,
             start_date=start_date,
             end_date=end_date,
             expected_return=expected_return,
@@ -145,6 +144,4 @@ def update_investment_opportunity(request, id):
         form = InvestmentOpportunityForm(instance=investment_opportunity)
     
     return render(request, 'investments/update_investment_opportunity.html', {'form': form})
-
-
 
