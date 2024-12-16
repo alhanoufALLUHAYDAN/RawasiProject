@@ -241,10 +241,10 @@
                             <button type="submit" class="btn btn-darkgreen">إنشاء الصندوق</button>
                         </div>
                     </form>
-              </div>
-          </div>
-      </div>
-  </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 <!-- Delete Confirmation Modal -->
 {% if investment_fund %}
@@ -271,7 +271,7 @@
 {% else %}
 {% endif %}
 
-{%endblock%}
+
           <div id="section2" class="dashboard-section" style="display: none;">
             <div class="row gap-3 justify-content-center align-items-center">
               <div  class="col-md-3 investment-card border p-0 rounded-3" >
@@ -376,106 +376,39 @@
             </div>
           </div>
           <div id="section6" class="dashboard-section" style="display: none;">
-
             <div class="container p-0">
-              <div class="row justify-content-center">
-                 <!-- Wallet Card -->
-                 <div class="col-md-12">
-                  <div class="card-wallet">
-                    <div class="wallet-header">
-                      <h2>محفظة الصندوق</h2>
-                    </div>
-            
-            
-                    <!-- Wallet Balance -->
-                    <div class="balance mt-4">
-                      <p>إجمالي قيمة الصندوق <span>١,٢٣٤.٥٦ ر.س</span></p>
-                    </div>
-                  </div>
-                </div>
-                  <div class="col-md-12 mt-4">
-                  <div class="container">
-                    <h5>الاستثمارات المشارك فيها</h5>
-                    
-                    <!-- Filter and Search Controls -->
-                    <div class="d-flex justify-content-between">
-                      <div class="d-flex gap-1">
-                        <button class="btn btn-darkgreen">تصفية</button>
-                      <select class="form-select" aria-label="Default select example">
-                        <option selected>menu</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                      </select>
-                      </div>
-                      
-                      <div class="d-flex gap-1">
-                        <input type="text" class="form-control"/>
-                        <button class="btn btn-secondry"><i class="fa-solid fa-magnifying-glass"></i></button>
-                      </div>
-                    </div>
-                     <!-- Horizontal Scroll for Opportunities -->
-                     <div class="opportunities-section mt-4">
-                      <h6>الفرص المستثمر فيها</h6>
-                      <div class="d-flex overflow-auto gap-2">
-                        <!-- Opportunity 1 -->
-                        <div class="investment-card-wallet-wrapper">
-                          <div class="investment-card-wallet">
-                            <div class="investment-card-wallet-title">الاستثمار اسمه</div>
-                            <div class="investment-card-wallet-info">
-                              <div class="row">
-                                <div class="col-md-6">
-                                  <p>الشركة: <strong>اسمها</strong></p>
-                                </div>
-                                <div class="col-md-6">
-                                  <p>المبلغ: <strong>١٠٠,٠ ر.س</strong></p>    
-                                </div>
-                              </div>
-                              <p class="investment-card-wallet-status">الحالة: <span class="text-success">قيد التنفيذ</span></p>
+                <div class="row justify-content-center">
+                    <!-- Wallet Section -->
+                    <div class="col-md-12">
+                        <div class="card-wallet shadow-sm rounded">
+                            <div class="wallet-header bg-dark text-white text-center py-3" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                                <h2 class="m-0">محفظة الصندوق</h2>
                             </div>
-                          </div>
-                        </div>
-                        <!-- Opportunity 1 -->
-                        <div class="investment-card-wallet-wrapper">
-                          <div class="investment-card-wallet">
-                            <div class="investment-card-wallet-title">الاستثمار اسمه</div>
-                            <div class="investment-card-wallet-info">
-                              <div class="row">
-                                <div class="col-md-6">
-                                  <p>الشركة: <strong>اسمها</strong></p>
-                                </div>
-                                <div class="col-md-6">
-                                  <p>المبلغ: <strong>١٠٠,٠ ر.س</strong></p>    
-                                </div>
-                              </div>
-                              <p class="investment-card-wallet-status">الحالة: <span class="text-success">قيد التنفيذ</span></p>
+                            <div class="wallet-container mt-4 p-4 bg-white rounded">
+                                <h4 class="text-center" style="color: #761305;">محفظتك المالية</h4>
+                                <hr>
+                                {% if wallet %}
+                                    <p class="text-center"><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
+                                    <p class="text-center"><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
+                                    <div class="text-center mt-3">
+                                        <a href="{% url 'investment_fund:wallet_view' %}" class="btn btn-darkgreen">عرض المحفظة</a>
+                                    </div>
+                                {% else %}
+                                    <p class="text-center">سيتم إنشاء محفظتك خلال ثواني...</p>
+                                {% endif %}
                             </div>
-                          </div>
                         </div>
-                        
-
-                        <!-- More Opportunities can be added here -->
-                      </div>
                     </div>
-                   
-            
-                   
-                  </div>
                 </div>
-            
-               
-            
-              </div>
             </div>
-
-
-          </div>
+        </div>
+        
       </div>
   </div>
 </section>
-
-  {%block script%}
-  <script>
+{%endblock%}
+{%block script%}
+<script>
     // Handle the section content change
     const navLinks = document.querySelectorAll('.nav-link-dashboard');
     const sections = document.querySelectorAll('.dashboard-section');

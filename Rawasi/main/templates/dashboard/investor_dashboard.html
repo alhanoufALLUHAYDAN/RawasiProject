@@ -29,37 +29,35 @@
           </ul>
         </div>
         <div class="d-flex justify-content-center">
-       
-      
-     
       <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#codeModal">
         انضمام   </button>
           <!-- Modal Structure -->
           <div class="modal fade" id="codeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header border-white d-flex justify-content-between">
-                        <h5 class="modal-title" id="exampleModalLabel">الرمز</h5>
-                        <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST">
-                            {% csrf_token %}
-                            <input type="text" name="join_code" maxlength="10" class="form-control" placeholder="أدخل رمز الانضمام" required/>
-                            <div class="modal-footer border-white">
-                                <button type="submit" name="submit_code" class="btn btn-darkgreen">ارسال</button>
-                            </div>
-                        </form>
-                    </div>
+              <div class="modal-content">
+                <div class="modal-header border-white d-flex justify-content-between">
+                  <h5 class="modal-title" id="exampleModalLabel">الرمز</h5>
+                  <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <div class="modal-body ">
+                 
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="text" maxlength="6" class="form-control"/>
+                        <div class="modal-footer border-white ">
+                            <button type="submit" name="new_code" class="btn btn-darkgreen">ارسال</button>
+                          </div>
+                    </form>
+                
+
+                </div>
+              </div>
             </div>
         </div>
         
 
         </div>
-         
       </div>
-
       <!-- Content Area -->
       <div class="col-md-9 p-3">
           <div id="section1" class="dashboard-section">
@@ -146,157 +144,20 @@
               </div>
           </div>
           <div id="section3" class="dashboard-section" style="display: none;">
-            <div class="container mt-5">
-                <!-- Header -->
-                <div class="row">
-                  <div class="col-12 mb-2">
-                    <h3 class="text-center">عرض الأرباح</h3>
-                  </div>
-                </div>
-              
-                <!-- Profit Overview Section -->
-                <div class="row">
-                  <!-- Total Profits -->
-                  <div class="col-12 col-md-4 mb-4">
-                    <div class="card">
-                      <div class="card-header">
-                        <h5>إجمالي الأرباح</h5>
-                      </div>
-                      <div class="card-body text-center">
-                        <p class="card-text">١٢٣,٤٥٦ ر.س</p>
-                      </div>
-                    </div>
-                  </div>
-              
-                  <!-- Upcoming Profits -->
-                  <div class="col-12 col-md-4 mb-4">
-                    <div class="card">
-                      <div class="card-header">
-                        <h5>الأرباح المتوقعة</h5>
-                      </div>
-                      <div class="card-body text-center">
-                        <p class="card-text">٤٥,٦٧٨ ر.س</p>
-                      </div>
-                    </div>
-                  </div>
-              
-                  <!-- Profits for Each Fund -->
-                  <div class="col-12 col-md-4 mb-4">
-                    <div class="card">
-                      <div class="card-header">
-                        <h5>أرباح الصناديق</h5>
-                      </div>
-                      <div class="card-body">
-                        <div class="list-group">
-                          <div class="list-group-item d-flex justify-content-between">
-                            <span>صندوق </span>
-                            <span>٣,٠٠٠ ر.س</span>
-                          </div>
-                          <div class="list-group-item d-flex justify-content-between">
-                            <span>صندوق </span>
-                            <span>١,٥٠٠ ر.س</span>
-                          </div>
-                          <div class="list-group-item d-flex justify-content-between">
-                            <span>صندوق </span>
-                            <span>٢,٢٠٠ ر.س</span>
-                          </div>
-                          <!-- Add more funds here -->
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-                             
-            </div>
+              <h3>Content for Section 3</h3>
+              <p>This is where the content for Section 3 will be displayed.</p>
+          </div>
           <div id="section4" class="dashboard-section" style="display: none;">
-            <div class="container wallet-container">
-                <div class="row justify-content-center">
-                  <div class="col-md-6 col-lg-6">
-                    <!-- Wallet Card -->
-                    <div class="card-wallet">
-                      <div class="wallet-header">
-                        <h2>محفظتي الرقمية</h2>
-                        <p>التحكم في أموالك بطريقة بسيطة وآمنة</p>
-                      </div>
-              
-                      <!-- Wallet Balance -->
-                      <div class="balance">
-                        <p>الرصيد الحالي: <span>١,٢٣٤.٥٦ ر.س</span></p>
-                      </div>
-              
-                      <!-- Action Buttons -->
-                      <div class="action-buttons">
-                        <button class="btn btn-action btn-darkgreen add-funds" data-bs-toggle="modal" data-bs-target="#depositModal">إضافة أموال</button>
-                        <button class="btn btn-action btn-darkred withdraw">سحب الأموال</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Deposit Modal -->
-              <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header d-flex justify-content-between">
-                      <h5 class="modal-title" id="depositModalLabel">إضافة أموال إلى المحفظة</h5>
-                      <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <form>
-                        <!-- Deposit Amount -->
-                        <div class="mb-3">
-                          <label for="deposit-amount" class="form-label">المبلغ</label>
-                          <input type="number" class="form-control" id="deposit-amount" placeholder="أدخل المبلغ" required>
-                        </div>
-              
-                        <!-- Payment Methods -->
-                        <div class="mb-3">
-                          <label for="payment-method" class="form-label">طريقة الإيداع</label>
-                          <select class="form-select" id="payment-method">
-                            <option selected>اختر طريقة الإيداع</option>
-                            <option value="bank">تحويل بنكي</option>
-                            <option value="credit-card">بطاقة ائتمانية</option>
-                          </select>
-                        </div>
-              
-                        <!-- Payment Details -->
-                        <div class="payment-method-details">
-                          <div id="bank-details" class="payment-details"  style="display: none;">
-                            <label for="bank-account" class="form-label">رقم الحساب البنكي</label>
-                            <input type="text" class="form-control" id="bank-account" placeholder="أدخل رقم الحساب" />
-                          </div>
-                          <div id="credit-card-details" class="payment-details"  style="display: none;">
-                            <label for="credit-card-number" class="form-label">رقم البطاقة الائتمانية</label>
-                            <div class="d-flex flex-column gap-1">
-                            <input type="text" class="form-control" id="credit-card-number" placeholder="أدخل رقم البطاقة" />
-                            <input type="date" class="form-control" id="credit-card-number" placeholder="أدخل تاريخ الانتهاء" />
-                            <input type="text" class="form-control" id="credit-card-number" placeholder="أدخل الرقم السري" />
-                            </div>
-                          </div>
-                        </div>
-              
-                        <button type="submit" class="btn btn-darkgreen w-100 mt-3">إتمام الإيداع</button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-            </div>              
+              <h3>Content for Section 4</h3>
+              <p>This is where the content for Section 4 will be displayed.</p>
+          </div>
           <div id="section5" class="dashboard-section" style="display: none;">
               <h3>Content for Section 5</h3>
               <p>This is where the content for Section 5 will be displayed.</p>
           </div>
-         
       </div>
   </div>
 </section>
-
-
-  
-
   {%endblock%}
   {%block script%}
   

@@ -5,6 +5,7 @@ from .forms import InvestmentFundForm
 from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .models import Wallet
 
 def create_investment_fund(request):
     if request.method == "POST":
@@ -77,3 +78,18 @@ def delete_investment_fund(request, pk):
         messages.success(request, "تم حذف الصندوق بنجاح.")
         return redirect('main:fund_dashboard_view')
     return redirect('main:fund_dashboard_view')
+
+#------------------------------------------ Wallet login 
+@login_required
+def wallet_view(request):
+    try:
+        # Fetch the wallet for the logged-in user
+        wallet = Wallet.objects.get(user=request.user)
+    except Wallet.DoesNotExist:
+        # If the wallet doesn't exist, create one automatically
+        wallet = Wallet.objects.create(user=request.user)
+        messages.info(request, "تم إنشاء محفظة جديدة لك.")
+    context = {
+        'wallet': wallet,
+    }
+    return render(request, 'investment_fund/wallet_detail.html', context)
