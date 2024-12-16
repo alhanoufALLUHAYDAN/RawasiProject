@@ -96,7 +96,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'تم تسجيل الدخول بنجاح!')
-            return redirect('accounts:profile')
+            return redirect('main:investor_dashboard_view')
         else:
             messages.error(request, 'اسم المستخدم أو كلمة المرور غير صحيحة')
     
@@ -106,7 +106,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.success(request, "تم تسجيل الخروج بنجاح!")
-    return redirect('accounts:login')
+    return redirect('main:home_view')
 
 @login_required
 def profile(request):
