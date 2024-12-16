@@ -7,18 +7,7 @@ body{
     font-family: "Noto Sans Arabic", sans-serif;
 }
 
-.sevice-icon1{
-    color: #761305;
-}
-.sevice-icon2{
-    color: #0f2e29;
-}
-.sevice-icon3{
-    color: #E4b42d;
-}
-.sevice-icon4{
-    color: #dfd6c4;
-}
+
 
 .noto-kufi-arabic-font {
   font-family: "Noto Kufi Arabic", sans-serif;
@@ -261,46 +250,64 @@ main{
   .featurs-col-color1{
     background-color: #0f2e29;
   }
+  .featurs-col-color3{
+    background-color: #5d0e04;
+  }
+  @media screen and (max-width: 600px) {
+    .featurs-text{
+      padding-bottom: 5rem;
+    }
+}
+
   :root {
     --size: 300px;
   }
-  
+
+  .row-cube{
+    margin-top: 10rem;
+    margin-bottom: 10rem;
+
+  }
   .cube-container {
     display: grid;
     place-content: center;
-    min-height: 80vh;
+    height: 30vh;
   }
-  
   /* container */
   .container-cube {
-    margin-top: 50px;
+    margin-bottom:1rem;
     perspective: 1000px;
     width: var(--size);
     height: var(--size);
   }
-  
   .cube {
     position: relative;
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    animation: rotateCube 24s infinite; 
-    transition: all 0.85s cubic-bezier(1, -0.75, 0.5, 1.2);
+    animation: rotateCube 20s infinite; 
+    transition: all 0.65s cubic-bezier(1, -0.75, 0.5, 1.2);
   }
   
   .face {
     position: absolute;
-    border: 1px solid #3c0903;
-    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.151);
+    border: 1px solid #e9e3e349;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.11);
     width: var(--size);
     height: var(--size);
     line-height: var(--size);
     text-align: center;
     font-size: 1.25rem;
-    background-color: #5d0e04;
+    background: linear-gradient(to bottom, #fbf9f5, #FAF6EE);
     opacity: 0.99;
   }
-  
+  .cube-text{
+    color: #0f2e29;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-weight: 300;
+
+  }
   .front {
     transform: translateZ(150px);
 
@@ -417,7 +424,7 @@ main{
     text-decoration: underline; 
   }
 .footer-content{
-    margin-right: 7rem;
+    margin-right: 5rem;
 }
 
 /*----- about css ------*/
@@ -425,22 +432,23 @@ main{
 
 .image-section {
     position: relative;
-    background: url('../images/money-2696229_1280.jpg') no-repeat center center;
+    background: url('../images/analytics-925379_1280.jpg') no-repeat center center;
     background-size: cover;
     height: 100vh; /* يمكنك تعديل هذه القيمة حسب احتياجك */
   }
   
-  .dark-overlay {
-    background-color: rgba(0, 0, 0, 0.5); /* هذا يضيف التعتيم على الصورة */
+  .text-shadow {
+    text-shadow: 4px 4px 5px rgba(0, 0, 0, 0.757);
   }
   
   .text-content {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start; /* التأكد من محاذاة النص بشكل صحيح */
-    height: 100%; /* التأكد من أن المحتوى يأخذ كامل ارتفاع الحاوية */
+    align-items:center;
+    height: 100%; 
   }
+
 
 
 .section-title h2 {
@@ -479,6 +487,24 @@ main{
 .service-title{
     font-weight: 600;
 }
+.sevice-icon1{
+  color: #761305;
+}
+.sevice-icon2{
+  color: #0f2e29;
+}
+.sevice-icon3{
+  color: #E4b42d;
+  font-size: 5rem;
+}
+.service-icon4 {
+  color: #dfd6c4 !important;
+  transition: transform 0.5s ease !important;  /* إضافة تأثير انتقال سلس */
+}
+
+.service-card:hover .service-icon4{
+  transform: rotate(360deg) !important;  /* دوران الأيقونة 360 درجة */
+}
 
 /*----- fund dashboard css ------*/
 .dashboard{
@@ -490,8 +516,7 @@ main{
 .dashboard-row{
     min-height: 85vh;
 }
-.dashboard-side{
-}
+
 .dashboard-side a{
     color: black;
     background-color: none;
