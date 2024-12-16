@@ -10,6 +10,9 @@ import random
 import string
 from investment_fund.models import InvestmentFund, Wallet
 from investment_fund.forms import InvestmentFundForm 
+from investments.models import InvestmentFund
+from investments.models import InvestorFund
+from accounts.models import Investor
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -90,12 +93,26 @@ def investor_dashboard_view(request):
 
     # Ensure wallet exists for the user
     wallet, created = Wallet.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        join_code = request.POST.get('join_code', None) 
 
-    return render(
-        request,
-        'dashboard/investor_dashboard.html',
-        {
-            "investor": request.user,
-            "wallet": wallet,
-        }
-    )
+        if join_code:
+
+            try:
+
+                fund = InvestmentFund.objects.get(join_code=join_code, is_active='Active')
+                if InvestorFund.objects.filter(fund=fund, investor__user=request.user).exists():
+                    messages.warning(request, 'أنت بالفعل عضو في هذا الصندوق.', "warning")
+                else:
+                    investor = Investor.objects.get(user=request.user)
+                    InvestorFund.objects.create(
+                        fund=fund,
+                        investor=investor, 
+                        amount_invested=0 
+                    )
+
+                    messages.success(request, f'تم الانضمام بنجاح إلى الصندوق: {fund.name}', "success")
+            except InvestmentFund.DoesNotExist:
+                messages.error(request, 'كود الانضمام غير صحيح أو الصندوق غير نشط.', "danger")
+
+    return render(request, 'dashboard/investor_dashboard.html', {"investor": request.user,"wallet": wallet,})

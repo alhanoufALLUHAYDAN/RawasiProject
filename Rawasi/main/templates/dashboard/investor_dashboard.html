@@ -2,9 +2,26 @@
 {%load static%}
 
 {%block title%}<title>لوحة التحكم - المستثمر</title>{%endblock%}
+{%block head%}
+<style>
+body {
+  background-image: url("/static/images/Background.png");
+  background-size: cover;
+}
+</style>
+{%endblock%}
 {%block content%}
     
 <section class="container bg-body-tertiary rounded-3 dashboard">
+  {% if messages %}
+  {% for message in messages %}
+  {% if not request.session.show_message or message.tags != request.session.show_message %}
+      <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}" role="alert">
+          {{ message }}
+      </div>
+      {% endif %}
+  {% endfor %}
+{% endif %}
   <div class="row dashboard-row">
       <!-- Sidebar -->
       <div class="col-md-3 p-3 d-flex flex-column justify-content-between dashboard-side">
@@ -34,24 +51,23 @@
           <!-- Modal Structure -->
           <div class="modal fade" id="codeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
+              
               <div class="modal-content">
                 <div class="modal-header border-white d-flex justify-content-between">
-                  <h5 class="modal-title" id="exampleModalLabel">الرمز</h5>
-                  <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="exampleModalLabel">الرمز</h5>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body ">
-                 
+                <div class="modal-body">
                     <form method="POST">
                         {% csrf_token %}
-                        <input type="text" maxlength="6" class="form-control"/>
-                        <div class="modal-footer border-white ">
-                            <button type="submit" name="new_code" class="btn btn-darkgreen">ارسال</button>
-                          </div>
+                        <input type="text" name="join_code" maxlength="10" class="form-control" placeholder="أدخل رمز الانضمام" required/>
+                        <div class="modal-footer border-white">
+                            <button type="submit" name="submit_code" class="btn btn-darkgreen">ارسال</button>
+                        </div>
                     </form>
-                
-
                 </div>
               </div>
+
             </div>
         </div>
         
@@ -167,6 +183,81 @@
                     </div>
                 </div>
             </div>
+            <div class="container wallet-container">
+              <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-6">
+                  <!-- Wallet Card -->
+                  <div class="card-wallet">
+                    <div class="wallet-header">
+                      <h2>محفظتي الرقمية</h2>
+                      <p>التحكم في أموالك بطريقة بسيطة وآمنة</p>
+                    </div>
+            
+                    <!-- Wallet Balance -->
+                    <div class="balance">
+                      <p>الرصيد الحالي: <span>١,٢٣٤.٥٦ ر.س</span></p>
+                    </div>
+            
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                      <button class="btn btn-action btn-darkgreen add-funds" data-bs-toggle="modal" data-bs-target="#depositModal">إضافة أموال</button>
+                      <button class="btn btn-action btn-darkred withdraw">سحب الأموال</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Deposit Modal -->
+            <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header d-flex justify-content-between">
+                    <h5 class="modal-title" id="depositModalLabel">إضافة أموال إلى المحفظة</h5>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form>
+                      <!-- Deposit Amount -->
+                      <div class="mb-3">
+                        <label for="deposit-amount" class="form-label">المبلغ</label>
+                        <input type="number" class="form-control" id="deposit-amount" placeholder="أدخل المبلغ" required>
+                      </div>
+            
+                      <!-- Payment Methods -->
+                      <div class="mb-3">
+                        <label for="payment-method" class="form-label">طريقة الإيداع</label>
+                        <select class="form-select" id="payment-method">
+                          <option selected>اختر طريقة الإيداع</option>
+                          <option value="bank">تحويل بنكي</option>
+                          <option value="credit-card">بطاقة ائتمانية</option>
+                        </select>
+                      </div>
+            
+                      <!-- Payment Details -->
+                      <div class="payment-method-details">
+                        <div id="bank-details" class="payment-details"  style="display: none;">
+                          <label for="bank-account" class="form-label">رقم الحساب البنكي</label>
+                          <input type="text" class="form-control" id="bank-account" placeholder="أدخل رقم الحساب" />
+                        </div>
+                        <div id="credit-card-details" class="payment-details"  style="display: none;">
+                          <label for="credit-card-number" class="form-label">رقم البطاقة الائتمانية</label>
+                          <div class="d-flex flex-column gap-1">
+                          <input type="text" class="form-control" id="credit-card-number" placeholder="أدخل رقم البطاقة" />
+                          <input type="date" class="form-control" id="credit-card-number" placeholder="أدخل تاريخ الانتهاء" />
+                          <input type="text" class="form-control" id="credit-card-number" placeholder="أدخل الرقم السري" />
+                          </div>
+                        </div>
+                      </div>
+            
+                      <button type="submit" class="btn btn-darkgreen w-100 mt-3">إتمام الإيداع</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>   
         </div>        
           <div id="section5" class="dashboard-section" style="display: none;">
               <h3>Content for Section 5</h3>

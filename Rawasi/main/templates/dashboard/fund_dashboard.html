@@ -46,16 +46,6 @@
         box-shadow: 0 0 5px rgba(118, 19, 5, 0.5);
     }
 
-    .btn-darkgreen {
-        background-color: #3b6e4e;
-        border-color: #3b6e4e;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-darkgreen:hover {
-        background-color: #2a4a35;
-        border-color: #2a4a35;
-    }
 
     .modal-footer .btn-secondary {
         background-color: #ccc;
@@ -263,6 +253,7 @@
 {% endif %}
 
 
+
           <div id="section2" class="dashboard-section" style="display: none;">
             <div class="row gap-3 justify-content-center align-items-center">
               <div  class="col-md-3 investment-card border p-0 rounded-3" >
@@ -370,27 +361,42 @@
             <div class="container p-0">
                 <div class="row justify-content-center">
                     <!-- Wallet Section -->
-                    <div class="col-md-12">
-                        <div class="card-wallet shadow-sm rounded">
-                            <div class="wallet-header bg-dark text-white text-center py-3" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                                <h2 class="m-0">محفظة الصندوق</h2>
-                            </div>
-                            <div class="wallet-container mt-4 p-4 bg-white rounded">
-                                <h4 class="text-center" style="color: #761305;">محفظتك المالية</h4>
-                                <hr>
-                                {% if wallet %}
-                                    <p class="text-center"><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
-                                    <p class="text-center"><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
-                                    <div class="text-center mt-3">
-                                        <a href="{% url 'investment_fund:wallet_view' %}" class="btn btn-darkgreen">عرض المحفظة</a>
-                                    </div>
-                                {% else %}
-                                    <p class="text-center">سيتم إنشاء محفظتك خلال ثواني...</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
+            </div>
+
+            <div class="container p-0">
+              <div class="row justify-content-center">
+                 <!-- Wallet Card -->
+                 <div class="col-md-12">
+                  <div class="card-wallet">
+                    <div class="wallet-header">
+                      <h2>محفظة الصندوق</h2>
+                      <hr>
+                    </div>
+                    <div class="wallet-container">
+                     
+                      {% if wallet %}
+                           <!-- Wallet Balance -->
+                      <div class="balance ">
+                        <p>الاجمالي:  <span>١,٢٣٤.٥٦ ر.س</span></p>
+                      </div>
+                          <div class="text-center mt-3">
+                              <a href="{% url 'investment_fund:wallet_view' %}" class="btn btn-darkgreen">عرض المحفظة</a>
+                          </div>
+                          <small class="text-start text-muted">آخر تحديث: {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</small>
+                      {% else %}
+                          <p class="text-center">سيتم إنشاء محفظتك خلال ثواني...</p>
+                      {% endif %}
+                  </div>
+                   
+                  </div>
+                </div>
+                
+            
+               
+            
+              </div>
             </div>
         </div>
         
@@ -398,8 +404,8 @@
   </div>
 </section>
 {%endblock%}
-{%block script%}
-<script>
+  {%block script%}
+  <script>
     // Handle the section content change
     const navLinks = document.querySelectorAll('.nav-link-dashboard');
     const sections = document.querySelectorAll('.dashboard-section');
