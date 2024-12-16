@@ -1,0 +1,404 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block head %}
+<style>
+    body{
+       background-image: url("/static/images/Background.png");;
+    }
+    .investment-card {
+        background: rgba(255, 255, 255, 0.8);  
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        padding: 3rem;
+        margin-top: 15rem;
+    }
+
+    .investment-container {
+        display: flex;
+        flex-direction: row-reverse; 
+        gap: 2rem;
+        align-items: flex-start;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .investment-image-container {
+        position: relative; 
+        top: 0;
+        flex: 1;
+        max-width: 600px; 
+    }
+
+    .investment-details-container {
+        flex: 2;
+        color: #555;
+        max-width: 100%;
+    }
+
+    .investment-image {
+        width: 100%;
+        max-height: 500px; 
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        object-fit: cover; 
+        cursor: pointer; 
+    }
+
+    .investment-title {
+        color: #761305;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        word-wrap: break-word; 
+    }
+
+    .investment-description {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        color: #666;
+        word-wrap: break-word; 
+    }
+
+    .investment-detail-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        justify-content: flex-start;
+    }
+
+    .investment-detail-item {
+        flex: 1;
+        min-width: 250px;
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        background-color: #f2f2f2;
+        border-radius: 10px;
+    }
+
+    .investment-detail-item span {
+        font-weight: bold;
+        color: #761305;
+    }
+
+    .file-download-btn, .delete-btn, .update-btn, .publish-btn {
+        background-color: #761305;
+        color: white;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-size: 1.1rem;
+        transition: background-color 0.3s ease;
+        display: inline-block;
+        margin-top: 20px;
+        text-decoration: none;
+    }
+
+    .file-download-btn:hover, .delete-btn:hover, .update-btn:hover, .publish-btn:hover {
+        background-color: #9e2b1c;
+    }
+
+    .delete-btn { background-color: #d9534f; }
+    .update-btn { background-color: #3b6e4e; }
+    .publish-btn { background-color: #3b496e; }
+
+    .meta-info {
+        margin-top: 20px;
+    }
+
+    .popup-image {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 20px;
+    }
+
+    .popup-image img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 10px;
+    }
+
+    .popup-image .popup-header {
+        top: 10px;
+        right: 50px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 5px;
+        z-index: 1;
+    }
+
+    .popup-image .close-btn {
+        font-size: 30px;
+        color: white;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+    }
+
+    .popup-image .close-btn:hover {
+        color: #f44336; 
+    }
+    .modal-content {
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-dialog {
+        max-width: 900px; 
+    }
+
+    .modal-header {
+        background-color: #761305;
+        color: white;
+        font-weight: bold;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        padding-left: 60px; 
+    }
+
+    .modal-header .btn-close {
+        position: absolute;
+        left: 10px;
+        top: 20px;
+        background-color: #761305;
+        border-radius: 50%;
+    }
+
+    .modal-footer {
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #761305;
+        box-shadow: 0 0 5px rgba(118, 19, 5, 0.5);
+    }
+
+    .btn-darkgreen {
+        background-color: #3b6e4e;
+        border-color: #3b6e4e;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-darkgreen:hover {
+        background-color: #2a4a35;
+        border-color: #2a4a35;
+    }
+
+    .modal-footer .btn-secondary {
+        background-color: #ccc;
+        border-color: #ccc;
+        border-radius: 8px;
+    }
+
+    .modal-footer .btn-secondary:hover {
+        background-color: #aaa;
+        border-color: #aaa;
+    }
+
+    .modal-body {
+        padding: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="investment-card">
+        <div class="investment-container">
+
+            <div class="investment-image-container">
+                {% if investment_opportunity.image %}
+                    <img src="{{ investment_opportunity.image.url }}" alt="Investment Image" class="investment-image img-fluid" onclick="openPopup('{{ investment_opportunity.image.url }}')">
+                {% else %}
+                    <p style="color: red; font-weight: bold;">لم يتم إرفاق صورة</p>
+                {% endif %}
+            </div>
+            
+            <div class="investment-details-container">
+                <h2 class="investment-title">{{ investment_opportunity.title }}</h2>
+                <p class="investment-description">{{ investment_opportunity.description }}</p>
+
+                <div class="investment-detail-row">
+                    <div class="investment-detail-item">
+                        <span>نوع الاستثمار:</span> 
+                        {% if investment_opportunity.investment_type == 'Stocks' %}
+                            أسهم
+                        {% elif investment_opportunity.investment_type == 'Real Estate' %}
+                            عقارات
+                        {% else %}
+                            {{ investment_opportunity.investment_type }}
+                        {% endif %}
+                    </div>
+                    <div class="investment-detail-item">
+                        <span>المبلغ الإجمالي للاستثمار:</span> {{ investment_opportunity.total_investment }} ريال سعودي
+                    </div>
+                    <div class="investment-detail-item">
+                        <span>النسبة المطلوبة للموافقة:</span> {{ investment_opportunity.required_approval_percentage }}%
+                    </div>
+                    <div class="investment-detail-item">
+                        <span>العائد المتوقع:</span> {{ investment_opportunity.expected_return }}
+                    </div>
+                    <div class="investment-detail-item">
+                        <span>تاريخ البدء:</span> {{ investment_opportunity.start_date|date:"d M Y" }}
+                    </div>
+                    <div class="investment-detail-item">
+                        <span>تاريخ الانتهاء:</span> {{ investment_opportunity.end_date|date:"d M Y" }}
+                    </div>
+                </div>
+
+                {% if investment_opportunity.pdf_file %}
+                    <a href="{{ investment_opportunity.pdf_file.url }}" class="file-download-btn" download>
+                        <i class="bi bi-cloud-arrow-down-fill"></i> تحميل ملف PDF
+                    </a>
+                {% endif %}
+
+                <a href="#" class="delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="bi bi-trash-fill"></i> حذف الفرصة
+                </a>
+
+                <a href="#" class="update-btn" data-bs-toggle="modal" data-bs-target="#editModal">
+                    <i class="bi bi-pencil-fill"></i> تعديل الفرصة
+                </a>
+                <a href="#" class="publish-btn">
+                    <i class="bi bi-check-circle-fill"></i> نشر الفرصة
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="popupImage" class="popup-image">
+    <div class="popup-header">
+        <button class="close-btn" onclick="closePopup()">×</button>
+    </div>
+    <img id="popupImg" src="" alt="Popup Image">
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">تأكيد الحذف</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                هل أنت متأكد من أنك تريد حذف هذه الفرصة الاستثمارية؟
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <form method="POST" action="{% url 'investments:delete_investment_opportunity' investment_opportunity.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">حذف</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">تعديل الفرصة الاستثمارية</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'investments:update_investment_opportunity' investment_opportunity.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="title" class="form-label">عنوان الاستثمار</label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ investment_opportunity.title }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">الوصف</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required>{{ investment_opportunity.description }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="investment_type" class="form-label">نوع الاستثمار</label>
+                        <select class="form-select" id="investment_type" name="investment_type">
+                            <option value="Stocks" {% if investment_opportunity.investment_type == 'Stocks' %}selected{% endif %}>أسهم</option>
+                            <option value="Real Estate" {% if investment_opportunity.investment_type == 'Real Estate' %}selected{% endif %}>عقارات</option>
+                            <option value="Other" {% if investment_opportunity.investment_type == 'Other' %}selected{% endif %}>آخر</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="total_investment" class="form-label">المبلغ الإجمالي للاستثمار</label>
+                        <input type="number" class="form-control" id="total_investment" name="total_investment" value="{{ investment_opportunity.total_investment }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="required_approval_percentage" class="form-label">النسبة المطلوبة للموافقة</label>
+                        <input type="number" class="form-control" id="required_approval_percentage" name="required_approval_percentage" value="{{ investment_opportunity.required_approval_percentage }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="expected_return" class="form-label">العائد المتوقع</label>
+                        <input type="number" class="form-control" id="expected_return" name="expected_return" value="{{ investment_opportunity.expected_return }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="start_date" class="form-label">تاريخ البدء</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ investment_opportunity.start_date|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="end_date" class="form-label">تاريخ الانتهاء</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ investment_opportunity.end_date|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">الصورة</label>
+                        <input type="file" class="form-control" id="image" name="image" onchange="previewImage(event)">
+                        <div id="imagePreview" class="mt-3">
+                            {% if investment_opportunity.image %}
+                                <img src="{{ investment_opportunity.image.url }}" alt="Current Image" style="width: 150px; height: auto;"/>
+                                <p>الصورة الحالية</p>
+                            {% endif %}
+                        </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="pdf_file" class="form-label">تحميل PDF</label>
+                            <input type="file" class="form-control" id="pdf_file" name="pdf_file" onchange="displayFileName(event)">
+                            <div id="pdfFileName" class="mt-3">
+                                {% if investment_opportunity.pdf_file %}
+                                    <p>اسم ملف PDF الحالي: {{ investment_opportunity.pdf_file.name }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    
+                    <button type="submit" class="btn btn-darkgreen">تعديل الفرصة</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    function openPopup(imageUrl) {
+        var popup = document.getElementById('popupImage');
+        var popupImg = document.getElementById('popupImg');
+        popup.style.display = 'flex';
+        popupImg.src = imageUrl;
+    }
+
+    function closePopup() {
+        var popup = document.getElementById('popupImage');
+        popup.style.display = 'none';
+    }
+</script>
+{% endblock %}

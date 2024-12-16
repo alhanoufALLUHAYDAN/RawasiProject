@@ -57,32 +57,96 @@
       <!-- Content Area -->
       <div class="col-md-9 p-3">
           <div id="section1" class="dashboard-section">
-            <div class="text-center dashboard-section1  d-flex flex-column justify-content-center align-items-center">
+            <div class="container fund-container">
+                <div class="row">
+                  <!-- نصف الجدول -->
+                  <div class="col-md-6">
+                    <h3>الصناديق الاستثمارية</h3>
+                    <table class="table table-striped fund-table">
+                      <thead>
+                        <tr>
+                          <th>اسم الصندوق</th>
+                          <th>المبلغ المستثمر</th>
+                          <th>الحالة</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="fund-row" data-fund-id="1">
+                          <td>صندوق النمو</td>
+                          <td>100,000 ر.س</td>
+                          <td>قيد التنفيذ</td>
+                        </tr>
+                        <tr class="fund-row" data-fund-id="2">
+                          <td>صندوق الدخل الثابت</td>
+                          <td>200,000 ر.س</td>
+                          <td>مغلق</td>
+                        </tr>
+                        <tr class="fund-row" data-fund-id="3">
+                          <td>صندوق العقارات</td>
+                          <td>300,000 ر.س</td>
+                          <td>قيد التنفيذ</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+              
+                  <!-- نصف التفاصيل -->
+                  <div class="col-md-6" id="fund-details">
+                    <h3>تفاصيل الصندوق</h3>
+                    <div class="details-placeholder">
+                      <p>الرجاء اختيار صندوق من الجدول لعرض التفاصيل.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Modal for Showing More Details -->
+              <div class="modal fade" id="fundModal" tabindex="-1" aria-labelledby="fundModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="fundModalLabel">تفاصيل الصندوق</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="modal-body-content">
+                      <!-- Dynamic content will go here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+          <!--<div class="text-center dashboard-section1  d-flex flex-column justify-content-center align-items-center">
               <h3>لا يوجد صناديق حاليا</h3>
               <p class="text-muted"> انضم الان </p>
               <button class="btn btn-darkgreen">انضمام</button>
-            </div>
+            </div>-->
           </div>
           <div id="section2" class="dashboard-section" style="display: none;">
-              <h3>Content for Section 2</h3>
-              <p>This is where the content for Section 2 will be displayed.</p>
+            <div class="row">
+                <div  class="col-md-3 investment-card border p-0 rounded-3" >
+                  <img src="{%static 'images/building-66375_1280.jpg'%}" class="w-100"/>
+                  <div class="p-2">
+                    <h5>اسم الاستثمار</h5>
+                    <small>وصف الاستثمار</small>
+                    <div class="d-flex justify-content-between">
+                      <div class="d-flex gap-1">
+                        <a href="" class="  p-0 text-success fs-5"> <i class="fa-solid fa-square-check"></i></a>
+                        <a href="" class=" text-danger p-0 fs-5 "> <i class="fa-solid fa-square-xmark"></i></a>
+                      </div>  
+                      <a class="btn btn-darkgreen p-0 px-1 mx-1"><small> تفاصيل</small></a>
+                    </div>
+                    </div>
+                </div>
+              </div>
           </div>
           <div id="section3" class="dashboard-section" style="display: none;">
               <h3>Content for Section 3</h3>
               <p>This is where the content for Section 3 will be displayed.</p>
           </div>
-          <div class="wallet-container mt-4 p-3 bg-white shadow-sm rounded">
-            <h4 class="text-center" style="color: #761305;">محفظتك</h4>
-            {% if wallet %}
-                <p><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
-                <p><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
-            {% else %}
-                <p>لم يتم العثور على محفظة. يتم إنشاؤها تلقائيًا عند تسجيلك.</p>
-            {% endif %}
-            <div class="text-center">
-                <a href="{% url 'investment_fund:wallet_view' %}" class="btn btn-darkgreen">عرض المحفظة</a>
-            </div>
-        </div>
+          <div id="section4" class="dashboard-section" style="display: none;">
+              <h3>Content for Section 4</h3>
+              <p>This is where the content for Section 4 will be displayed.</p>
+          </div>
           <div id="section5" class="dashboard-section" style="display: none;">
               <h3>Content for Section 5</h3>
               <p>This is where the content for Section 5 will be displayed.</p>
@@ -92,6 +156,25 @@
 </section>
   {%endblock%}
   {%block script%}
+  
+  <script>
+    // Show relevant payment details based on selected method
+    document.getElementById('payment-method').addEventListener('change', function() {
+      const method = this.value;
+      const paymentDetails = document.querySelectorAll('.payment-details');
+      paymentDetails.forEach(detail => {
+        detail.style.display = 'none';
+      });
+  
+      if (method === 'bank') {
+        document.getElementById('bank-details').style.display = 'block';
+      } else if (method === 'credit-card') {
+        document.getElementById('credit-card-details').style.display = 'block';
+      } else if (method === 'e-wallet') {
+        document.getElementById('e-wallet-details').style.display = 'block';
+      }
+    });
+  </script>
   <script>
     // Handle the section content change
     const navLinks = document.querySelectorAll('.nav-link-dashboard');
@@ -123,4 +206,53 @@
         });
     });
 </script>
+<script>
+    document.querySelectorAll('.fund-row').forEach(row => {
+      row.addEventListener('click', function() {
+        // Get fund ID
+        const fundId = row.getAttribute('data-fund-id');
+        
+        // Fetch fund details (you can modify this to fetch from an API or server)
+        const fundDetails = getFundDetails(fundId);
+        
+        // Populate details section with data
+        document.getElementById('fund-details').innerHTML = `
+          <h3>${fundDetails.name}</h3>
+          <p><strong>المبلغ المستثمر:</strong> ${fundDetails.amount}</p>
+          <p><strong>الحالة:</strong> ${fundDetails.status}</p>
+          <p><strong>تاريخ التأسيس:</strong> ${fundDetails.startDate}</p>
+          <p><strong>التوزيعات المتوقعة:</strong> ${fundDetails.expectedReturns}</p>
+        `;
+      });
+    });
+    
+    // Function to simulate fetching fund details
+    function getFundDetails(id) {
+      const funds = {
+        1: {
+          name: "صندوق النمو",
+          amount: "100,000 ر.س",
+          status: "قيد التنفيذ",
+          startDate: "يناير 2023",
+          expectedReturns: "15% سنويًا"
+        },
+        2: {
+          name: "صندوق الدخل الثابت",
+          amount: "200,000 ر.س",
+          status: "مغلق",
+          startDate: "مارس 2021",
+          expectedReturns: "7% سنويًا"
+        },
+        3: {
+          name: "صندوق العقارات",
+          amount: "300,000 ر.س",
+          status: "قيد التنفيذ",
+          startDate: "أبريل 2022",
+          expectedReturns: "12% سنويًا"
+        }
+      };
+    
+      return funds[id];
+    }
+  </script>
 {%endblock%}
