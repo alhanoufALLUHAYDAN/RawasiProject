@@ -241,10 +241,10 @@
                             <button type="submit" class="btn btn-darkgreen">إنشاء الصندوق</button>
                         </div>
                     </form>
-              </div>
-          </div>
-      </div>
-  </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 <!-- Delete Confirmation Modal -->
 {% if investment_fund %}
@@ -271,7 +271,7 @@
 {% else %}
 {% endif %}
 
-{%endblock%}
+
           <div id="section2" class="dashboard-section" style="display: none;">
               <h3>Content for Section 2</h3>
               <p>This is where the content for Section 2 will be displayed.</p>
@@ -288,16 +288,24 @@
               <h3>Content for Section 5</h3>
               <p>This is where the content for Section 5 will be displayed.</p>
           </div>
-          <div id="section6" class="dashboard-section" style="display: none;">
-              <h3>Content for Section 6</h3>
-              <p>This is where the content for Section 6 will be displayed.</p>
-          </div>
-      </div>
-  </div>
+          <div class="wallet-container mt-4 p-3 bg-white shadow-sm rounded">
+            <h4 class="text-center" style="color: #761305;">محفظتك</h4>
+            {% if wallet %}
+                <p><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
+                <p><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
+            {% else %}
+            <p>سيتم انشأ محفظتك خلال ثواني...</p>
+            {% endif %}
+            <div class="text-center">
+                <a href="{% url 'investment_fund:wallet_view' %}" class="btn btn-darkgreen">عرض المحفظة</a>
+            </div>
+        </div>        
+    </div>
+</div>
 </section>
-
-  {%block script%}
-  <script>
+{%endblock%}
+{%block script%}
+<script>
     // Handle the section content change
     const navLinks = document.querySelectorAll('.nav-link-dashboard');
     const sections = document.querySelectorAll('.dashboard-section');

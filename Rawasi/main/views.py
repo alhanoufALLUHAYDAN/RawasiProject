@@ -10,6 +10,7 @@ import random
 import string
 from investment_fund.models import InvestmentFund
 from investment_fund.forms import InvestmentFundForm 
+from investment_fund.models import Wallet  
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -62,7 +63,8 @@ def fund_dashboard_view(request):
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)
     except InvestmentFund.DoesNotExist:
         investment_fund = None
-
+    # Fetch the user's wallet
+    wallet = getattr(request.user, 'wallet', None)  # Safe access to wallet
     # Handle new join code generation
     if request.method == "POST" and "new_code" in request.POST:
         new_code = generate_unique_code()
@@ -77,16 +79,31 @@ def fund_dashboard_view(request):
         "leader": leader_instance,
         "investment_fund": investment_fund,
         "unique_code": new_code,
+        "wallet": wallet,
     }
     return render(request, 'dashboard/fund_dashboard.html', context)
 
     
-def investor_dashboard_view(request:HttpRequest):
+def investor_dashboard_view(request: HttpRequest):
     if not request.user.is_authenticated:
-        messages.error(request, 'مصرح فقط للاعضاء المسجلين',"danger")
+        messages.error(request, 'مصرح فقط للأعضاء المسجلين', "danger")
         return redirect("main:home_view")
-    
 
-    return render(request,'dashboard/investor_dashboard.html',
-                  {"investor":request.user,
-                   })
+    # Fetch the user's wallet
+    try:
+        wallet, created = Wallet.objects.get_or_create(user=request.user)
+        if created:
+            messages.info(request, "تم إنشاء محفظة جديدة لك.")
+    except Exception as e:
+        wallet = None
+        messages.error(request, f"حدث خطأ: {e}")
+
+    # Pass wallet to the template
+    return render(
+        request,
+        'dashboard/investor_dashboard.html',
+        {
+            "investor": request.user,
+            "wallet": wallet,
+        }
+    )
