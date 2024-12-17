@@ -619,6 +619,11 @@ main{
 
 .investment-card img{
     border-radius: 7px 7px 0 0;
+    height: 9rem;
+    object-fit: cover;
+}
+.investment-description{
+  min-height: 100px;
 }
 .person-card img{
     border-radius: 0 7px 7px 0 ;
@@ -861,4 +866,18 @@ main{
       background-color: #0f2e2984;
   }
 
+/*pagination*/
+.page-link{
+  background-color: #f9f6ef;
+  border: #761305 solid 1px;
+  color: #761305;
+  transition: color ease 0.3s , background-color ease 0.3s;
+}
 
+.page-link:hover{
+  background-color: #761305;
+  color: #f9f6ef;
+}
+.page-link:focus{
+  box-shadow: 0 0 5px #76120596;
+}

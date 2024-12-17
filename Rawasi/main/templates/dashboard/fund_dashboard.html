@@ -146,6 +146,18 @@
 
       <!-- Content Area -->
       <div class="col-md-9 p-3">
+        {% if messages %}
+        {% for message in messages %}
+        {% if not request.session.show_message or message.tags != request.session.show_message %}
+        <div class=" w-100">
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} w-100 d-flex justify-content-between align-items-center" role="alert">
+                {{ message }}
+            <button type="button" class="btn-close m-0 px-2" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+      {% endif %}
         <div id="section1" class="dashboard-section">
             {% if investment_fund %}
                 <!-- Display Investment Fund Details -->
@@ -270,7 +282,7 @@
 {% endif %}
 
 
-
+<!-- التصويت-->
           <div id="section2" class="dashboard-section" style="display: none;">
             <div class="row gap-3 justify-content-center align-items-center">
               <div  class="col-md-3 investment-card border p-0 rounded-3" >
@@ -313,6 +325,7 @@
               </div>
             </div>
           </div>
+          <!--الربح-->
           <div id="section3" class="dashboard-section" style="display: none;">
             <div class="row">
               <div class="col-md-6">
@@ -329,13 +342,88 @@
 
             </div>
           </div>
+          <!--الفرص-->
           <div id="section4" class="dashboard-section" style="display: none;">
             <div class="d-flex align-items-end justify-content-end">
-              <button class="btn btn-darkgreen">
+              <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#investmentOpportunityModal">
                 فرصة جديدة <i class="fa-solid fa-plus"></i>
               </button>
             </div>
-            <div class="row gap-3">
+          <!--اضافة فرصة-->
+          <div class="modal fade" id="investmentOpportunityModal" tabindex="-1" aria-labelledby="investmentOpportunityModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                      <div class="modal-header d-flex justify-content-between p-0 px-3 py-2">
+                          <h5 class="modal-title" id="investmentOpportunityModalLabel">إضافة فرصة استثمارية جديدة</h5>
+                          <button type="button" class="btn-close m-0 p-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <form method="POST" action="{%url 'investments:add_investment_opportunity'%}" enctype="multipart/form-data">
+                              {% csrf_token %}
+                          
+                              <div class="mb-3">
+                                  <label for="title" class="form-label" style="color: #761305;">عنوان الاستثمار</label>
+                                  <input type="text" class="form-control" id="title" name="title" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="description" class="form-label" style="color: #761305;">وصف الاستثمار</label>
+                                  <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="company_name" class="form-label" style="color: #761305;">اسم الشركة</label>
+                                  <input type="text" class="form-control" id="company_name" name="company_name" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="investment_type" class="form-label" style="color: #761305;">نوع الاستثمار</label>
+                                  <select class="form-select" id="investment_type" name="investment_type" required>
+                                      <option value="Stocks">أسهم</option>
+                                      <option value="Real Estate">عقارات</option>
+                                  </select>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="total_investment" class="form-label" style="color: #761305;">المبلغ الإجمالي للاستثمار</label>
+                                  <input type="number" class="form-control" id="total_investment" name="total_investment" required>
+                              </div>                          
+  
+                              <div class="mb-3">
+                                  <label for="start_date" class="form-label" style="color: #761305;">تاريخ البداية</label>
+                                  <input type="date" class="form-control" id="start_date" name="start_date" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="end_date" class="form-label" style="color: #761305;">تاريخ الانتهاء</label>
+                                  <input type="date" class="form-control" id="end_date" name="end_date" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="expected_return" class="form-label" style="color: #761305;">العائد المتوقع</label>
+                                  <input type="number" class="form-control" id="expected_return" name="expected_return" required>
+                              </div>
+                              <div class="mb-3">
+                                  <label for="investment_image" class="form-label" style="color: #761305;">صورة الاستثمار</label>
+                                  <input type="file" class="form-control" id="investment_image" name="investment_image" accept="image/*">
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="investment_pdf" class="form-label" style="color: #761305;">تحميل ملف PDF</label>
+                                  <input type="file" class="form-control" id="investment_pdf" name="investment_pdf" accept="application/pdf">
+                              </div>
+  
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                                  <button type="submit" class="btn btn-darkgreen">إضافة الفرصة</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+            <div class="row gap-3 mt-3 w-100 d-flex align-items-center justify-content-center">
               {% for investment in investments%}
               <div  class="col-md-3 investment-card border p-0 rounded-3" >
                 {% if investment.image%}
@@ -344,16 +432,57 @@
                  <img src="{%static 'images/building-66375_1280.jpg'%}" class="w-100"/>
                  {%endif%}
                 <div class="p-2">
-                  <h5>{{investment.title}}</h5>
-                  <small>{{investment.description|truncatechars:40}}</small>
-                  <div class="d-flex align-items-end justify-content-end">
+                  <div class="investment-description">
+                    <h5>{{investment.title}}</h5>
+                    <small>{{investment.description|truncatechars:40}}</small>  
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    {% if investment.status == 'Open'%}
+                    <div class="p-0 px-3 border border-success text-success rounded-pill  ">مفتوحة</div>
+                    {%elif investment.status == 'Closed'%}
+                    <div class="p-0 px-3 border border-danger text-danger rounded-pill  ">مغلقة</div>
+                    {%else%}
+                    <div class="p-0 px-3 border border-warning text-warning rounded-pill  ">مكتملة </div>
+                    {%endif%}
                     <a href="{% url 'investments:investment_opportunity_detail' investment.id %}" class="btn btn-darkgreen p-0 px-1"><small> تفاصيل</small></a>
                   </div>
                   </div>
               </div>
               {%endfor%}
+              <!--pagination-->
+              <br/>
+              <navbar aria-label="Page navigation example">
+                  <ul class="pagination justify-content-center gap-4">
+                      {% if investments.has_next %}
+                          <li class="page-item">
+                              <a class="page-link rounded-3 px-3 py-2" href="?page={{ investments.next_page_number }}&section=section4" aria-label="Next">
+                                <span aria-hidden="true"><i class="fa-solid fa-chevron-right "></i></span>
+                              </a>
+                          </li>
+                      {% else %}
+                          <li class="page-item disabled">
+                            <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+                          </li>
+                      {% endif %}
+
+                      {% if investments.has_previous %}
+                      <li class="page-item">
+                          <a class="page-link rounded-3 px-3 py-2" href="?page={{ investments.previous_page_number }}&section=section4" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+                          </a>
+                      </li>
+                  {% else %}
+
+                      <li class="page-item disabled ">
+                        <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+
+                      </li>
+                  {% endif %}
+                  </ul>
+              </navbar>    
             </div>
           </div>
+          <!--الحساب-->
           <div id="section5" class="dashboard-section" style="display: none;">
             <div class="row gap-2">
               <div  class="col-md-5 person-card d-flex border p-0 rounded-3" >
@@ -411,16 +540,31 @@
 </section>
 {%endblock%}
   {%block script%}
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
     // Handle the section content change
     const navLinks = document.querySelectorAll('.nav-link-dashboard');
     const sections = document.querySelectorAll('.dashboard-section');
 
-    // Set the default visible section
-    const defaultSection = 'section1'; // This can be any section you want to show by default
-    document.getElementById(defaultSection).style.display = 'block';
-    document.querySelector(`.nav-link-dashboard[data-content="${defaultSection}"]`).classList.add('active');
-    
+    window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeSection = urlParams.get('section');  // الحصول على القسم من معلمة الـ URL
+
+    if (activeSection) {
+        document.getElementById(activeSection).classList.add('active');
+        document.getElementById(activeSection).style.display = 'block'; // إظهار القسم الافتراضي
+        document.querySelector(`.nav-link-dashboard[data-content="${activeSection}"]`).classList.add('active');
+        const defaultSection = 'section1'; 
+        document.getElementById(defaultSection).style.display = 'none'; 
+        document.querySelector(`.nav-link-dashboard[data-content="${defaultSection}"]`).classList.remove('active');
+
+    } else {  
+        const defaultSection = 'section1'; 
+        document.getElementById(defaultSection).style.display = 'block'; 
+        document.querySelector(`.nav-link-dashboard[data-content="${defaultSection}"]`).classList.add('active');
+    }
+}
+
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -443,4 +587,6 @@
     });
 
 </script>
+
+
 {%endblock%}

@@ -68,6 +68,9 @@ def fund_dashboard_view(request):
     try:
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)
         investments=investment_fund.investment_opportunities.all()
+        p=Paginator(investments,6)
+        page=request.GET.get('page',1)
+        investments_list=p.get_page(page)
     except InvestmentFund.DoesNotExist:
         investment_fund = None
     # Fetch the user's wallet
@@ -80,7 +83,6 @@ def fund_dashboard_view(request):
             investment_fund.save()
             messages.success(request, f"تم إنشاء رمز الانضمام: {new_code}")
     else:
-        print("here inside else")
         new_code = investment_fund.join_code if investment_fund else None
 
     context = {
@@ -88,7 +90,7 @@ def fund_dashboard_view(request):
         "investment_fund": investment_fund,
         "unique_code": new_code,
         "wallet": wallet,
-        "investments":investments
+        "investments":investments_list
     }
     return render(request, 'dashboard/fund_dashboard.html', context)
 

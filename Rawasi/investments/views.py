@@ -19,10 +19,11 @@ from django.core.exceptions import PermissionDenied
 @login_required
 def add_investment_opportunity(request):
     leader = Leader.objects.filter(user=request.user).first()
-    
+    active_section = 'section4' 
+
     if not leader:
         messages.error(request, "فقط المسؤول يمكنه إضافة فرص استثمارية.")
-        return redirect('/') 
+        return redirect('dashboard:fund_dashboard_view') 
 
     if request.method == "POST":
 
@@ -39,30 +40,30 @@ def add_investment_opportunity(request):
 
         if not all([title, description, company_name, investment_type, total_investment, start_date, end_date, expected_return]):
             messages.error(request, "جميع الحقول مطلوبة.")
-            return redirect('investments:add_investment_opportunity')
+            return redirect(f'/dashboard/fund/?section={active_section}')
 
         fund = InvestmentFund.objects.first()
         if not fund:
             messages.error(request, "لا يوجد صندوق استثماري في النظام. يرجى إضافة صندوق استثماري أولاً.")
-            return redirect('investments:add_investment_opportunity')
+            return redirect(f'/dashboard/fund/?section={active_section}')
 
         if fund.leader != leader:
             messages.error(request, "لا يمكنك إضافة فرصة استثمارية لأنك لست المسؤول عن هذا الصندوق.")
-            return redirect('investments:add_investment_opportunity')
+            return redirect(f'/dashboard/fund/?section={active_section}')
 
         if fund.is_active != 'Active':
             messages.error(request, "لا يمكن إضافة فرص استثمارية لأن الصندوق غير نشط.")
-            return redirect('investments:add_investment_opportunity')
+            return redirect(f'/dashboard/fund/?section={active_section}')
 
         try:
             start_date = datetime.strptime(start_date, '%Y-%m-%d')
             end_date = datetime.strptime(end_date, '%Y-%m-%d')
             if start_date >= end_date:
                 messages.error(request, "تاريخ البدء يجب أن يكون قبل تاريخ الانتهاء.")
-                return redirect('investments:add_investment_opportunity')
+                return redirect(f'/dashboard/fund/?section={active_section}')
         except ValueError:
             messages.error(request, "تاريخ البدء والانتهاء غير صحيح.")
-            return redirect('investments:add_investment_opportunity')
+            return redirect(f'/dashboard/fund/?section={active_section}')
 
         investment_opportunity = InvestmentOpportunity(
             title=title,
@@ -81,10 +82,12 @@ def add_investment_opportunity(request):
         try:
             investment_opportunity.save()
             messages.success(request, "تم إضافة الفرصة الاستثمارية بنجاح!")
-            return redirect('/')
+            return redirect(f'/dashboard/fund/?section={active_section}')
         except Exception as e:
             messages.error(request, f"حدث خطأ أثناء إضافة الفرصة الاستثمارية: {str(e)}")
-            return redirect('investments:add_investment_opportunity')
+            return redirect(f'/dashboard/fund/?section={active_section}')
+
+
 
     return render(request, 'investments/add_investment_opportunity.html')
 
