@@ -66,30 +66,51 @@
 
 {%block title%}<title>لوحة التحكم - الصندوق</title>{%endblock%}
 {%block content%}
-<section class="container bg-body-tertiary rounded-3 dashboard">
+<section class="container rounded-3 shadow dashboard">
   <div class="row dashboard-row">
       <!-- Sidebar -->
       <div class="col-md-3 p-3 d-flex flex-column justify-content-between dashboard-side">
         <div>
-          <h4 class=" mb-4 text-center ">مرحبا <span>{{leader.full_name}}</span></h4>
+          <h4 class=" mb-4 text-center ">مرحبا <span>{{leader.user.full_name}}</span></h4>
           <ul class="nav flex-column dashboard-links">
               <li class="nav-item">
-                  <a class="nav-link-dashboard active" href="#" data-content="section1">الصندوق</a>
+                  <a class="nav-link-dashboard active" href="#" data-content="section1">
+                    <i class="fa-solid fa-landmark"></i>
+                    <span class="px-2">الصندوق</span> 
+                  </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link-dashboard" href="#" data-content="section2">التصويت</a>
+                  <a class="nav-link-dashboard" href="#" data-content="section2">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span class="px-2">التصويت</span> 
+                  </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link-dashboard" href="#" data-content="section3">الأرباح</a>
+                  <a class="nav-link-dashboard" href="#" data-content="section3">
+                    <i class="fa-solid fa-coins"></i>
+                    <span class="px-2">الأرباح</span> 
+                  </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link-dashboard" href="#" data-content="section4">الفرص الاستثمارية</a>
+                  <a class="nav-link-dashboard" href="#" data-content="section4">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                    <span class="px-2">الفرص الاستثمارية</span> 
+  
+                  </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link-dashboard" href="#" data-content="section5">الافراد</a>
+                  <a class="nav-link-dashboard" href="#" data-content="section5">
+                    <i class="fa-solid fa-users"></i>
+                    <span class="px-2">الأفراد </span> 
+
+                  </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link-dashboard" href="#" data-content="section6">المحفظة</a>
+                  <a class="nav-link-dashboard" href="#" data-content="section6">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span class="px-2">المحفظة</span> 
+
+                  </a>
               </li>
           </ul>
         </div>
@@ -379,16 +400,15 @@
                       <h2>محفظة الصندوق</h2>
                       <hr>
                     </div>
-                    <div class="investment-summary mt-4">
-                      <h4>ملخص الصندوق</h4>
-                      <p>الاجمالي: <span>ر.س {{ investment_fund.total_balance }}</span></p>
-                  </div>
-                  
-                  </div>
                   </div>
                 </div>
+                
+            
+               
+            
               </div>
             </div>
+
         </div>
         
       </div>

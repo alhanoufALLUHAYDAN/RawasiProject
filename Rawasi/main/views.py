@@ -59,7 +59,7 @@ def fund_dashboard_view(request):
 
     # Fetch the related leader instance
     leader_instance = request.user.leader
-
+    
     # Check if an investment fund exists for the leader
     try:
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)

@@ -265,6 +265,13 @@
                     <div class="investment-detail-item">
                         <span>تاريخ الانتهاء:</span> {{ investment_opportunity.end_date|date:"d M Y" }}
                     </div>
+                    {% if investment_opportunity.votes.count > 0 %}
+                        <p><strong>نسبة الموافقة: </strong>{{ investment_opportunity.approval_percentage|floatformat:2 }}%</p>
+                    {% else %}
+                        <p>لا توجد تصويتات حتى الآن.</p>
+                    {% endif %}
+
+
                 </div>
 
                 {% if investment_opportunity.pdf_file %}
