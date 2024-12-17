@@ -15,6 +15,8 @@ from investment_fund.models import InvestmentFund, Wallet
 from investment_fund.forms import InvestmentFundForm 
 from investments.models import InvestorFund,InvestmentOpportunity,InvestmentFund
 from accounts.models import Investor
+from django.contrib.auth.decorators import login_required
+
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -65,6 +67,7 @@ def fund_dashboard_view(request):
     # Check if an investment fund exists for the leader
     try:
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)
+        investments=investment_fund.investment_opportunities.all()
     except InvestmentFund.DoesNotExist:
         investment_fund = None
     # Fetch the user's wallet
