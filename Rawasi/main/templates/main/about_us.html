@@ -2,6 +2,15 @@
 {%load static%}
 
 {%block title%}<title>نبذة عنا</title>{%endblock%}
+{%block head%}
+<style>
+  body, html {
+    overflow-x: hidden;
+
+  }
+
+</style>
+{%endblock%}
 {%block content%}
     <section class="container-fluid p-0">
         <div class="image-section">
@@ -27,22 +36,22 @@
       </p>
     </div>-->
 
-      <section class="services-section container">
+      <section class="services-section container ">
         <!-- قسم الخدمات -->
          <div class="row mb-5">
-            <div class="section-title text-end d-flex flex-column align-items-start justify-content-center col-md-6 mb-5">
+            <div class="section-title text-end d-flex flex-column align-items-start justify-content-center col-md-6 mt-4 mb-3">
                 <h2>خدماتنا</h2>
                 <p>نحن نقدم مجموعة من الخدمات المتميزة التي تلبي احتياجات عملائنا وتساعدهم في تحقيق أهدافهم.</p>
               </div>
               <div class="col-md-6">
-                <dotlottie-player src="https://lottie.host/3465d012-11a1-4d21-8d02-7f5d0ccf7e4a/OGVNEjvbfE.lottie" background="transparent" speed="1" style="width: 500px; height: 500px" loop autoplay></dotlottie-player>
+                <dotlottie-player src="https://lottie.host/3465d012-11a1-4d21-8d02-7f5d0ccf7e4a/OGVNEjvbfE.lottie" background="transparent" speed="1" style="width: 400px; height: 400px" loop autoplay></dotlottie-player>
               </div>
       </section>
       <section>
-        <div class="container-fluid ">
+        <div class="container my-5 ">
           <div class="row">
               <div class="col-md-6 mb-4">
-                  <div class="service-card  p-4 text-center">
+                  <div class="service-card p-4 text-center">
                       <div class="d-flex gap-3 mb-4 justify-content-start align-items-center ">
                           <i class="fa-solid fa-money-bill-wheat fs-1 sevice-icon4"></i>
                           <h5 class="service-title"> إدارة المحفظة العائلية</h5>      
@@ -89,84 +98,65 @@
    </div>
       </section>
        <!-- قسم فريق العمل -->
-        <div class="container">
+       
+       <div class="container">
 
-          <div class="row mt-5">
-            <div class="row col-md-8">
-                <div class="col-md-4 mb-4">
-                    <div class="team-member shadow  text-center rounded-3">
-                      <img src="{% static 'images/image.png'%}" alt="Team Member 2" class="team-photo  w-100">
-                      <div class="p-4">
-                        <h6 class="team-name text-end">حصة المسعد</h6>
-                        <div class="d-flex gap-2 text-start">
-                            <a href="https://www.facebook.com" target="_blank" class="social-icon facebook-icon">
-                                <i class="fab fa-facebook-f"></i> <!-- أيقونة فيسبوك -->
-                              </a>
-                              <a href="https://www.twitter.com" target="_blank" class="social-icon twitter-icon">
-                                <i class="fab fa-twitter"></i> <!-- أيقونة تويتر -->
-                              </a>
-                              <a href="https://www.linkedin.com" target="_blank" class="social-icon linkedin-icon">
-                                <i class="fab fa-linkedin-in"></i> <!-- أيقونة لينكد إن -->
-                              </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                <div class="col-md-4 mb-4">
-                  <div class="team-member shadow  text-center rounded-3">
-                    <img src="{% static 'images/default-avatar-profile-picture-female-icon.webp'%}" alt="Team Member 2" class="team-photo  w-100">
-                    <div class="p-4">
-                      <h6 class="team-name text-end">الهنوف اللحيدان</h6>
-                      <div class="d-flex gap-2 text-start">
-                          <a href="https://www.facebook.com" target="_blank" class="social-icon facebook-icon">
-                              <i class="fab fa-facebook-f"></i> <!-- أيقونة فيسبوك -->
-                            </a>
-                            <a href="https://www.twitter.com" target="_blank" class="social-icon twitter-icon">
-                              <i class="fab fa-twitter"></i> <!-- أيقونة تويتر -->
-                            </a>
-                            <a href="https://www.linkedin.com" target="_blank" class="social-icon linkedin-icon">
-                              <i class="fab fa-linkedin-in"></i> <!-- أيقونة لينكد إن -->
-                            </a>
-                      </div>
-                    </div>
-                  </div>
+        <!-- Section for Team Members -->
+        <div class="row mt-5">
+          <!-- Left Section for Team Members -->
+          <div class="col-md-8 mb-5">
+            <div class="container container-team">
+              <!-- First Team Member -->
+              <div class="glass" style="--r:-15;">
+                <img src="{% static 'images/image.png' %}" height="1em"/>
+                <div class="d-flex px-4 justify-content-between align-items-center link-content">
+                  <p class="pt-1">حصة المسعد</p>
+                  <a href="https://www.linkedin.com" target="_blank" class="social-icon linkedin-icon">
+                    <i class="fab fa-linkedin-in"></i> <!-- LinkedIn Icon -->
+                  </a>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="team-member shadow  text-center rounded-3">
-                      <img src="{% static 'images/default-avatar-profile-picture-female-icon.webp'%}" alt="Team Member 2" class="team-photo  w-100">
-                      <div class="p-4">
-                        <h6 class="team-name text-end">أريج شريفي</h6>
-                        <div class="d-flex gap-2 text-start">
-                            <a href="https://www.facebook.com" target="_blank" class="social-icon facebook-icon">
-                                <i class="fab fa-facebook-f"></i> <!-- أيقونة فيسبوك -->
-                              </a>
-                              <a href="https://www.twitter.com" target="_blank" class="social-icon twitter-icon">
-                                <i class="fab fa-twitter"></i> <!-- أيقونة تويتر -->
-                              </a>
-                              <a href="https://www.linkedin.com" target="_blank" class="social-icon linkedin-icon">
-                                <i class="fab fa-linkedin-in"></i> <!-- أيقونة لينكد إن -->
-                              </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
               </div>
-    
-              <div class="section-title text-center mb-5 col-md-4 d-flex flex-column justify-content-center align-items-end ">
-                <h2>فريق العمل</h2>
-                <p class="text-start">تعرف على أعضاء فريقنا المبدعين الذين يعملون جاهدين لتحقيق أهدافكم.</p>
+              
+              <!-- Second Team Member -->
+              <div class="glass" style="--r:-15;">
+                <img src="{% static 'images/default-avatar-profile-picture-female-icon.webp' %}" height="1em"/>
+                <div class="d-flex px-4 justify-content-between align-items-center link-content">
+                  <p class="pt-1">الهنوف اللحيدان</p>
+                  <a href="https://www.linkedin.com" target="_blank" class="social-icon linkedin-icon">
+                    <i class="fab fa-linkedin-in"></i> <!-- LinkedIn Icon -->
+                  </a>
+                </div>
               </div>
       
-         </div>
-    
+              <!-- Third Team Member -->
+              <div class="glass" style="--r:-15;">
+                <img src="{% static 'images/default-avatar-profile-picture-female-icon.webp' %}" height="1em"/>
+                <div class="d-flex px-4 justify-content-between align-items-center link-content">
+                  <p class="pt-1">أريج شريفي</p>
+                  <a href="https://www.linkedin.com" target="_blank" class="social-icon linkedin-icon">
+                    <i class="fab fa-linkedin-in"></i> <!-- LinkedIn Icon -->
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Right Section for Section Title -->
+          <div class="col-md-4 d-flex flex-column justify-content-center align-items-start section-title mb-3">
+            <h2>فريق العمل</h2>
+            <p class="text-end">تعرف على أعضاء فريقنا المبدعين الذين يعملون جاهدين لتحقيق أهدافكم.</p>
+          </div>
         </div>
+      </div>
+      
   
 
-</section>
+
   
   
 
   {%endblock%}
 {% block script%}
 <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+
 {%endblock%}

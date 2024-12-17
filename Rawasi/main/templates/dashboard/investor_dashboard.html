@@ -12,7 +12,7 @@ body {
 {%endblock%}
 {%block content%}
     
-<section class="container bg-body-tertiary rounded-3 dashboard">
+<section class="container rounded-3 dashboard shadow">
   {% if messages %}
   {% for message in messages %}
   {% if not request.session.show_message or message.tags != request.session.show_message %}
@@ -32,26 +32,34 @@ body {
                
                 
                 <a class="nav-link-dashboard active" href="#" data-content="section1">
-                  
-                  الصناديق 
+                  <i class="fa-solid fa-boxes-stacked"></i>
+                  <span class="px-2">الصناديق</span> 
                 </a>
 
               </li>
               <li class="nav-item">
                   <a class="nav-link-dashboard" href="#" data-content="section2">
-                    
-                    التصويت
-
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span class="px-2">التصويت</span> 
                   </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link-dashboard" href="#" data-content="section3">الأرباح</a>
+                  <a class="nav-link-dashboard" href="#" data-content="section3">
+                    <i class="fa-solid fa-coins"></i>
+                    <span class="px-2">الأرباح</span> 
+                  </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link-dashboard" href="#" data-content="section4">المحفظة </a>
+                  <a class="nav-link-dashboard" href="#" data-content="section4">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span class="px-2">المحفظة</span> 
+                  </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link-dashboard" href="#" data-content="section5">حسابي</a>
+                  <a class="nav-link-dashboard" href="#" data-content="section5">
+                    <i class="fa-regular fa-address-card"></i>
+                    <span class="px-2">حسابي</span> 
+                  </a>
               </li>
           </ul>
         </div>
@@ -84,6 +92,7 @@ body {
 
         </div>
       </div>
+
       <!-- Content Area -->
       <div class="col-md-9 p-3">
           <div id="section1" class="dashboard-section">
@@ -174,49 +183,32 @@ body {
               <p>This is where the content for Section 3 will be displayed.</p>
           </div>
           <div id="section4" class="dashboard-section" style="display: none;">
+            
             <div class="container p-0">
-                <!-- Section 4 Header -->
-                <h3 class="text-center mb-4" style="color: #761305;">محفظتك</h3>
-                <h1></h1>
                 <!-- Wallet Container -->
                 <div class="wallet-container mt-4 p-3 bg-white shadow-sm rounded">
-                    <h4 class="text-center" style="color: #761305;">محفظتك</h4>
                     {% if wallet %}
-                        <p class="text-right"><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
-                        <p class="text-right"><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
+                    <div class="wallet-header">
+                      <h5>محفظتي الرقمية</h5>
+                      <p class="fs-6">التحكم في أموالك بطريقة بسيطة وآمنة</p>
+                      <p class="text-center fs-6"><strong>رصيد المحفظة:</strong> {{ wallet.balance }} ريال</p>
+
                     {% else %}
                         <p class="text-center">سيتم انشأ محفظتك خلال ثواني...</p>
                     {% endif %}
                     <!-- Wallet Actions -->
                     <div class="text-center mt-3">
-                        <a href="{% url 'investment_fund:wallet_view' %}" class="btn btn-darkgreen">عرض المحفظة</a>
+                      <div class="action-buttons d-flex justify-content-center align-items-center gap-3">
+                        <button class="btn btn-action btn-darkgreen add-funds" data-bs-toggle="modal" data-bs-target="#depositModal"><i class="fa-solid fa-plus"></i> <span class="mx-2">إضافة الأموال </span> </button>
+                        <button class="btn btn-action btn-darkred withdraw"> <i class="fa-solid fa-minus"></i> <span class="mx-2">سحب الأموال </span></button>
+                      </div>
                     </div>
                 </div>
+                <small class="text-start text-muted">آخر تحديث: {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</small>
+
             </div>
-            <div class="container wallet-container">
-              <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-6">
-                  <!-- Wallet Card -->
-                  <div class="card-wallet">
-                    <div class="wallet-header">
-                      <h2>محفظتي الرقمية</h2>
-                      <p>التحكم في أموالك بطريقة بسيطة وآمنة</p>
-                    </div>
+
             
-                    <!-- Wallet Balance -->
-                    <div class="balance">
-                      <p>الرصيد الحالي: <span>١,٢٣٤.٥٦ ر.س</span></p>
-                    </div>
-            
-                    <!-- Action Buttons -->
-                    <div class="action-buttons">
-                      <button class="btn btn-action btn-darkgreen add-funds" data-bs-toggle="modal" data-bs-target="#depositModal">إضافة أموال</button>
-                      <button class="btn btn-action btn-darkred withdraw">سحب الأموال</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             
             <!-- Deposit Modal -->
             <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
@@ -267,14 +259,17 @@ body {
               </div>
             </div>
             
-          </div>   
-        </div>        
+          </div> 
+          
           <div id="section5" class="dashboard-section" style="display: none;">
-              <h3>Content for Section 5</h3>
-              <p>This is where the content for Section 5 will be displayed.</p>
-          </div>
+            <h3>Content for Section 5</h3>
+            <p>This is where the content for Section 5 will be displayed.</p>
+        </div>
+        </div>        
+          
+       
       </div>
-  </div>
+  
 </section>
   {%endblock%}
   {%block script%}

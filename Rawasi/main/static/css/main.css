@@ -472,8 +472,9 @@ main{
     object-fit: cover;
 }
 .social-icon{
-    color: #761305;
+    color: #000000;
     font-size: smaller;
+    margin-bottom: 5px;
     transition: transform ease 0.3s;
 }
 
@@ -489,26 +490,93 @@ main{
 }
 .sevice-icon1{
   color: #761305;
+  transition: transform 0.5s ease ;  
+}
+.service-card:hover .sevice-icon1{
+  transform: rotate(360deg) ; 
 }
 .sevice-icon2{
   color: #0f2e29;
+  transition: transform 0.5s ease ;  
+
+}
+.service-card:hover .sevice-icon2{
+  transform: rotate(360deg) ; 
 }
 .sevice-icon3{
   color: #E4b42d;
   font-size: 5rem;
+  transition: transform 0.5s ease ;  
+
 }
-.service-icon4 {
-  color: #dfd6c4 !important;
-  transition: transform 0.5s ease !important;  /* إضافة تأثير انتقال سلس */
+.service-card:hover .sevice-icon3{
+  transform: rotate(360deg) ; 
+}
+.sevice-icon4 {
+  color: #dfd6c4 ;
+  transition: transform 0.5s ease ;  
+}
+.service-card:hover .sevice-icon4{
+  transform: rotate(360deg) ; 
+}
+.service-description{
+  text-align: start;
 }
 
-.service-card:hover .service-icon4{
-  transform: rotate(360deg) !important;  /* دوران الأيقونة 360 درجة */
+.container-team {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.container-team  .glass {
+  position: relative;
+  width: 180px;
+  height: 200px;
+  background: linear-gradient(rgba(74, 74, 74, 0.133), transparent);
+  border: 1px solid rgba(48, 48, 48, 0.1);
+  box-shadow: 0 25px 25px rgba(30, 30, 30, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.5s;
+  border-radius: 10px;
+  margin: 0 -45px;
+  backdrop-filter: blur(10px);
+  transform: rotate(calc(var(--r) * 1deg));
+}
+
+.container-team:hover .glass {
+  transform: rotate(0deg);
+  margin: 0 10px;
+}
+
+
+
+.glass .link-content {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #020202;
+  text-decoration: none;
+}
+.container-team .glass img {
+  width: 100%;
+  height: 50%;
+  object-fit: cover;
+  fill: #fff;
+}
+
 
 /*----- fund dashboard css ------*/
 .dashboard{
-    background-color: #194d45;
+    background-color: #f9f6ef;
     min-height: 85vh;
     margin-top: 5rem;
     width: 100%;
