@@ -10,9 +10,9 @@ import random
 import string
 from investment_fund.models import InvestmentFund, Wallet
 from investment_fund.forms import InvestmentFundForm 
-from investments.models import InvestmentFund
-from investments.models import InvestorFund
+from investments.models import InvestorFund,InvestmentOpportunity,InvestmentFund
 from accounts.models import Investor
+
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -59,10 +59,11 @@ def fund_dashboard_view(request):
 
     # Fetch the related leader instance
     leader_instance = request.user.leader
-    
+
     # Check if an investment fund exists for the leader
     try:
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)
+        investments= investment_fund.investment_opportunities.all()
     except InvestmentFund.DoesNotExist:
         investment_fund = None
     # Fetch the user's wallet
@@ -82,6 +83,7 @@ def fund_dashboard_view(request):
         "investment_fund": investment_fund,
         "unique_code": new_code,
         "wallet": wallet,
+        "investments":investments
     }
     return render(request, 'dashboard/fund_dashboard.html', context)
 

@@ -3,6 +3,8 @@
 
 {%block title%}<title>لوحة التحكم - المستثمر</title>{%endblock%}
 {%block head%}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
 body {
   background-image: url("/static/images/Background.png");
@@ -11,17 +13,7 @@ body {
 </style>
 {%endblock%}
 {%block content%}
-    
 <section class="container rounded-3 dashboard shadow">
-  {% if messages %}
-  {% for message in messages %}
-  {% if not request.session.show_message or message.tags != request.session.show_message %}
-      <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}" role="alert">
-          {{ message }}
-      </div>
-      {% endif %}
-  {% endfor %}
-{% endif %}
   <div class="row dashboard-row">
       <!-- Sidebar -->
       <div class="col-md-3 p-3 d-flex flex-column justify-content-between dashboard-side">
@@ -183,97 +175,138 @@ body {
               <p>This is where the content for Section 3 will be displayed.</p>
           </div>
           <div id="section4" class="dashboard-section" style="display: none;">
-            
-            <div class="container p-0">
-                <!-- Wallet Container -->
-                <div class="wallet-container mt-4 p-3 bg-white shadow-sm rounded">
-                    {% if wallet %}
-                    <div class="wallet-header">
-                      <h5>محفظتي الرقمية</h5>
-                      <p class="fs-6">التحكم في أموالك بطريقة بسيطة وآمنة</p>
-                      <p class="text-center fs-6"><strong>رصيد المحفظة:</strong> {{ wallet.balance }} ريال</p>
 
-                    {% else %}
-                        <p class="text-center">سيتم انشأ محفظتك خلال ثواني...</p>
-                    {% endif %}
-                    <!-- Wallet Actions -->
-                    <div class="text-center mt-3">
-                      <div class="action-buttons d-flex justify-content-center align-items-center gap-3">
-                        <button class="btn btn-action btn-darkgreen add-funds" data-bs-toggle="modal" data-bs-target="#depositModal"><i class="fa-solid fa-plus"></i> <span class="mx-2">إضافة الأموال </span> </button>
-                        <button class="btn btn-action btn-darkred withdraw"> <i class="fa-solid fa-minus"></i> <span class="mx-2">سحب الأموال </span></button>
-                      </div>
-                    </div>
-                </div>
-                <small class="text-start text-muted">آخر تحديث: {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</small>
-
-            </div>
-
+          </div>
             
             
-            <!-- Deposit Modal -->
-            <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header d-flex justify-content-between">
-                    <h5 class="modal-title" id="depositModalLabel">إضافة أموال إلى المحفظة</h5>
-                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <form>
-                      <!-- Deposit Amount -->
-                      <div class="mb-3">
-                        <label for="deposit-amount" class="form-label">المبلغ</label>
-                        <input type="number" class="form-control" id="deposit-amount" placeholder="أدخل المبلغ" required>
-                      </div>
-            
-                      <!-- Payment Methods -->
-                      <div class="mb-3">
-                        <label for="payment-method" class="form-label">طريقة الإيداع</label>
-                        <select class="form-select" id="payment-method">
-                          <option selected>اختر طريقة الإيداع</option>
-                          <option value="bank">تحويل بنكي</option>
-                          <option value="credit-card">بطاقة ائتمانية</option>
-                        </select>
-                      </div>
-            
-                      <!-- Payment Details -->
-                      <div class="payment-method-details">
-                        <div id="bank-details" class="payment-details"  style="display: none;">
-                          <label for="bank-account" class="form-label">رقم الحساب البنكي</label>
-                          <input type="text" class="form-control" id="bank-account" placeholder="أدخل رقم الحساب" />
-                        </div>
-                        <div id="credit-card-details" class="payment-details"  style="display: none;">
-                          <label for="credit-card-number" class="form-label">رقم البطاقة الائتمانية</label>
-                          <div class="d-flex flex-column gap-1">
-                          <input type="text" class="form-control" id="credit-card-number" placeholder="أدخل رقم البطاقة" />
-                          <input type="date" class="form-control" id="credit-card-number" placeholder="أدخل تاريخ الانتهاء" />
-                          <input type="text" class="form-control" id="credit-card-number" placeholder="أدخل الرقم السري" />
-                          </div>
-                        </div>
-                      </div>
-            
-                      <button type="submit" class="btn btn-darkgreen w-100 mt-3">إتمام الإيداع</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-          </div> 
           
           <div id="section5" class="dashboard-section" style="display: none;">
-            <h3>Content for Section 5</h3>
-            <p>This is where the content for Section 5 will be displayed.</p>
-        </div>
-        </div>        
-          
-       
+                        <div class="container-wrapper-profile">
+                          <div id="alert-container"></div>
+                          <div class="profile-container container">
+                              <div class="profile-image-container row w-100">
+                                <div class="col-md-8 d-flex gap-3 align-items-start ">
+                                  <h2 class="mb-3"> بيانات الحساب  </h2>
+                                  <div class="mt-2">
+                                    <span class="edit-icon" id="edit-image-icon"><i class="fas fa-pencil-alt"></i></span>
+                                    <span class="check-icon hidden" id="check-icon"><i class="fas fa-check"></i></span>    
+                                  </div>
+                                </div>
+                                  <div class=" col-md-4">
+                                    <img src="{{ user.profile_picture.url }}" alt="Profile Image" class="profile-image rounded-3 " id="profile-img">
+                                  </div>
+    
+                              </div>
+                              
+                              <div class="profile-info mt-3">
+                                  <form id="profile-form" method="POST" enctype="multipart/form-data">
+                                      {% csrf_token %}
+                                      
+                                      <div class="form-group">
+                                          <label for="full_name">الاسم الكامل</label>
+                                          <input type="text" class="form-control" value="{{ user.full_name }}" name="full_name" id="full-name" disabled>
+                                      </div>
+                      
+                                      <div class="form-group">
+                                          <label for="username">اسم المستخدم</label>
+                                          <input type="text" class="form-control" value="{{ user.username }}" name="username" id="username" disabled>
+                                      </div>
+                      
+                                      <div class="form-group">
+                                          <label for="email">البريد الإلكتروني</label>
+                                          <input type="email" class="form-control" value="{{ user.email }}" name="email" id="email" disabled>
+                                      </div>
+                      
+                                      <div class="form-group">
+                                          <label for="phone_number">رقم الجوال</label>
+                                          <input type="text" class="form-control" value="{{ user.phone_number }}" name="phone_number" id="phone-number" disabled>
+                                      </div>
+                      
+                                      <div class="form-group">
+                                          <label for="dob">تاريخ الميلاد</label>
+                                          <input type="date" class="form-control" value="{{ user.date_of_birth|date:'Y-m-d' }}" name="date_of_birth" id="dob" disabled>
+                                      </div>
+                      
+                                      <div class="form-group hidden" id="profile-picture-group">
+                                          <label for="profile_picture">الصورة الشخصية</label>
+                                          <input type="file" class="form-control" name="profile_picture" id="profile-picture">
+                                      </div>
+                      
+                                      <div class="form-group hidden" id="password-group">
+                                          <label for="password">كلمة المرور الجديدة</label>
+                                          <input type="password" class="form-control" placeholder="أدخل كلمة المرور الجديدة" name="password" id="password">
+                                      </div>
+                      
+                                      <div class="form-group hidden" id="password-confirm-group">
+                                          <label for="password_confirm">تأكيد كلمة المرور</label>
+                                          <input type="password" class="form-control" placeholder="تأكيد كلمة المرور" name="password_confirm" id="password_confirm">
+                                      </div>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>
+                  </div>   
       </div>
   
 </section>
   {%endblock%}
   {%block script%}
   
+<script>
+  $(document).ready(function () {
+      $('#edit-image-icon').click(function () {
+          $('input').prop('disabled', false);
+          $('#profile-picture-group, #password-group, #password-confirm-group').removeClass('hidden');
+          $('#save-btn-container').removeClass('hidden'); 
+          $('#check-icon').removeClass('hidden'); 
+          $('#edit-image-icon').hide(); 
+      });
+
+      $('#check-icon').click(function () {
+          $('#profile-form').submit(); 
+      });
+
+      $('#profile-form').submit(function (e) {
+          e.preventDefault();
+
+          var formData = new FormData(this); 
+
+          $.ajax({
+              url: '{% url "accounts:update_profile" %}',
+              type: 'POST',
+              data: formData,
+              contentType: false,
+              processData: false,
+              success: function(response) {
+                  $('#full-name').val(response.full_name);
+                  $('#username').val(response.username);
+                  $('#email').val(response.email);
+                  $('#phone-number').val(response.phone_number);
+                  $('#dob').val(response.date_of_birth);
+                  $('#profile-img').attr('src', response.profile_picture_url);
+
+                  $('input').prop('disabled', true);
+                  $('#profile-picture-group, #password-group, #password-confirm-group').addClass('hidden');
+                  $('#save-btn-container').addClass('hidden');
+                  $('#edit-image-icon').show();
+                  $('#check-icon').addClass('hidden'); 
+
+                  $('#alert-container').html('<div class="alert alert-success">تم تحديث البيانات بنجاح!</div>');
+
+                  setTimeout(function() {
+                      $('.alert').fadeOut();
+                  }, 3000);
+              },
+              error: function(xhr, status, error) {
+                  $('#alert-container').html('<div class="alert alert-danger">حدث خطأ أثناء التحديث.</div>');
+                  setTimeout(function() {
+                      $('.alert').fadeOut();
+                  }, 3000);
+              }
+          });
+      });
+  });
+</script>
   <script>
     // Show relevant payment details based on selected method
     document.getElementById('payment-method').addEventListener('change', function() {

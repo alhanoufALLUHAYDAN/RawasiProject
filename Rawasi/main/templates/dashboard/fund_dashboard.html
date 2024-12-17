@@ -22,13 +22,6 @@
         padding-left: 60px;
     }
 
-    .modal-header .btn-close {
-        position: absolute;
-        left: 10px;
-        top: 20px;
-        background-color: #761305;
-        border-radius: 50%;
-    }
 
     .modal-footer {
         border-bottom-left-radius: 10px;
@@ -131,8 +124,8 @@
           <!-- Modal Structure -->
           <div class="modal fade" id="codeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header border-white d-flex justify-content-between">
+              <div class="modal-content w-100">
+                <div class="modal-header border-white d-flex justify-content-between p-0 py-1 px-2 w-100">
                   <h5 class="modal-title" id="exampleModalLabel">الرمز</h5>
                   <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -142,7 +135,7 @@
                   {% endif %}
                 </div>
                 <div class="modal-footer border-white ">
-                  <button type="button" class="btn btn-darkgreen w-100 " data-bs-dismiss="modal">تم</button>
+                  <button type="button" class="btn btn-light w-100 " data-bs-dismiss="modal">تم</button>
                 </div>
               </div>
             </div>
@@ -156,14 +149,12 @@
         <div id="section1" class="dashboard-section">
             {% if investment_fund %}
                 <!-- Display Investment Fund Details -->
-                <div class="p-4" style="background-color: #faf6ee; border: 2px solid #0f2e29; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
-                    <h3 class="text-center mb-4" style="color: #761305; font-weight: bold;">تفاصيل الصندوق الاستثماري</h3>
-                    <hr style="border-top: 2px solid #0f2e29;">
+                <div class="p-4 h-100" style="background-color: #faf6ee; border: 2px solid #0f2e29; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
                     
                     <!-- Display Fund Data -->
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>اسم الصندوق:</strong> {{ investment_fund.name }}</p>
+                            <p><span>اسم الصندوق:</span> <span class="fs-1">{{ investment_fund.name }}</span></p>
                             <p><strong>الوصف:</strong> {{ investment_fund.description }}</p>
                             <p><strong>الرصيد الكلي:</strong> {{ investment_fund.total_balance }}</p>
                         </div>
@@ -339,17 +330,23 @@
                 فرصة جديدة <i class="fa-solid fa-plus"></i>
               </button>
             </div>
-            <div class="row">
+            <div class="row gap-3">
+              {% for investment in investments%}
               <div  class="col-md-3 investment-card border p-0 rounded-3" >
-                <img src="{%static 'images/building-66375_1280.jpg'%}" class="w-100"/>
+                {% if investment.image%}
+                 <img src="{{investment.image.url}}" class="w-100"/>
+                 {%else%}
+                 <img src="{%static 'images/building-66375_1280.jpg'%}" class="w-100"/>
+                 {%endif%}
                 <div class="p-2">
-                  <h5>اسم الاستثمار</h5>
-                  <small>وصف الاستثمار</small>
+                  <h5>{{investment.title}}</h5>
+                  <small>{{investment.description|truncatechars:40}}</small>
                   <div class="d-flex align-items-end justify-content-end">
-                    <a class="btn btn-darkgreen p-0 px-1"><small> تفاصيل</small></a>
+                    <a href="{% url 'investments:investment_opportunity_detail' investment.id %}" class="btn btn-darkgreen p-0 px-1"><small> تفاصيل</small></a>
                   </div>
                   </div>
               </div>
+              {%endfor%}
             </div>
           </div>
           <div id="section5" class="dashboard-section" style="display: none;">
@@ -379,40 +376,7 @@
             </div>
           </div>
           <div id="section6" class="dashboard-section" style="display: none;">
-            <div class="container p-0">
-                <div class="row justify-content-center">
-                    <!-- Wallet Section -->
-                    
-                </div>
-            </div>
-
-            <div class="container p-0">
-              <div class="row justify-content-center">
-                 <!-- Wallet Card -->
-                 <div class="col-md-12">
-                  <div class="card-wallet">
-                    <div class="wallet-header">
-                      <h2>محفظة الصندوق</h2>
-                      <hr>
-                    </div>
-                    <div class="wallet-container">
-                     
-                      {% if wallet %}
-                           <!-- Wallet Balance -->
-                      <div class="balance ">
-                        <p class="text-center"><strong>رصيد المحفظة:</strong> {{ wallet.balance }} ريال</p>
-                      </div>
-                        
-                          <small class="text-start text-muted">آخر تحديث: {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</small>
-                      {% else %}
-                          <p class="text-center">سيتم إنشاء محفظتك خلال ثواني...</p>
-                      {% endif %}
-                  </div>
-                   
-                  </div>
-                </div>        
-              </div>
-            </div>
+            
 
         </div>
         

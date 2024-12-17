@@ -15,11 +15,7 @@ body{
   font-weight: 200;
   font-style: normal;
 }
-.navbar-toggler{
-    padding-top: 0.7rem;
-    padding-bottom: 0.7rem;
-    
-}
+
 nav{
     position: fixed;
     background: linear-gradient(to bottom, rgb(0, 0, 0), transparent); 
@@ -35,10 +31,13 @@ nav{
 }
 
 .navbar-toggler{
-    border: white 0.7px solid;
+    border: white 0.7px solid !important;
+    padding-top: 0.7rem !important;
+    padding-bottom: 0.7rem !important;
+  
 }
 .navbar-toggler.scrolled{
-    border: rgb(0, 0, 0) 0.7px solid;
+    border: rgb(0, 0, 0) 0.7px solid !important;
 }
 
 
@@ -388,8 +387,8 @@ main{
 }
 
 .btn-darkgreen{
-    background-color: #0f2e29;
-    color: white;
+    background-color: #0f2e29 !important;
+    color: white !important;
 }
 .btn-darkgreen:hover{
     background-color: #194d45;
@@ -599,8 +598,7 @@ main{
 }
 .dashboard-links{
     border-left: 0.5px solid rgb(209, 209, 209) ;
-    padding-left: 0.6rem;
-
+    padding-left: 0.6rem !important;
 }
 .dashboard-side a:hover{
     background-color: #5d0e04;
@@ -741,3 +739,126 @@ main{
     }
   }
   
+  /* profile css*/
+
+  .container-wrapper-profile {
+      padding: 1rem;
+  }
+
+
+
+  .btn-save {
+      background-color: #0f2e29;
+      color: white;
+      border: none;
+      transition: background-color 0.3s ease;
+  }
+
+  .btn-save:hover {
+      background-color: #761305;
+  }
+
+  .btn-edit {
+      background-color: #e4b42d;
+      color: white;
+      border: none;
+      transition: background-color 0.3s ease;
+  }
+
+  .btn-edit:hover {
+      background-color: #e67e22;
+  }
+
+  .profile-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      }
+  
+
+  .profile-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+  }
+
+  .profile-info {
+      font-size: 18px;
+      font-weight: 500;
+      color: #000000;
+      width: 100%;
+  }
+
+  .form-group {
+      margin-bottom: 20px;
+      position: relative;
+  }
+
+  .form-control {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+      width: 100%;
+      transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+      border-color: #e4b42d;
+      box-shadow: 0 0 5px rgba(228, 180, 45, 0.5);
+  }
+
+  .form-control:disabled {
+      background-color: #f7f7f7;
+      border-color: #ddd;
+  }
+
+  .alert {
+      margin-top: 20px;
+      text-align: center;
+  }
+
+  .hidden {
+      display: none;
+  }
+
+  .card-footer {
+      text-align: center;
+  }
+
+  .edit-icon {
+      border-radius: 0.5rem;
+      background-color: #e4b42d;
+      color: white;
+      padding-top:0.5rem;
+      padding-bottom:0.5rem;
+      padding-left:0.6rem;
+      padding-right:0.6rem;
+      font-size: 1rem;
+      cursor: pointer;
+  }
+
+  .edit-icon:hover {
+      background-color: #e4b32d7e;
+  }
+
+  .check-icon {
+      background-color: #0f2e29; 
+      color: white;
+      border-radius: 0.5rem;
+      padding-top:0.5rem;
+      padding-bottom:0.5rem;
+      padding-left:0.6rem;
+      padding-right:0.6rem;
+      font-size: 1rem;
+      cursor: pointer;
+  }
+
+  .check-icon:hover {
+      background-color: #0f2e2984;
+  }
+
+
