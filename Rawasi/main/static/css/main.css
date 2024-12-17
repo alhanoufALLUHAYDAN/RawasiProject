@@ -616,14 +616,24 @@ main{
 .dashboard-section1{
     height: 100%;
 }
-
+.investment-card{
+ color: #000000;
+ text-decoration: none;
+ border: 1px solid #e4e5e5;
+ transition: color ease 0.3s , border, transform ease 0.3s ;
+}
+.investment-card:hover{
+  color: #194d45;
+  transform: scale(1.03);
+  border: 1px solid #194d45;
+}
 .investment-card img{
     border-radius: 7px 7px 0 0;
     height: 9rem;
     object-fit: cover;
 }
 .investment-description{
-  min-height: 100px;
+  min-height: 80px;
 }
 .person-card img{
     border-radius: 0 7px 7px 0 ;

@@ -158,7 +158,7 @@
             {% endif %}
         {% endfor %}
       {% endif %}
-        <div id="section1" class="dashboard-section">
+        <div id="section1" class="container dashboard-section">
             {% if investment_fund %}
                 <!-- Display Investment Fund Details -->
                 <div class="p-4 h-100" style="background-color: #faf6ee; border: 2px solid #0f2e29; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
@@ -283,7 +283,7 @@
 
 
 <!-- التصويت-->
-          <div id="section2" class="dashboard-section" style="display: none;">
+          <div id="section2" class="container dashboard-section" style="display: none;">
             <div class="row gap-3 justify-content-center align-items-center">
               <div  class="col-md-3 investment-card border p-0 rounded-3" >
                 <img src="{%static 'images/building-66375_1280.jpg'%}" class="w-100"/>
@@ -326,7 +326,7 @@
             </div>
           </div>
           <!--الربح-->
-          <div id="section3" class="dashboard-section" style="display: none;">
+          <div id="section3" class="container dashboard-section" style="display: none;">
             <div class="row">
               <div class="col-md-6">
                 <h5>اجمالي قيمة الاستثمار: SAR</h5>
@@ -343,7 +343,7 @@
             </div>
           </div>
           <!--الفرص-->
-          <div id="section4" class="dashboard-section" style="display: none;">
+          <div id="section4" class="dashboard-section container" style="display: none;">
             <div class="d-flex align-items-end justify-content-end">
               <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#investmentOpportunityModal">
                 فرصة جديدة <i class="fa-solid fa-plus"></i>
@@ -425,7 +425,8 @@
 
             <div class="row gap-3 mt-3 w-100 d-flex align-items-center justify-content-center">
               {% for investment in investments%}
-              <div  class="col-md-3 investment-card border p-0 rounded-3" >
+              <a href="{% url 'investments:investment_opportunity_detail' investment.id %}" class="col-md-4 investment-card p-0 rounded-3">
+              <div>
                 {% if investment.image%}
                  <img src="{{investment.image.url}}" class="w-100"/>
                  {%else%}
@@ -434,7 +435,17 @@
                 <div class="p-2">
                   <div class="investment-description">
                     <h5>{{investment.title}}</h5>
-                    <small>{{investment.description|truncatechars:40}}</small>  
+                    <small class="text-muted">{{investment.description|truncatechars:40}}</small>  
+                  </div>
+                  <div class="d-flex justify-content-center align-items-center gap-3">
+                    <div class="d-flex flex-column my-2 row-gap-1 justify-content-center align-items-center ">
+                      <strong>{{investment.total_investment}} ر.س</strong>
+                      <small class="text-muted">المبلغ</small>
+                    </div>
+                    <div class="d-flex flex-column row-gap-1 justify-content-center align-items-center ">
+                      <strong>{{investment.expected_return}} %</strong>
+                      <small class="text-muted">الربح المتوقع</small>
+                    </div>
                   </div>
                   <div class="d-flex justify-content-between">
                     {% if investment.status == 'Open'%}
@@ -444,10 +455,10 @@
                     {%else%}
                     <div class="p-0 px-3 border border-warning text-warning rounded-pill  ">مكتملة </div>
                     {%endif%}
-                    <a href="{% url 'investments:investment_opportunity_detail' investment.id %}" class="btn btn-darkgreen p-0 px-1"><small> تفاصيل</small></a>
                   </div>
                   </div>
               </div>
+            </a>
               {%endfor%}
               <!--pagination-->
               <br/>
@@ -483,7 +494,7 @@
             </div>
           </div>
           <!--الحساب-->
-          <div id="section5" class="dashboard-section" style="display: none;">
+          <div id="section5" class="container dashboard-section" style="display: none;">
             <div class="row gap-2">
               <div  class="col-md-5 person-card d-flex border p-0 rounded-3" >
                 <img src="{%static 'images/building-66375_1280.jpg'%}" style="height: 30px; width:80px; object-fit: cover;"  class="h-100"/>
@@ -509,7 +520,7 @@
               </div>
             </div>
           </div>
-          <div id="section6" class="dashboard-section" style="display: none;">
+          <div id="section6" class="container dashboard-section" style="display: none;">
             <div class="container p-0">
                 <div class="row justify-content-center">
                     <!-- Wallet Section -->
