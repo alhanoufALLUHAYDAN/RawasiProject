@@ -32,7 +32,8 @@ class InvestmentFund(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    join_code = models.CharField(max_length=10, unique=True, blank=True, null=True) 
+    join_code = models.CharField(max_length=6, unique=True, blank=True, null=True)
+    profit_balance = models.FloatField(default=0.0)  # Track the total profit for the fund
     def __str__(self):
         return self.name
 
@@ -43,6 +44,7 @@ class Wallet(models.Model):
     last_updated = models.DateTimeField(auto_now=True)  # Tracks the last modification date
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    profit_balance = models.FloatField(default=0.0)  # Profit available for the user
     
     def __str__(self):
         return f"{self.user.username}'s Wallet"
@@ -52,7 +54,8 @@ class Transactions(models.Model):
     wallet = models.ForeignKey('Wallet', null=True, blank=True, on_delete=models.SET_NULL, related_name="transactions")
     transaction_type = models.CharField(
         max_length=50,
-        choices=[('Deposit', 'Deposit'), ('Withdrawal', 'Withdrawal'), ('Profit', 'Profit')]
+        choices=[('Deposit', 'ايداع'), ('Transfer', 'تحويل')],
+        default='Deposit',
     )
     amount = models.FloatField()
     description = models.TextField(null=True, blank=True)
