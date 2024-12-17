@@ -177,23 +177,24 @@ def transfer_to_fund(request, pk):
 
             if amount <= 0:
                 messages.error(request, "المبلغ يجب أن يكون أكبر من 0.")
-            elif wallet.balance < float(amount):  # Compare wallet balance with float version
+            elif wallet.balance < amount:  # Decimal comparison
                 messages.error(request, "ليس لديك رصيد كافي في المحفظة.")
             else:
                 # Deduct from wallet
-                wallet.balance -= float(amount)  # Convert Decimal to float for wallet
+                amount = Decimal(request.POST.get('amount', '0')).quantize(Decimal('0.01'))
                 wallet.save()
 
                 # Add to fund's total balance
-                fund.total_balance += float(amount)  # Ensure consistent type
+                fund.total_balance = Decimal(fund.total_balance).quantize(Decimal('0.01')) + amount
                 fund.save()
 
                 # Update or create an InvestorFund instance
                 investor_fund, created = InvestorFund.objects.get_or_create(
                     investor=request.user.investor,
-                    fund=fund
+                    fund=fund,
+                    defaults={"amount_invested": Decimal('0.0')}  # Set default value
                 )
-                investor_fund.amount_invested += amount  # Decimal addition
+                investor_fund.amount_invested += amount  # Add the amount
                 investor_fund.save()
 
                 # Log the transaction
@@ -201,7 +202,7 @@ def transfer_to_fund(request, pk):
                     wallet=wallet,
                     fund=fund,
                     transaction_type="Transfer",
-                    amount=float(amount),  # Log as float
+                    amount=amount,
                     description=description or f"Transfer to {fund.name}",
                     created_at=timezone.now()
                 )

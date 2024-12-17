@@ -1,6 +1,5 @@
 {% extends 'main/base.html'%}
 {%load static%}
-
 {%block title%}<title>لوحة التحكم - المستثمر</title>{%endblock%}
 {%block head%}
 <style>
@@ -11,7 +10,6 @@ body {
 </style>
 {%endblock%}
 {%block content%}
-    
 <section class="container rounded-3 dashboard shadow">
   {% if messages %}
   {% for message in messages %}
@@ -84,17 +82,13 @@ body {
                         </div>
                     </form>
                 </div>
-              </div>
-
+            </div>
             </div>
         </div>
-        
-
         </div>
-      </div>
-
-      <!-- Content Area -->
-      <div class="col-md-9 p-3">
+    </div>
+    <!-- Content Area -->
+    <div class="col-md-9 p-3">
         <div id="section1" class="dashboard-section">
             <div class="container fund-container">
                 <div class="row">
@@ -135,8 +129,6 @@ body {
                 </div>
             </div>
         </div>
-        
-      
           <div id="section2" class="dashboard-section" style="display: none;">
             <div class="row">
                 <div  class="col-md-3 investment-card border p-0 rounded-3" >
@@ -208,15 +200,36 @@ body {
             
             <div class="container p-0">
                 <!-- Section 4 Header -->
-                <h3 class="text-center mb-4" style="color: #761305;">محفظتك</h3>
-                <h1></h1>
+                <div class="wallet-header">
+                    <h2>محفظتي الرقمية</h2>
+                    <p>التحكم في أموالك بطريقة بسيطة وآمنة</p>
+                  </div>
                 <!-- Wallet Container -->
                 <div class="wallet-container mt-4 p-3 bg-white shadow-sm rounded">
-                    <h4 class="text-center" style="color: #761305;">محفظتك</h4>
                     {% if wallet %}
-                  
-                    <div class="text-center mt-3">
-            
+                    <p><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
+                    <p><strong>رصيد الأرباح:</strong> {{ wallet.profit_balance }} ريال</p>
+                    <p><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
+                {% else %}
+                    <p>سيتم انشاء محفظتك خلال ثواني...</p>
+                {% endif %}
+                </div>
+                <button class="btn btn-action btn-darkgreen add-funds mb-2" data-bs-toggle="modal" data-bs-target="#depositModal">
+                    إضافة أموال
+                </button>
+                <button class="btn btn-action btn-darkred transfer mb-2" data-bs-toggle="modal" data-bs-target="#transferModal">
+                    تحويل الأموال
+                </button>
+                <div class="text-center mt-3">
+                    <!-- Button to Trigger Modal -->
+                    <button class="btn btn-action btn-darkred withdraw mb-2" data-bs-toggle="modal" data-bs-target="#withdrawModal">
+                        سحب الأرباح
+                    </button>
+                </div>                        
+                 <!-- <a href="{% url 'investment_fund:withdraw_profit' %}" class="btn btn-darkgreen">سحب الأرباح</a> -->
+            </div>
+            <!-- Deposit Modal -->
+            <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header d-flex justify-content-between">
@@ -299,14 +312,11 @@ body {
             <p>This is where the content for Section 5 will be displayed.</p>
         </div>
         </div>        
-          
-       
-      </div>
-  
+    </div>
 </section>
-  {%endblock%}
-  {%block script%}
-  <script>
+{%endblock%}
+{%block script%}
+<script>
     // Handle the section content change
     const navLinks = document.querySelectorAll('.nav-link-dashboard');
     const sections = document.querySelectorAll('.dashboard-section');
