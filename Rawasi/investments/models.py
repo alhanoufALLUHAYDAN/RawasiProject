@@ -38,17 +38,23 @@ class InvestmentOpportunity(models.Model):
 
     def __str__(self): 
         return self.title
+    
 
 
 class Voting(models.Model):
     APPROVAL_CHOICES = [
         ('Accepted', 'Accepted'), 
-        ('Rejected', 'Rejected'),  
+        ('Rejected', 'Rejected'),
+        ('Pending', 'Pending') ,
     ]
-
+    VOTE_TYPE_CHOICES = [
+        ('Buy', 'Buy'),
+        ('Sell', 'Sell'),
+    ]
     opportunity = models.ForeignKey('InvestmentOpportunity', on_delete=models.CASCADE, related_name='votes')  
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE) 
-    vote = models.CharField(max_length=10, choices=APPROVAL_CHOICES, default='Rejected') 
+    vote = models.CharField(max_length=10, choices=APPROVAL_CHOICES, default='Pending') 
+    vote_type = models.CharField(max_length=4, choices=VOTE_TYPE_CHOICES, default='Buy')
     required_approval_percentage = models.FloatField(default=70.0)  
     voting_start_time = models.DateTimeField(default=datetime.now)
     voting_end_time = models.DateTimeField(default=datetime.now)
@@ -56,24 +62,22 @@ class Voting(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        unique_together = ('user', 'opportunity')  
-
     def __str__(self):
         return f"{self.user.username} voted {self.vote} on {self.opportunity.title}"
 
 class BuySellTransaction(models.Model):
     TRANSACTION_TYPE_CHOICES = [
-        ('Buy', 'Buy'), 
+        ('Buy', 'Buy'),
         ('Sell', 'Sell'), 
     ]
+    
     opportunity = models.ForeignKey(InvestmentOpportunity, on_delete=models.CASCADE, related_name='buy_sell_transactions') 
     transaction_type = models.CharField(max_length=4, choices=TRANSACTION_TYPE_CHOICES) 
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     transaction_date = models.DateTimeField(auto_now_add=True) 
     status = models.CharField(max_length=50, choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')],default='Pending') 
-    required_approval_percentage = models.FloatField(default=70.0)
 
     def __str__(self):
         return f"{self.get_transaction_type_display()} Transaction for {self.opportunity.title}"
 
+    

@@ -6,7 +6,14 @@ from accounts.models import Leader
 from django.contrib import messages
 from investments.forms import InvestmentOpportunityForm
 from datetime import datetime
-from .models import InvestorFund
+from .models import InvestorFund, Voting , BuySellTransaction
+from django.utils import timezone 
+from datetime import timedelta
+from accounts.models import CustomUser , Investor
+from django.http import JsonResponse
+from django.core.exceptions import PermissionDenied
+
+
 # Create your views here.
 
 @login_required
@@ -24,14 +31,13 @@ def add_investment_opportunity(request):
         company_name = request.POST.get('company_name')
         investment_type = request.POST.get('investment_type')
         total_investment = request.POST.get('total_investment')
-        required_approval_percentage = request.POST.get('required_approval_percentage')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         expected_return = request.POST.get('expected_return')
         pdf_file = request.FILES.get('pdf_file')
         image = request.FILES.get('image')
 
-        if not all([title, description, company_name, investment_type, total_investment, required_approval_percentage, start_date, end_date, expected_return]):
+        if not all([title, description, company_name, investment_type, total_investment, start_date, end_date, expected_return]):
             messages.error(request, "جميع الحقول مطلوبة.")
             return redirect('investments:add_investment_opportunity')
 
@@ -91,6 +97,18 @@ def investment_opportunity_detail(request, id):
     fund = investment_opportunity.fund
     is_leader = hasattr(request.user, 'leader') and request.user.leader.managed_fund == fund
     is_investor = InvestorFund.objects.filter(investor__user=request.user, fund=fund).exists()
+    total_votes = investment_opportunity.votes.count()
+    accepted_votes = investment_opportunity.votes.filter(vote='Accepted').count()
+
+    if total_votes > 0:
+        approval_percentage = (accepted_votes / total_votes) * 100
+    else:
+        approval_percentage = 0  
+
+    user_vote = None
+    if request.user.is_authenticated:
+        user_vote = investment_opportunity.votes.filter(user=request.user).first()
+
 
     if not is_leader and not is_investor:
         messages.error(request, "ليس لديك صلاحية للوصول إلى تفاصيل هذه الفرصة الاستثمارية.")
@@ -98,6 +116,8 @@ def investment_opportunity_detail(request, id):
 
     return render(request, 'investments/investment_opportunity_detail.html', {
         'investment_opportunity': investment_opportunity,
+        'approval_percentage': approval_percentage,
+        'user_vote': user_vote,
     })
 
 @login_required
@@ -144,4 +164,57 @@ def update_investment_opportunity(request, id):
         form = InvestmentOpportunityForm(instance=investment_opportunity)
     
     return render(request, 'investments/update_investment_opportunity.html', {'form': form})
+
+
+def add_voting(request):
+    fund = InvestmentFund.objects.filter(leader__user=request.user).first()
+    if not fund:
+        raise PermissionDenied("You are not authorized to create a vote for any investment opportunity.")
+
+    if request.method == "POST":
+        opportunity_id = request.POST.get('opportunity')
+        required_approval_percentage = request.POST.get('required_approval_percentage')
+        voting_start_time = request.POST.get('voting_start_time')
+        voting_end_time = request.POST.get('voting_end_time')
+        total_amount = request.POST.get('total_amount')
+        vote_type = request.POST.get('vote_type')  
+
+        try:
+            opportunity = InvestmentOpportunity.objects.get(id=opportunity_id)
+            
+            if opportunity.fund != fund:
+                raise PermissionDenied("You do not have permission to vote for this investment opportunity.")
+            
+            voting_start_time = datetime.strptime(voting_start_time, '%Y-%m-%dT%H:%M')
+            voting_end_time = datetime.strptime(voting_end_time, '%Y-%m-%dT%H:%M')
+            
+            if voting_start_time >= voting_end_time:
+                messages.error(request, "تاريخ بداية التصويت يجب أن يكون قبل تاريخ نهايته.")
+                return redirect('add_voting')
+
+            voting = Voting(
+                opportunity=opportunity,
+                user=request.user,
+                required_approval_percentage=required_approval_percentage,
+                voting_start_time=voting_start_time,
+                voting_end_time=voting_end_time,
+                total_amount=total_amount,
+                vote_type=vote_type, 
+            )
+            voting.save()
+
+            messages.success(request, "تم إضافة التصويت بنجاح!")
+            return redirect('investments:add_voting')
+
+        except InvestmentOpportunity.DoesNotExist:
+            messages.error(request, "الفرصة الاستثمارية المحددة غير موجودة.")
+            return redirect('investments:add_voting')
+        except PermissionDenied as e:
+            messages.error(request, str(e))
+            return redirect('investments:add_voting')
+
+    opportunities = InvestmentOpportunity.objects.filter(fund=fund, status='Open')
+    
+    return render(request, 'investments/add_voting.html', {'opportunities': opportunities})
+
 
