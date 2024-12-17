@@ -8,11 +8,11 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import random
 import string
-from investment_fund.models import InvestmentFund, Wallet
-from investment_fund.forms import InvestmentFundForm 
+from investment_fund.models import InvestmentFund, Wallet 
 from investments.models import InvestmentFund
-from investments.models import InvestorFund
+from investments.models import InvestorFund , InvestmentOpportunity
 from accounts.models import Investor
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -63,6 +63,7 @@ def fund_dashboard_view(request):
     # Check if an investment fund exists for the leader
     try:
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)
+        print("the investment fund",investment_fund)
     except InvestmentFund.DoesNotExist:
         investment_fund = None
     # Fetch the user's wallet
@@ -75,6 +76,7 @@ def fund_dashboard_view(request):
             investment_fund.save()
             messages.success(request, f"تم إنشاء رمز الانضمام: {new_code}")
     else:
+        print("here inside else")
         new_code = investment_fund.join_code if investment_fund else None
 
     context = {
@@ -85,7 +87,7 @@ def fund_dashboard_view(request):
     }
     return render(request, 'dashboard/fund_dashboard.html', context)
 
-    
+@login_required
 def investor_dashboard_view(request):
     if not request.user.is_authenticated:
         messages.error(request, 'مصرح فقط للأعضاء المسجلين', "danger")
@@ -93,26 +95,63 @@ def investor_dashboard_view(request):
 
     # Ensure wallet exists for the user
     wallet, created = Wallet.objects.get_or_create(user=request.user)
+    transactions = wallet.transactions.all()
+    fund = InvestmentFund.objects.filter(leader=request.user.leader).first()
+
+    # Fetch funds the investor has joined
+    joined_funds = InvestorFund.objects.filter(investor__user=request.user)
+
+    # Prepare profit data for each fund the investor has joined
+    profit_data = []
+    for investor_fund in joined_funds:
+        # Profit calculation logic based on expected return
+        opportunity = InvestmentOpportunity.objects.filter(fund=investor_fund.fund).first()
+        if opportunity:
+            investment_period_days = (opportunity.end_date - opportunity.start_date).days
+            profit = (investor_fund.amount_invested * opportunity.expected_return * investment_period_days) / 365 / 100
+            profit_data.append({
+                "fund_name": investor_fund.fund.name,
+                "amount_invested": investor_fund.amount_invested,
+                "profit": round(profit, 2),
+                "status": investor_fund.status
+            })
+        else:
+            profit_data.append({
+                "fund_name": investor_fund.fund.name,
+                "amount_invested": investor_fund.amount_invested,
+                "profit": 0.0,
+                "status": investor_fund.status
+            })
+
+    # Handle joining a new fund via join_code
     if request.method == 'POST':
-        join_code = request.POST.get('join_code', None) 
-
+        join_code = request.POST.get('join_code', None)
         if join_code:
-
             try:
-
                 fund = InvestmentFund.objects.get(join_code=join_code, is_active='Active')
                 if InvestorFund.objects.filter(fund=fund, investor__user=request.user).exists():
                     messages.warning(request, 'أنت بالفعل عضو في هذا الصندوق.', "warning")
                 else:
+                    print("the user is", request.user)
                     investor = Investor.objects.get(user=request.user)
                     InvestorFund.objects.create(
                         fund=fund,
-                        investor=investor, 
-                        amount_invested=0 
+                        investor=investor,
+                        amount_invested=0
                     )
-
                     messages.success(request, f'تم الانضمام بنجاح إلى الصندوق: {fund.name}', "success")
             except InvestmentFund.DoesNotExist:
                 messages.error(request, 'كود الانضمام غير صحيح أو الصندوق غير نشط.', "danger")
 
-    return render(request, 'dashboard/investor_dashboard.html', {"investor": request.user,"wallet": wallet,})
+    return render(
+        request, 
+        'dashboard/investor_dashboard.html', 
+        {
+            "investor": request.user, 
+            "wallet": wallet,
+            "transactions": transactions,
+            "fund": fund,
+            "joined_funds": joined_funds,
+            "profit_data": profit_data  
+        }
+    )

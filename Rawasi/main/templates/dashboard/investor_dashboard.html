@@ -26,7 +26,7 @@ body {
       <!-- Sidebar -->
       <div class="col-md-3 p-3 d-flex flex-column justify-content-between dashboard-side">
         <div>
-          <h4 class=" mb-4 text-center ">مرحبا <span>{{investor.full_name}}</span></h4>
+          <h4 class=" mb-4 text-center ">مرحبا <span>{{investor.user.full_name}}</span></h4>
           <ul class="nav flex-column dashboard-links">
               <li class="nav-item">
                   <a class="nav-link-dashboard active" href="#" data-content="section1">الصناديق</a>
@@ -76,71 +76,48 @@ body {
       </div>
       <!-- Content Area -->
       <div class="col-md-9 p-3">
-          <div id="section1" class="dashboard-section">
+        <div id="section1" class="dashboard-section">
             <div class="container fund-container">
                 <div class="row">
-                  <!-- نصف الجدول -->
-                  <div class="col-md-6">
-                    <h3>الصناديق الاستثمارية</h3>
-                    <table class="table table-striped fund-table">
-                      <thead>
-                        <tr>
-                          <th>اسم الصندوق</th>
-                          <th>المبلغ المستثمر</th>
-                          <th>الحالة</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr class="fund-row" data-fund-id="1">
-                          <td>صندوق النمو</td>
-                          <td>100,000 ر.س</td>
-                          <td>قيد التنفيذ</td>
-                        </tr>
-                        <tr class="fund-row" data-fund-id="2">
-                          <td>صندوق الدخل الثابت</td>
-                          <td>200,000 ر.س</td>
-                          <td>مغلق</td>
-                        </tr>
-                        <tr class="fund-row" data-fund-id="3">
-                          <td>صندوق العقارات</td>
-                          <td>300,000 ر.س</td>
-                          <td>قيد التنفيذ</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-              
-                  <!-- نصف التفاصيل -->
-                  <div class="col-md-6" id="fund-details">
-                    <h3>تفاصيل الصندوق</h3>
-                    <div class="details-placeholder">
-                      <p>الرجاء اختيار صندوق من الجدول لعرض التفاصيل.</p>
+                    <!-- Half Table -->
+                    <div class="col-md-6">
+                        <h3>الصناديق الاستثمارية</h3>
+                        <table class="table table-striped fund-table">
+                            <thead>
+                                <tr>
+                                    <th>اسم الصندوق</th>
+                                    <th>المبلغ المستثمر</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if joined_funds %}
+                                    {% for investor_fund in joined_funds %}
+                                        <tr class="fund-row" data-fund-id="{{ investor_fund.fund.id }}">
+                                            <td>{{ investor_fund.fund.name }}</td>
+                                            <td>{{ investor_fund.amount_invested }} ر.س</td>
+                                            <td>
+                                                {% if investor_fund.fund.is_active == 'Active' %}
+                                                    <span class="text-success">نشط</span>
+                                                {% else %}
+                                                    <span class="text-danger">غير نشط</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">لم تنضم إلى أي صندوق بعد.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
                     </div>
-                  </div>
                 </div>
-              </div>
-              
-              <!-- Modal for Showing More Details -->
-              <div class="modal fade" id="fundModal" tabindex="-1" aria-labelledby="fundModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="fundModalLabel">تفاصيل الصندوق</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" id="modal-body-content">
-                      <!-- Dynamic content will go here -->
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-          <!--<div class="text-center dashboard-section1  d-flex flex-column justify-content-center align-items-center">
-              <h3>لا يوجد صناديق حاليا</h3>
-              <p class="text-muted"> انضم الان </p>
-              <button class="btn btn-darkgreen">انضمام</button>
-            </div>-->
-          </div>
+            </div>
+        </div>
+        
+      
           <div id="section2" class="dashboard-section" style="display: none;">
             <div class="row">
                 <div  class="col-md-3 investment-card border p-0 rounded-3" >
@@ -160,105 +137,171 @@ body {
               </div>
           </div>
           <div id="section3" class="dashboard-section" style="display: none;">
-              <h3>Content for Section 3</h3>
-              <p>This is where the content for Section 3 will be displayed.</p>
-          </div>
+            <div class="container p-0">
+                <!-- Section 3 Header -->
+                <div class="text-center mb-4">
+                    <h2 style="color: #761305;">تفاصيل الأرباح</h2>
+                    <p>سحب الأرباح المحققة من استثماراتك</p>
+                </div>
+        
+                <!-- Profit Table -->
+                <div class="profit-container p-4 bg-white shadow-sm rounded">
+                    <table class="table table-striped text-center">
+                        <thead>
+                            <tr>
+                                <th>اسم الصندوق</th>
+                                <th>المبلغ المستثمر</th>
+                                <th>الأرباح المحققة</th>
+                                <th>الحالة</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if profit_data %}
+                                {% for data in profit_data %}
+                                <tr>
+                                    <td>{{ data.fund_name }}</td>
+                                    <td>{{ data.amount_invested }} ر.س</td>
+                                    <td>{{ data.profit }} ر.س</td>
+                                    <td>{{ data.status }}</td>
+                                    <td>
+                                        <form method="POST" action="{% url 'investment_fund:withdraw_profit' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="fund_name" value="{{ data.fund_name }}">
+                                            <input type="hidden" name="profit" value="{{ data.profit }}">
+                                            <button type="submit" class="btn btn-darkgreen">سحب الأرباح</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">لا توجد بيانات أرباح حاليا.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
           <div id="section4" class="dashboard-section" style="display: none;">
             <div class="container p-0">
                 <!-- Section 4 Header -->
-                <h3 class="text-center mb-4" style="color: #761305;">محفظتك</h3>
-                <h1></h1>
+                <div class="wallet-header text-center mb-4">
+                    <h2 style="color: #761305;">محفظتي الرقمية</h2>
+                    <p>التحكم في أموالك بطريقة بسيطة وآمنة</p>
+                </div>
+                
                 <!-- Wallet Container -->
-                <div class="wallet-container mt-4 p-3 bg-white shadow-sm rounded">
-                    <h4 class="text-center" style="color: #761305;">محفظتك</h4>
+                <div class="wallet-container p-4 bg-white shadow-sm rounded">
                     {% if wallet %}
-                        <p class="text-right"><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
-                        <p class="text-right"><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
-                    {% else %}
-                        <p class="text-center">سيتم انشأ محفظتك خلال ثواني...</p>
-                    {% endif %}
-                    <!-- Wallet Actions -->
-                    <div class="text-center mt-3">
-                        <a href="{% url 'investment_fund:wallet_view' %}" class="btn btn-darkgreen">عرض المحفظة</a>
-                    </div>
-                </div>
-            </div>
-            <div class="container wallet-container">
-              <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-6">
-                  <!-- Wallet Card -->
-                  <div class="card-wallet">
-                    <div class="wallet-header">
-                      <h2>محفظتي الرقمية</h2>
-                      <p>التحكم في أموالك بطريقة بسيطة وآمنة</p>
-                    </div>
-            
-                    <!-- Wallet Balance -->
-                    <div class="balance">
-                      <p>الرصيد الحالي: <span>١,٢٣٤.٥٦ ر.س</span></p>
-                    </div>
-            
+                    <p><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
+                    <p><strong>رصيد الأرباح:</strong> {{ wallet.profit_balance }} ريال</p>
+                    <p><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
+                {% else %}
+                    <p>سيتم انشاء محفظتك خلال ثواني...</p>
+                {% endif %}
                     <!-- Action Buttons -->
-                    <div class="action-buttons">
-                      <button class="btn btn-action btn-darkgreen add-funds" data-bs-toggle="modal" data-bs-target="#depositModal">إضافة أموال</button>
-                      <button class="btn btn-action btn-darkred withdraw">سحب الأموال</button>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-action btn-darkgreen add-funds mb-2" data-bs-toggle="modal" data-bs-target="#depositModal">
+                            إضافة أموال
+                        </button>
+                        <button class="btn btn-action btn-darkred transfer mb-2" data-bs-toggle="modal" data-bs-target="#transferModal">
+                            تحويل الأموال
+                        </button>
+                        <div class="text-center mt-3">
+                            <!-- Button to Trigger Modal -->
+                            <button class="btn btn-action btn-darkred withdraw mb-2" data-bs-toggle="modal" data-bs-target="#withdrawModal">
+                                سحب الأرباح
+                            </button>
+                        </div>                        
+                         <!-- <a href="{% url 'investment_fund:withdraw_profit' %}" class="btn btn-darkgreen">سحب الأرباح</a> -->
                     </div>
-                  </div>
                 </div>
-              </div>
             </div>
-            
-            <!-- Deposit Modal -->
-            <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
+        </div>
+        
+        <!-- Deposit Modal -->
+        <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
                 <div class="modal-content">
-                  <div class="modal-header d-flex justify-content-between">
-                    <h5 class="modal-title" id="depositModalLabel">إضافة أموال إلى المحفظة</h5>
-                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <form>
-                      <!-- Deposit Amount -->
-                      <div class="mb-3">
-                        <label for="deposit-amount" class="form-label">المبلغ</label>
-                        <input type="number" class="form-control" id="deposit-amount" placeholder="أدخل المبلغ" required>
-                      </div>
-            
-                      <!-- Payment Methods -->
-                      <div class="mb-3">
-                        <label for="payment-method" class="form-label">طريقة الإيداع</label>
-                        <select class="form-select" id="payment-method">
-                          <option selected>اختر طريقة الإيداع</option>
-                          <option value="bank">تحويل بنكي</option>
-                          <option value="credit-card">بطاقة ائتمانية</option>
-                        </select>
-                      </div>
-            
-                      <!-- Payment Details -->
-                      <div class="payment-method-details">
-                        <div id="bank-details" class="payment-details"  style="display: none;">
-                          <label for="bank-account" class="form-label">رقم الحساب البنكي</label>
-                          <input type="text" class="form-control" id="bank-account" placeholder="أدخل رقم الحساب" />
+                    <div class="modal-header d-flex justify-content-between">
+                        <h5 class="modal-title" id="depositModalLabel">إضافة أموال إلى المحفظة</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    <form method="POST" action="{% url 'investment_fund:deposit_to_wallet' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">المبلغ</label>
+                            <input type="number" name="amount" id="amount" class="form-control" placeholder="أدخل المبلغ" required>
                         </div>
-                        <div id="credit-card-details" class="payment-details"  style="display: none;">
-                          <label for="credit-card-number" class="form-label">رقم البطاقة الائتمانية</label>
-                          <div class="d-flex flex-column gap-1">
-                          <input type="text" class="form-control" id="credit-card-number" placeholder="أدخل رقم البطاقة" />
-                          <input type="date" class="form-control" id="credit-card-number" placeholder="أدخل تاريخ الانتهاء" />
-                          <input type="text" class="form-control" id="credit-card-number" placeholder="أدخل الرقم السري" />
-                          </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">الوصف</label>
+                            <input type="text" name="description" id="description" class="form-control" placeholder="اختياري">
                         </div>
-                      </div>
-            
-                      <button type="submit" class="btn btn-darkgreen w-100 mt-3">إتمام الإيداع</button>
+                        <button type="submit" class="btn btn-darkgreen w-100 mt-3">إتمام الإيداع</button>
                     </form>
-                  </div>
+                                    
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header d-flex justify-content-between">
+                        <h5 class="modal-title" id="withdrawModalLabel">تحويل أموال إلى الصندوق</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    {% if fund %}
+    <form method="POST" action="{% url 'investment_fund:transfer_to_fund' pk=fund.id %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="withdraw-amount" class="form-label">المبلغ</label>
+            <input type="number" name="amount" class="form-control" id="withdraw-amount" placeholder="أدخل المبلغ" required>
+        </div>
+        <button type="submit" class="btn btn-darkred w-100">إتمام التحويل</button>
+    </form>
+{% else %}
+    <p class="text-center">لم يتم العثور على صندوق الاستثمار الخاص بك.</p>
+{% endif %}
+                </div>
+            </div>
+        </div>
                 </div>
               </div>
+              <!-- Withdraw Profit Modal -->
+<div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="withdrawModalLabel">سحب الأرباح</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
-          </div>   
-        </div>        
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form method="POST" action="{% url 'investment_fund:withdraw_profit' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">المبلغ المراد سحبه</label>
+                        <input type="number" name="amount" id="amount" class="form-control" placeholder="أدخل المبلغ" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">الوصف (اختياري)</label>
+                        <input type="text" name="description" id="description" class="form-control" placeholder="أدخل وصف السحب">
+                    </div>
+                    <button type="submit" class="btn btn-darkgreen w-100">تأكيد السحب</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
           <div id="section5" class="dashboard-section" style="display: none;">
               <h3>Content for Section 5</h3>
               <p>This is where the content for Section 5 will be displayed.</p>
@@ -268,25 +311,6 @@ body {
 </section>
   {%endblock%}
   {%block script%}
-  
-  <script>
-    // Show relevant payment details based on selected method
-    document.getElementById('payment-method').addEventListener('change', function() {
-      const method = this.value;
-      const paymentDetails = document.querySelectorAll('.payment-details');
-      paymentDetails.forEach(detail => {
-        detail.style.display = 'none';
-      });
-  
-      if (method === 'bank') {
-        document.getElementById('bank-details').style.display = 'block';
-      } else if (method === 'credit-card') {
-        document.getElementById('credit-card-details').style.display = 'block';
-      } else if (method === 'e-wallet') {
-        document.getElementById('e-wallet-details').style.display = 'block';
-      }
-    });
-  </script>
   <script>
     // Handle the section content change
     const navLinks = document.querySelectorAll('.nav-link-dashboard');
@@ -318,53 +342,5 @@ body {
         });
     });
 </script>
-<script>
-    document.querySelectorAll('.fund-row').forEach(row => {
-      row.addEventListener('click', function() {
-        // Get fund ID
-        const fundId = row.getAttribute('data-fund-id');
-        
-        // Fetch fund details (you can modify this to fetch from an API or server)
-        const fundDetails = getFundDetails(fundId);
-        
-        // Populate details section with data
-        document.getElementById('fund-details').innerHTML = `
-          <h3>${fundDetails.name}</h3>
-          <p><strong>المبلغ المستثمر:</strong> ${fundDetails.amount}</p>
-          <p><strong>الحالة:</strong> ${fundDetails.status}</p>
-          <p><strong>تاريخ التأسيس:</strong> ${fundDetails.startDate}</p>
-          <p><strong>التوزيعات المتوقعة:</strong> ${fundDetails.expectedReturns}</p>
-        `;
-      });
-    });
-    
-    // Function to simulate fetching fund details
-    function getFundDetails(id) {
-      const funds = {
-        1: {
-          name: "صندوق النمو",
-          amount: "100,000 ر.س",
-          status: "قيد التنفيذ",
-          startDate: "يناير 2023",
-          expectedReturns: "15% سنويًا"
-        },
-        2: {
-          name: "صندوق الدخل الثابت",
-          amount: "200,000 ر.س",
-          status: "مغلق",
-          startDate: "مارس 2021",
-          expectedReturns: "7% سنويًا"
-        },
-        3: {
-          name: "صندوق العقارات",
-          amount: "300,000 ر.س",
-          status: "قيد التنفيذ",
-          startDate: "أبريل 2022",
-          expectedReturns: "12% سنويًا"
-        }
-      };
-    
-      return funds[id];
-    }
-  </script>
+
 {%endblock%}
