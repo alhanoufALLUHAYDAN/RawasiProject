@@ -1,5 +1,26 @@
 {% extends 'main/base.html'%}
 {%load static%}
+{%block head%}
+<style>
+  body, html {
+    overflow-x: hidden;
+
+  }
+  a{
+    text-shadow: none;
+  }
+
+  .know-btn{
+    background-color: #FAF6EE;
+    color: black;
+    transition: ease 0.3s background-color;
+  }
+  .know-btn:hover {
+    background-color: #faefdb;
+    color: black;
+  }
+</style>
+{%endblock%}
 
 {%block title%}<title>الرئيسية</title>{%endblock%}
 {%block content%}
@@ -10,13 +31,20 @@
         Your browser does not support the video tag.
     </video>
     <div class="carousel-caption">
-        <h5>رواسي لادارة صناديق العائلة الاستثمارية</h5>
-        <p>منصة تسهل عميلة ادارة الصناديق الاستثمارية للعائلة .</p>
+        <h3>رواسي لادارة صناديق العائلة الاستثمارية</h3>
+        <p class="mb-5">منصة تسهل عملية ادارة الصناديق الاستثمارية للعائلة .</p>
+        <div class="d-flex justify-content-center gap-4">
+          <a href="{%url 'accounts:choose_role'%}" class="btn btn-darkgreen rounded-3 px-5 border-white">سجل الآن</a>
+          <a href="#know-more"  class="btn know-btn rounded-3 d-flex justify-content-center align-items-center gap-2">
+            <span>تعرف أكثر</span>
+            <i class="fa-solid fa-angles-down"></i>
+          </a>
+        </div>
     </div>
 </div>
-<section class="container">
-    <div class="section-title text-center mb-5">
-      <h2>كيف تعمل منصة رواسي؟</h2>
+<section id="know-more" class="container mt-5">
+    <div class="section-title text-center mb-5 mt-5">
+      <h2  >كيف تعمل منصة رواسي؟</h2>
     </div>
   
     <div class="how-it-works-description text-center mb-5">
@@ -26,6 +54,7 @@
       <p>
         نحن نوفر لك الأدوات لإدارة محفظتك العائلية بذكاء وفعالية لتحقيق أهدافك المالية معًا.
       </p>
+      
     </div>
   
     <div class="row">
@@ -34,7 +63,7 @@
         <div class="step-card shadow-lg p-4 rounded position-relative">
           <h5 class="step-title">إنشاء وإدارة المحفظة العائلية</h5>
           <p class="step-description">
-            كقائد عائلة، يمكنك إنشاء المحفظة العائلية وإضافة أموال إلى المحفظة لضمان وجود الأموال الكافية للاستثمار في الفرص المناسبة.
+            كقائد عائلة، يمكنك إنشاء المحفظة العائلية وإضافة أموال إلى المحفظة للاستثمار في الفرص المناسبة.
           </p>
         </div>
       </div>
@@ -76,31 +105,34 @@
   
   
 
-    <div class="container-fluid  mt-3">
-        <div class="row d-flex justify-content-center pt-2 pb-5">
-            <div class="col-md-2 featurs-col-color2">
+  <div class="container-fluid  mt-3">
+        <div class=" d-flex justify-content-center  row-cube row ">
+            <div class="col-md-2 featurs-col-color1">
             </div>
             <div class="col-md-1 featurs-col-color1"></div>
 
-            <div class="col-md-3 bg-body-tertiary d-flex flex-column justify-content-center align-items-center gap-3">
-                <h1>مميزاتنا</h1>
-                <p>تتميز خدماتنا بالاتي: </p>
+            <div class="col-md-3 featurs-col-color2 d-flex flex-column justify-content-center align-items-center gap-3">
+                <h1 class=" pt-2">مميزاتنا</h1>
+                <p class="mb-5 featurs-text" >تتميز خدماتنا بالاتي: </p>
             </div>
-            <div class="cube-container col-md-6 bg-body-tertiary">             
+            <div class="cube-container col-md-6 featurs-col-color2  ">             
                   <div class="container-cube ">
                     <div class="cube ">
-                      <div class="face front  text-white">
-                        <img src="{% static 'images/face1.png' %}" alt="Automate" class="face-image w-100 h-100">
+                      <div class="face front d-flex p-0 m-0 flex-column justify-content-center text-white align-items-center">
+                        <h1 class="cube-text">اتمتة العمليات</h1>
                     </div>
-                      <div class="face back text-white">
-                        <img src="{% static 'images/face2.png' %}" alt="Automate" class="face-image w-100 h-100">
+                      <div class="face back   d-flex p-0 m-0 flex-column justify-content-center text-white align-items-center">
+                        <h1 class="cube-text">توفير خدمة التصويت</h1>
+
                     </div>
-                      <div class="face top  text-white"></div>
-                      <div class="face right  text-white">        
-                        <img src="{% static 'images/face3.png' %}" alt="Automate" class="face-image w-100 h-100">
+                      <div class="face top  text-white  "></div>
+                      <div class="face right  d-flex p-0 m-0 flex-column justify-content-center text-white align-items-center">     
+                        <h1 class="cube-text">الامان والخصوصية</h1>
+   
                       </div>
-                      <div class="face left  text-white">
-                        <img src="{% static 'images/face4.png' %}" alt="Automate" class="face-image w-100 h-100">
+                      <div class="face left  text-white  d-flex p-0 m-0 flex-column justify-content-center text-white align-items-center">
+                        <h1 class="cube-text">التحكم المتكامل</h1>
+
                       </div>
                       <div class="face bottom text-white"></div>
                     </div>
@@ -108,5 +140,7 @@
             </div>
     </div>
   </div>
+
+  
 
   {%endblock%}

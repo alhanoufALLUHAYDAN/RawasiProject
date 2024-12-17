@@ -18,7 +18,11 @@
 <body>
     <nav class="navbar  fixed-top" id="navbar">
         <div class="container-fluid">
-          <a class="navbar-brand noto-kufi-arabic-font" id="navbar-brand" href="/">رواسي</a>
+          <div class="d-flex justify-content-center align-items-center gap-1">
+            <img src="{% static 'images/logo-rawas.png'%}" style="height: 20px;" />  
+            <a class="navbar-brand noto-kufi-arabic-font m-0" id="navbar-brand" href="/">رواسي</a>
+          </div>
+
           <div class="d-flex gap-3 justify-content-center align-items-center">
             {% if request.user.is_authenticated%}
             <div class="d-flex gap-2">
@@ -51,7 +55,7 @@
             <div class="offcanvas-header d-flex justify-content-between">
               <button type="button" class="btn-close m-0" data-bs-dismiss="offcanvas" aria-label="Close"></button>
               <h5 class="offcanvas-title" id="offcanvasNavbarLabel">رواسي</h5>
-
+              <img src="{% static 'images/logo-rawas.png'%}" style="height: 20px;" />
             </div>
             <div class="offcanvas-body">
               <ul class="navbar-nav flex-grow-1 pe-3">
@@ -138,7 +142,7 @@
                     <span class="fs-5">رواسي</span>
                   </a>
                   <ul class="list-unstyled small">
-                    <li class="mb-2">صنع بحب من قبل  <a class="footer-link-text" href="/docs/5.3/about/team/">فريق رواسي</a></li>
+                    <li class="mb-2">صنع من قبل  <a class="footer-link-text" href="/docs/5.3/about/team/">فريق رواسي</a></li>
                   </ul>
                 </div>
                 <div class="col-6 col-lg-2 offset-lg-1 mb-3">
@@ -151,12 +155,8 @@
                 <div class="col-6 col-lg-2 mb-3">
                   <h5>وصول سريع</h5>
                   <ul class="list-unstyled">
-                    {% if request.user.is_authenticated%}
-                    <li class="mb-2"><a class="footer-link-text text-danger" href="{%url 'accounts:logout'%}">تسجيل خروج</a></li>
-                    {%else%}
                     <li class="mb-2"><a class="footer-link-text" href="{%url 'accounts:choose_role'%}">تسجيل جديد</a></li>
                     <li class="mb-2"><a class="footer-link-text" href="{%url 'accounts:login'%}">تسجيل دخول</a></li>
-                    {%endif%}
 
                   </ul>
                 </div>
