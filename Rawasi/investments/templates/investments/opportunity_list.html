@@ -1,0 +1,71 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4" style="color: #761305;">الفرص الاستثمارية المتاحة</h2>
+    {% if messages %}
+    {% for message in messages %}
+    {% if not request.session.show_message or message.tags != request.session.show_message %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}" role="alert">
+            {{ message }}
+        </div>
+        {% endif %}
+    {% endfor %}
+  {% endif %}
+
+    <div class="row">
+        {% for opportunity in opportunities %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title" style="color: #761305;">{{ opportunity.title }}</h5>
+                <p class="card-text">{{ opportunity.description|slice:":100" }}...</p>
+                <p class="card-text"><strong>المبلغ الإجمالي:</strong> {{ opportunity.total_investment }} ريال</p>
+                <p class="card-text"><strong>العائد المتوقع:</strong> {{ opportunity.expected_return }}%</p>
+                <p class="card-text"><strong>تاريخ البداية:</strong> {{ opportunity.start_date|date:"Y-m-d" }}</p>
+                <p class="card-text"><strong>تاريخ الانتهاء:</strong> {{ opportunity.end_date|date:"Y-m-d" }}</p>
+                <p class="card-text"><strong>النسبة المطلوبة للموافقة:</strong> {{ opportunity.required_approval_percentage }}%</p>
+                <p class="card-text"><strong>نسبة الموافقة على الشراء:</strong> {{ opportunity.approval_percentage }}%</p>
+
+                <p class="card-text"><strong>التصويتات المقبولة:</strong> {{ opportunity.accepted_votes }}</p>
+                <p class="card-text"><strong>التصويتات المرفوضة:</strong> {{ opportunity.rejected_votes }}</p>
+                <p class="card-text"><strong>التصويتات المعلقة:</strong> {{ opportunity.pending_votes }}</p>
+
+                <p class="card-text">
+                    {% if opportunity.status == 'Closed' %}
+                        <span class="badge bg-dark">تم إغلاق التصويت</span>
+                    {% elif opportunity.status == 'Open' %}
+                        {% if opportunity.pending_votes > 0 %}
+                            <span class="badge bg-warning">التصويت قيد الانتظار</span>
+                        {% else %}
+                            <span class="badge bg-success">التصويت مكتمل</span>
+                        {% endif %}
+                    {% endif %}
+                </p>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'investments:investment_opportunity_detail' id=opportunity.id %}" class="btn btn-darkgreen">تفاصيل الفرصة</a>
+
+                    {% if opportunity.status == 'Open' %}
+                        <form method="POST" action="{% url 'investments:vote_on_opportunity' id=opportunity.id %}">
+                            {% csrf_token %}
+                            <button type="submit" name="vote_choice" value="Accepted" class="btn btn-success">أوافق</button>
+                            <button type="submit" name="vote_choice" value="Rejected" class="btn btn-danger">أرفض</button>
+                        </form>
+                    {% elif opportunity.status == 'Closed' %}
+                    {% if opportunity.status == 'Closed' and request.user == opportunity.fund.leader.user %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <button type="submit" name="reopen_vote" class="btn btn-warning">إعادة فتح التصويت</button>
+                            </form>
+                        {% endif %}
+                        <span class="badge bg-dark">تم إغلاق التصويت</span>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

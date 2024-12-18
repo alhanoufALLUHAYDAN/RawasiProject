@@ -9,5 +9,7 @@ urlpatterns = [
     path('investment_opportunity/delete/<id>/', views.delete_investment_opportunity, name='delete_investment_opportunity'),
     path('update/<id>/', views.update_investment_opportunity, name='update_investment_opportunity'),
     path('add-voting/', views.add_voting, name='add_voting'),
+    path('opportunity-list/', views.opportunity_list, name='opportunity_list'),
+    path('vote/<int:id>/', views.vote_on_opportunity, name='vote_on_opportunity'),
 ]
 
