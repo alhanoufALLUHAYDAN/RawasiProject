@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from .models import Wallet, InvestmentFund, Transactions
-from investments.models import InvestorFund,InvestmentOpportunity
+from investments.models import InvestorFund,InvestmentOpportunity,BuySellTransaction
 from accounts.models import Investor
 
 def create_investment_fund(request):
@@ -50,9 +50,7 @@ def create_investment_fund(request):
 
 
 def investment_fund_detail(request, pk):
-    # Get the specific investment fund by primary key (pk)
     fund = get_object_or_404(InvestmentFund, pk=pk)
-    # Pass the fund object to the template
     return render(request, 'investment_fund/detail.html', {'fund': fund})
 
 def investment_fund_list(request):
@@ -68,9 +66,8 @@ def update_investment_fund(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, f'تم تحديث الصندوق "{fund.name}" بنجاح.')
-            return redirect('main:fund_dashboard_view')  # Redirect after successful update
+            return redirect('main:fund_dashboard_view')  
         else:
-            # Print form errors to console for debugging
             print("Form errors:", form.errors)
             messages.error(request, "يوجد خطأ في البيانات، يرجى تصحيحها.")
     else:
@@ -229,6 +226,7 @@ def transfer_to_fund(request, pk=None):
     return render(request, 'main/investor_dashboard.html', {"joined_funds": joined_funds, "fund": fund})
 
 
+from decimal import Decimal
 @login_required
 def withdraw_profit(request):
     # Fetch the wallet for the logged-in user
@@ -240,28 +238,39 @@ def withdraw_profit(request):
     # Calculate the total profit for each fund
     profit_data = []
     for investor_fund in joined_funds:
+        # Fetch the related investment opportunity for each fund
         opportunity = InvestmentOpportunity.objects.filter(fund=investor_fund.fund).first()
+        
         if opportunity:
-            # Convert expected_return to Decimal
             expected_return = Decimal(opportunity.expected_return)
-            
+
             # Calculate the profit based on the invested amount and expected return
             investment_period_days = (opportunity.end_date - opportunity.start_date).days
             profit = (investor_fund.amount_invested * expected_return * investment_period_days) / Decimal(365) / Decimal(100)
+
+            # Check if the opportunity status is 'Closed'
+            if opportunity.status == 'Closed':
+                transfer_enabled = True  # Allow the withdrawal if the status is Closed
+            else:
+                transfer_enabled = False  # Otherwise, disable it
+
             profit_data.append({
                 "fund_name": investor_fund.fund.name,
                 "amount_invested": investor_fund.amount_invested,
                 "profit": round(profit, 2),
-                "status": investor_fund.status,
-                "fund_id": investor_fund.fund.id  # Include the fund ID for withdrawal
+                "status": opportunity.status,  # Only access status if opportunity exists
+                "fund_id": investor_fund.fund.id,
+                "transfer_enabled": transfer_enabled  # Pass the flag for button activation
             })
         else:
+            # If no opportunity is found, set status to None or other default value
             profit_data.append({
                 "fund_name": investor_fund.fund.name,
                 "amount_invested": investor_fund.amount_invested,
                 "profit": 0.0,
-                "status": investor_fund.status,
-                "fund_id": investor_fund.fund.id
+                "status": 'No Opportunity',  # Default status when no opportunity exists
+                "fund_id": investor_fund.fund.id,
+                "transfer_enabled": False  # Disable the button if no opportunity exists
             })
 
     # Handle withdrawal request (POST)
@@ -332,7 +341,7 @@ def withdraw_profit(request):
     return render(request, 'dashboard/investor_dashboard.html', {
         "wallet": wallet,
         "joined_funds": joined_funds,
-        "profit_data": profit_data
+        "profit_data": profit_data  # Pass the calculated profit data
     })
 
 #-------------------------------------------------- Profit Calculate
