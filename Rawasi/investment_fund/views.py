@@ -7,11 +7,11 @@ from .models import Wallet, InvestmentFund, Transactions
 from investments.models import InvestorFund,InvestmentOpportunity,BuySellTransaction
 from accounts.models import Investor
 
+@login_required
 def create_investment_fund(request):
     if request.method == "POST":
         name = request.POST.get("name")
         description = request.POST.get("description")
-        # total_balance = request.POST.get("total_balance")
         is_active = request.POST.get("is_active")  # Convert string to boolean
 
         # Check if the leader already has an investment fund
@@ -24,21 +24,29 @@ def create_investment_fund(request):
             messages.error(request, "الرجاء ملء جميع الحقول المطلوبة.")
             return redirect("main:fund_dashboard_view")
 
-        # Create the investment fund
         try:
-            InvestmentFund.objects.create(
+            # Ensure the leader has an associated investor
+            if not hasattr(request.user, 'investor'):
+                # If the leader doesn't have an investor, create one
+                investor = Investor.objects.create(user=request.user)
+            else:
+                investor = request.user.investor
+
+            # Create the investment fund and link it to the leader
+            investment_fund = InvestmentFund.objects.create(
                 name=name,
                 description=description,
-                # total_balance=total_balance,
                 is_active=is_active,
                 leader=request.user.leader  # Link the fund to the current leader
             )
-            # investor = Investor.objects.get(user=request.user)
-            # InvestorFund.objects.create(
-            #             fund=fund,
-            #             investor=investor,
-            #             amount_invested=0
-            #         )
+            
+            # Link the fund to the investor (leader in this case)
+            InvestorFund.objects.create(
+                fund=investment_fund,
+                investor=investor,
+                amount_invested=0  # Default investment of 0 for new join
+            )
+
             messages.success(request, "تم إنشاء الصندوق الاستثماري بنجاح!")
         except Exception as e:
             messages.error(request, f"حدث خطأ: {e}")
@@ -46,7 +54,6 @@ def create_investment_fund(request):
         return redirect("main:fund_dashboard_view")
     else:
         return redirect("main:fund_dashboard_view")
-
 
 
 def investment_fund_detail(request, pk):
@@ -183,7 +190,7 @@ def transfer_to_fund(request, pk=None):
 
             # Get the selected fund
             selected_fund = get_object_or_404(InvestmentFund, id=fund_id)
-
+            
             if amount <= 0:
                 messages.error(request, "المبلغ يجب أن يكون أكبر من 0.")
             elif wallet.balance < amount:  # Decimal comparison
@@ -237,20 +244,34 @@ def withdraw_profit(request):
 
     # Calculate the total profit for each fund
     profit_data = []
+    total_profit_available = Decimal(0)  # Keep track of the total profit available for withdrawal
+
     for investor_fund in joined_funds:
         # Fetch the related investment opportunity for each fund
         opportunity = InvestmentOpportunity.objects.filter(fund=investor_fund.fund).first()
-        
+
         if opportunity:
             expected_return = Decimal(opportunity.expected_return)
 
             # Calculate the profit based on the invested amount and expected return
             investment_period_days = (opportunity.end_date - opportunity.start_date).days
             profit = (investor_fund.amount_invested * expected_return * investment_period_days) / Decimal(365) / Decimal(100)
+            
+            # Accumulate the profit
+            total_profit_available += profit
 
-            # Check if the opportunity status is 'Closed'
+            # Check if the opportunity status is 'Closed' and if the sell status is 'Approved'
+            # Assuming we have a model like BuySellTransaction that tracks sell status
+            sell_status_approved = False
             if opportunity.status == 'Closed':
-                transfer_enabled = True  # Allow the withdrawal if the status is Closed
+                # Check if there's an approved sell for this opportunity
+                sell_transaction = BuySellTransaction.objects.filter(opportunity=opportunity, status='Approved').first()
+                if sell_transaction:
+                    sell_status_approved = True
+
+            # Only enable transfer if the opportunity is closed and sell status is approved
+            if opportunity.status == 'Closed' and sell_status_approved:
+                transfer_enabled = True  # Allow the withdrawal if both conditions are met
             else:
                 transfer_enabled = False  # Otherwise, disable it
 
@@ -258,7 +279,7 @@ def withdraw_profit(request):
                 "fund_name": investor_fund.fund.name,
                 "amount_invested": investor_fund.amount_invested,
                 "profit": round(profit, 2),
-                "status": opportunity.status,  # Only access status if opportunity exists
+                "status": opportunity.status,
                 "fund_id": investor_fund.fund.id,
                 "transfer_enabled": transfer_enabled  # Pass the flag for button activation
             })
@@ -286,15 +307,15 @@ def withdraw_profit(request):
             messages.error(request, "الرجاء إدخال مبلغ صالح.")
             return redirect('main:investor_dashboard_view')
 
-        # Get the selected fund for the withdrawal
-        selected_fund = get_object_or_404(InvestmentFund, id=fund_id)
-
-        # Ensure the profit is valid
+        # Ensure the profit to withdraw is not more than the total available profit
         if profit_to_withdraw <= 0:
             messages.error(request, "المبلغ يجب أن يكون أكبر من 0.")
-        elif profit_to_withdraw > wallet.profit_balance:
-            messages.error(request, "ليس لديك رصيد كافي من الأرباح للسحب.")
+        elif profit_to_withdraw > total_profit_available:
+            messages.error(request, f"ليس لديك رصيد كافي من الأرباح للسحب. رصيد الأرباح المتاح: {total_profit_available} ريال.")
         else:
+            # Get the selected fund for the withdrawal
+            selected_fund = get_object_or_404(InvestmentFund, id=fund_id)
+
             # Determine the action (withdraw to wallet or reinvest in fund)
             action = request.POST.get('action', 'withdraw_to_wallet')  # Default is 'withdraw_to_wallet'
 
@@ -316,8 +337,7 @@ def withdraw_profit(request):
                 )
                 messages.success(request, f"تم سحب {profit_to_withdraw} ريال من الأرباح إلى محفظتك.")
             elif action == 'reinvest_in_fund':
-                # Reinvest the profit into the selected fund
-                selected_fund.total_balance += profit_to_withdraw
+                selected_fund.total_balance = Decimal(selected_fund.total_balance)
                 selected_fund.save()
 
                 # Update the InvestorFund record
@@ -341,7 +361,8 @@ def withdraw_profit(request):
     return render(request, 'dashboard/investor_dashboard.html', {
         "wallet": wallet,
         "joined_funds": joined_funds,
-        "profit_data": profit_data  # Pass the calculated profit data
+        "profit_data": profit_data,  # Pass the calculated profit data
+        "total_profit_available": total_profit_available  # Pass the total available profit
     })
 
 #-------------------------------------------------- Profit Calculate
@@ -354,15 +375,19 @@ def investor_profit_view(request):
     # Prepare data with calculated profits
     profit_data = []
     for investor_fund in investor_funds:
+        # Assuming calculate_profit() is a method of InvestorFund that calculates the profit
         profit = investor_fund.calculate_profit()
+        
+        # Append the data for each fund
         profit_data.append({
             "fund_name": investor_fund.fund.name,
             "amount_invested": investor_fund.amount_invested,
-            "profit": profit,
+            "profit": profit,  # Profit value calculated by the method
             "status": investor_fund.status,
         })
 
     context = {
-        "profit_data": profit_data,
+        "profit_data": profit_data,  # Pass the profit data to the template
     }
+    
     return render(request, "dashboard/investor_dashboard.html", context)

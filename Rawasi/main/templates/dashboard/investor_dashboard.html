@@ -94,34 +94,35 @@ body {
             {% endif %}
         {% endfor %}
       {% endif %}
-        <div id="section1" class="dashboard-section">
-            <div class="container mt-5">
-                <!-- Investor Dashboard Header -->
-                <h3>صناديق الاستثمار التي انضممت إليها</h3>
-                <table class="table">
-                    <thead>
+      <div id="section1" class="dashboard-section">
+        <div class="container mt-5">
+            <!-- Investor Dashboard Header -->
+            <h3>صناديق الاستثمار التي انضممت إليها</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>اسم الصندوق</th>
+                        <th>المبلغ المستثمر</th>
+                        <th>الأرباح</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fund in profit_data %}
                         <tr>
-                            <th>اسم الصندوق</th>
-                            <th>المبلغ المستثمر</th>
-                            <th>الأرباح</th>
+                            <td>{{ fund.fund_name }}</td>
+                            <td>{{ fund.amount_invested }} ريال</td>
+                            <td>{{ fund.profit }} ريال</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {% for fund in profit_data %}
-                            <tr>
-                                <td>{{ fund.fund_name }}</td>
-                                <td>{{ fund.amount_invested }} ريال</td>
-                                <td>{{ fund.profit }} ريال</td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="4">لا توجد صناديق استثمار للعرض.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>            
-        </div>        
+                    {% empty %}
+                        <tr>
+                            <td colspan="3">لا توجد صناديق استثمار للعرض.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>            
+    </div>
+    
           <div id="section2" class="dashboard-section" style="display: none;">
             <div class="row">
                 <div  class="col-md-3 investment-card border p-0 rounded-3" >
@@ -376,10 +377,10 @@ body {
                     </div>
                     <div class="mb-3">
                         <label for="fund" class="form-label">اختار صندوق الاستثمار</label>
-                        <select name="fund_id" class="form-control">
-                            {% for fund in profit_data %}
-                                <option value="{{ fund.fund_id }}">
-                                    {{ fund.fund_name }} - ربح: {{ fund.profit }} ريال
+                        <select name="fund_id" class="form-control" required>
+                            {% for fund in joined_funds %}
+                                <option value="{{ fund.fund.id }}">
+                                    {{ fund.fund.name }} - ربح: {{ fund.profit }} ريال
                                 </option>
                             {% endfor %}
                         </select>
