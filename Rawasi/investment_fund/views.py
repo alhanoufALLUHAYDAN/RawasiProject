@@ -12,7 +12,7 @@ def create_investment_fund(request):
         name = request.POST.get("name")
         description = request.POST.get("description")
         # total_balance = request.POST.get("total_balance")
-        is_active = request.POST.get("is_active") == "True"  # Convert string to boolean
+        is_active = request.POST.get("is_active")  # Convert string to boolean
 
         # Check if the leader already has an investment fund
         if hasattr(request.user, 'leader') and hasattr(request.user.leader, 'managed_fund'):

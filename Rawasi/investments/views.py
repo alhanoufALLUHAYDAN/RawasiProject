@@ -8,7 +8,7 @@ from investments.forms import InvestmentOpportunityForm
 from datetime import datetime
 from .models import InvestorFund, Voting , BuySellTransaction
 from django.core.exceptions import PermissionDenied
-
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -17,6 +17,8 @@ from django.core.exceptions import PermissionDenied
 def add_investment_opportunity(request):
     leader = Leader.objects.filter(user=request.user).first()
     active_section = 'section4' 
+
+
 
     if not leader:
         messages.error(request, "فقط المسؤول يمكنه إضافة فرص استثمارية.")
@@ -39,14 +41,15 @@ def add_investment_opportunity(request):
             messages.error(request, "جميع الحقول مطلوبة.")
             return redirect(f'/dashboard/fund/?section={active_section}')
 
-        fund = InvestmentFund.objects.first()
+        fund = leader.managed_fund
+        print(fund.is_active)
         if not fund:
             messages.error(request, "لا يوجد صندوق استثماري في النظام. يرجى إضافة صندوق استثماري أولاً.")
             return redirect(f'/dashboard/fund/?section={active_section}')
 
-        if fund.leader != leader:
+        '''if fund.leader != leader:
             messages.error(request, "لا يمكنك إضافة فرصة استثمارية لأنك لست المسؤول عن هذا الصندوق.")
-            return redirect(f'/dashboard/fund/?section={active_section}')
+            return redirect(f'/dashboard/fund/?section={active_section}')'''
 
         if fund.is_active != 'Active':
             messages.error(request, "لا يمكن إضافة فرص استثمارية لأن الصندوق غير نشط.")
@@ -292,25 +295,20 @@ def vote_on_opportunity(request, id):
     except InvestmentOpportunity.DoesNotExist:
         messages.error(request, "الفرصة الاستثمارية غير موجودة.")
         return redirect('investments:opportunity_list')
-
     if opportunity.status not in ['Open', 'Reopened']:
         messages.error(request, "التصويت مغلق لهذه الفرصة.")
         return redirect('investments:opportunity_list')
-
     existing_vote = Voting.objects.filter(opportunity=opportunity, user=request.user).first()
-
     if existing_vote:
         if existing_vote.vote == 'Pending':
             pass 
         else:
             messages.error(request, "لقد قمت بالتصويت مسبقًا.")
             return redirect('investments:opportunity_list')
-
     vote_choice = request.POST.get('vote_choice')
     if vote_choice not in ['Accepted', 'Rejected']:
         messages.error(request, "التصويت غير صالح.")
         return redirect('investments:opportunity_list')
-
    
     if existing_vote:
         existing_vote.vote = vote_choice
@@ -324,5 +322,107 @@ def vote_on_opportunity(request, id):
             vote=vote_choice
         )
         messages.success(request, f"تم التصويت بنجاح: {vote_choice}")
-
     return redirect('investments:opportunity_list')
+
+
+@login_required
+def buy_opportunity(request, opportunity_id):
+    fund = InvestmentFund.objects.filter(leader__user=request.user).first()
+    if not fund:
+        raise PermissionDenied("ليس لديك صلاحية للوصول.")
+
+    try:
+        opportunity = InvestmentOpportunity.objects.get(id=opportunity_id)
+
+        fund = InvestmentFund.objects.get(id=opportunity.fund.id)
+
+        if fund.total_balance >= opportunity.total_investment:
+            fund.total_balance -= opportunity.total_investment
+            fund.save()
+
+            BuySellTransaction.objects.create(
+                opportunity=opportunity,
+                transaction_type='Buy',
+                amount=opportunity.total_investment,
+                status='Approved' 
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': f'تم شراء الفرصة {opportunity.title} بنجاح.'
+            })
+        else:
+         
+            BuySellTransaction.objects.create(
+                opportunity=opportunity,
+                transaction_type='Buy',
+                amount=opportunity.total_investment,
+                status='Rejected'  
+            )
+
+            return JsonResponse({
+                'status': 'error',
+                'message': 'رصيد الصندوق غير كافٍ لإتمام عملية الشراء.'
+            })
+
+    except InvestmentOpportunity.DoesNotExist:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'الفرصة الاستثمارية غير موجودة.',
+        })
+
+
+@login_required
+def sell_opportunity(request, opportunity_id):
+    fund = InvestmentFund.objects.filter(leader__user=request.user).first()
+    
+    if not fund:
+        raise PermissionDenied("ليس لديك صلاحية للوصول.")
+
+    try:
+        opportunity = InvestmentOpportunity.objects.get(id=opportunity_id)
+
+        investment = InvestorFund.objects.filter(fund=fund, amount_invested__gte=opportunity.total_investment).first()
+
+        if investment:
+            profit = calculate_profit_for_sale(opportunity.total_investment, opportunity.expected_return)
+
+            fund.total_balance += opportunity.total_investment
+            fund.save()
+
+            BuySellTransaction.objects.create(
+                opportunity=opportunity,
+                transaction_type='Sell',  
+                amount=opportunity.total_investment,  
+                status='Approved' 
+            )
+
+          
+            return JsonResponse({
+                'status': 'success',
+                'message': f'تم بيع الفرصة {opportunity.title} بنجاح. الربح المحقق: {profit} ريـال.',
+                'profit': profit 
+            })
+        else:
+          
+            BuySellTransaction.objects.create(
+                opportunity=opportunity,
+                transaction_type='Sell', 
+                amount=opportunity.total_investment,
+                status='Rejected' 
+            )
+
+            
+
+    except InvestmentOpportunity.DoesNotExist:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'الفرصة الاستثمارية غير موجودة.',
+        })
+
+def calculate_profit_for_sale(amount_invested, expected_return):
+   
+    profit = float(amount_invested) * (expected_return / 100)
+    return round(profit, 2)
+
+
