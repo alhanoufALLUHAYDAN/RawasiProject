@@ -604,7 +604,14 @@ main{
     background-color: #5d0e04;
     color: rgb(255, 255, 255);
 }
-
+.copy-btn{
+  color: rgb(179, 179, 179);
+  background-color: transparent !important;
+  border: none;
+}
+.copy-btn:focus{
+  color: #194d45;
+}
 .nav-link-dashboard.active {
     background-color: #5d0e04;
     color: rgb(255, 255, 255);

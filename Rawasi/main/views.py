@@ -63,14 +63,16 @@ def fund_dashboard_view(request):
 
     # Fetch the related leader instance
     leader_instance = request.user.leader
+    investments_list=[]
 
     # Check if an investment fund exists for the leader
     try:
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)
-        investments=investment_fund.investment_opportunities.all()
-        p=Paginator(investments,4)
-        page=request.GET.get('page',1)
-        investments_list=p.get_page(page)
+        if investment_fund.investment_opportunities:
+            investments=investment_fund.investment_opportunities.all()
+            p=Paginator(investments,4)
+            page=request.GET.get('page',1)
+            investments_list=p.get_page(page)
     except InvestmentFund.DoesNotExist:
         investment_fund = None
     # Fetch the user's wallet
