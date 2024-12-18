@@ -7,11 +7,8 @@ from django.contrib import messages
 from investments.forms import InvestmentOpportunityForm
 from datetime import datetime
 from .models import InvestorFund, Voting , BuySellTransaction
-from django.utils import timezone 
-from datetime import timedelta
-from accounts.models import CustomUser , Investor
-from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
+
 
 
 # Create your views here.
@@ -141,7 +138,6 @@ def delete_investment_opportunity(request, id):
 
     messages.success(request, "تم حذف الفرصة الاستثمارية بنجاح.")
     return redirect('/')
- 
 
 @login_required
 def update_investment_opportunity(request, id):
@@ -169,31 +165,29 @@ def update_investment_opportunity(request, id):
     return render(request, 'investments/update_investment_opportunity.html', {'form': form})
 
 
+@login_required
 def add_voting(request):
     fund = InvestmentFund.objects.filter(leader__user=request.user).first()
     if not fund:
-        raise PermissionDenied("You are not authorized to create a vote for any investment opportunity.")
+        raise PermissionDenied("ليس لديك صلاحية للوصول إلى هذا الصندوق الاستثماري.")
 
     if request.method == "POST":
         opportunity_id = request.POST.get('opportunity')
-        required_approval_percentage = request.POST.get('required_approval_percentage')
+        required_approval_percentage = float(request.POST.get('required_approval_percentage'))
         voting_start_time = request.POST.get('voting_start_time')
         voting_end_time = request.POST.get('voting_end_time')
         total_amount = request.POST.get('total_amount')
-        vote_type = request.POST.get('vote_type')  
+        vote_type = request.POST.get('vote_type') 
 
         try:
             opportunity = InvestmentOpportunity.objects.get(id=opportunity_id)
             
             if opportunity.fund != fund:
-                raise PermissionDenied("You do not have permission to vote for this investment opportunity.")
-            
-            voting_start_time = datetime.strptime(voting_start_time, '%Y-%m-%dT%H:%M')
-            voting_end_time = datetime.strptime(voting_end_time, '%Y-%m-%dT%H:%M')
-            
-            if voting_start_time >= voting_end_time:
-                messages.error(request, "تاريخ بداية التصويت يجب أن يكون قبل تاريخ نهايته.")
-                return redirect('add_voting')
+                raise PermissionDenied("ليس لديك صلاحية للتصويت على هذه الفرصة الاستثمارية.")
+
+            if Voting.objects.filter(opportunity=opportunity, vote_type='Sell', vote='Accepted').exists():
+                messages.error(request, "تمت الموافقة على تصويت البيع لهذه الفرصة. لا يمكن إضافة تصويت جديد للبيع.")
+                return redirect('investments:add_voting')
 
             voting = Voting(
                 opportunity=opportunity,
@@ -205,9 +199,10 @@ def add_voting(request):
                 vote_type=vote_type, 
             )
             voting.save()
+            print(f"قبل إضافة التصويت، حالة الفرصة: {opportunity.status}")
 
             messages.success(request, "تم إضافة التصويت بنجاح!")
-            return redirect('investments:add_voting')
+            return redirect('investments:opportunity_list') 
 
         except InvestmentOpportunity.DoesNotExist:
             messages.error(request, "الفرصة الاستثمارية المحددة غير موجودة.")
@@ -216,8 +211,118 @@ def add_voting(request):
             messages.error(request, str(e))
             return redirect('investments:add_voting')
 
-    opportunities = InvestmentOpportunity.objects.filter(fund=fund, status='Open')
-    
+    opportunities = InvestmentOpportunity.objects.filter(fund=fund)
     return render(request, 'investments/add_voting.html', {'opportunities': opportunities})
 
 
+@login_required
+def opportunity_list(request):
+    opportunities = InvestmentOpportunity.objects.filter()
+
+    for opportunity in opportunities:
+        user_investor = InvestorFund.objects.filter(fund=opportunity.fund, investor__user=request.user).exists()
+        total_investors = InvestorFund.objects.filter(fund=opportunity.fund).count()
+
+        total_accepted = Voting.objects.filter(opportunity=opportunity, vote='Accepted').count()
+        total_rejected = Voting.objects.filter(opportunity=opportunity, vote='Rejected').count()
+
+        approval_percentage = (total_accepted / total_investors) * 100 if total_investors else 0
+
+        try:
+            required_percentage = Voting.objects.filter(opportunity=opportunity).first().required_approval_percentage
+        except AttributeError:
+            required_percentage = 0  
+
+        opportunity.approval_percentage = approval_percentage
+        opportunity.required_approval_percentage = required_percentage
+        opportunity.pending_votes = Voting.objects.filter(opportunity=opportunity, vote='Pending').count()
+        opportunity.accepted_votes = total_accepted
+        opportunity.rejected_votes = total_rejected
+
+        
+        if approval_percentage >= required_percentage:
+            opportunity.status = 'Closed'
+        else:
+            opportunity.status = 'Open'
+
+        if opportunity.status == 'Closed' and request.user == opportunity.fund.leader.user:
+            if 'reopen_vote' in request.POST:  
+                opportunity.status = 'Open' 
+                opportunity.save()
+
+                Voting.objects.filter(opportunity=opportunity).update(vote='Pending')
+
+                if not Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists():
+                    Voting.objects.create(
+                        opportunity=opportunity,
+                        user=request.user,
+                        vote_type='Sell',
+                        vote='Pending',
+                        required_approval_percentage=opportunity.required_approval_percentage,
+                    )
+
+                messages.success(request, "تم إعادة فتح التصويت وإضافة تصويت البيع بنجاح.")
+                return redirect('investments:opportunity_list')
+
+        if request.method == 'POST' and 'vote_choice' in request.POST:
+            vote_choice = request.POST['vote_choice']
+            vote_id = request.POST['vote_id']
+
+            existing_vote = Voting.objects.filter(opportunity=opportunity, user=request.user).first()
+            if existing_vote:
+                messages.error(request, "لقد قمت بالتصويت مسبقًا.")
+            else:
+                Voting.objects.create(
+                    user=request.user,
+                    opportunity=opportunity,
+                    vote=vote_choice
+                )
+                messages.success(request, "تم التصويت بنجاح!")
+                return redirect('investments:opportunity_list')
+
+    return render(request, 'investments/opportunity_list.html', {
+        'opportunities': opportunities,
+        'user_investor': user_investor, 
+    })
+
+@login_required
+def vote_on_opportunity(request, id):
+    try:
+        opportunity = InvestmentOpportunity.objects.get(id=id)
+    except InvestmentOpportunity.DoesNotExist:
+        messages.error(request, "الفرصة الاستثمارية غير موجودة.")
+        return redirect('investments:opportunity_list')
+
+    if opportunity.status not in ['Open', 'Reopened']:
+        messages.error(request, "التصويت مغلق لهذه الفرصة.")
+        return redirect('investments:opportunity_list')
+
+    existing_vote = Voting.objects.filter(opportunity=opportunity, user=request.user).first()
+
+    if existing_vote:
+        if existing_vote.vote == 'Pending':
+            pass 
+        else:
+            messages.error(request, "لقد قمت بالتصويت مسبقًا.")
+            return redirect('investments:opportunity_list')
+
+    vote_choice = request.POST.get('vote_choice')
+    if vote_choice not in ['Accepted', 'Rejected']:
+        messages.error(request, "التصويت غير صالح.")
+        return redirect('investments:opportunity_list')
+
+   
+    if existing_vote:
+        existing_vote.vote = vote_choice
+        existing_vote.save()
+        messages.success(request, f"تم تحديث التصويت بنجاح: {vote_choice}")
+    else:
+     
+        Voting.objects.create(
+            opportunity=opportunity,
+            user=request.user,
+            vote=vote_choice
+        )
+        messages.success(request, f"تم التصويت بنجاح: {vote_choice}")
+
+    return redirect('investments:opportunity_list')

@@ -11,20 +11,22 @@ class InvestorFund(models.Model):
     amount_invested = models.DecimalField(max_digits=12, decimal_places=2)
     invested_at = models.DateTimeField(auto_now_add=True)  
     status = models.CharField(max_length=100, choices=[('Completed', 'Completed'), ('Pending', 'Pending')], default='Pending') 
-    
+
     def calculate_profit(self):
         """Calculates profit based on associated opportunities and expected returns."""
         total_profit = 0.0
-        # Find all opportunities linked to this fund
         opportunities = self.fund.investment_opportunities.filter(status='Open')
         for opportunity in opportunities:
             invested_period = (opportunity.end_date - opportunity.start_date).days or 1
             profit = float(self.amount_invested) * (opportunity.expected_return / 100)
             total_profit += profit
+
+        # Update status after calculating profit
+        if total_profit > 0:
+            self.status = 'Completed'
+            self.save()
+
         return round(total_profit, 2)
-    
-    def __str__(self):
-        return f'{self.investor.user.username} in {self.fund.name}'
 
 
 class InvestmentOpportunity(models.Model):

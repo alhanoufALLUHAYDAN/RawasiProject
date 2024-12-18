@@ -105,6 +105,7 @@
 
 {% block title %}<title>تحديث بيانات الصندوق الاستثماري</title>{% endblock %}
 {% block content %}
+
 <div class="container-fluid">
     <div class="row w-100">
         <div class="update-container col-md-8">
@@ -155,6 +156,54 @@
                     <p>{{ error }}</p>
                 {% endfor %}
             </div>
+=======
+<div class="update-container">
+    <div class="update-header">تحديث بيانات الصندوق الاستثماري</div>
+    <form method="post" action="{% url 'investment_fund:update_investment_fund' pk=fund.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name" class="form-label">اسم الصندوق</label>
+            <input type="text" name="name" id="name" class="form-control" value="{{ form.instance.name }}">
+            {% if form.errors.name %}
+                <div class="text-danger">{{ form.errors.name }}</div>
+            {% endif %}
+        </div>
+    
+        <div class="form-group">
+            <label for="description" class="form-label">وصف الصندوق</label>
+            <textarea name="description" id="description" class="form-control">{{ form.instance.description }}</textarea>
+            {% if form.errors.description %}
+                <div class="text-danger">{{ form.errors.description }}</div>
+            {% endif %}
+        </div>
+    
+        <!-- <div class="form-group">
+            <label for="total_balance" class="form-label">الرصيد الكلي</label>
+            <input type="number" name="total_balance" id="total_balance" class="form-control" value="{{ form.instance.total_balance }}">
+            {% if form.errors.total_balance %}
+                <div class="text-danger">{{ form.errors.total_balance }}</div>
+            {% endif %}
+        </div> -->
+    <h1></h1>
+        <div class="form-group">
+            <label for="is_active" class="form-label">الحالة</label>
+            <select name="is_active" id="is_active" class="form-select">
+                <option value="Active" {% if form.instance.is_active == 'Active' %}selected{% endif %}>نشط</option>
+                <option value="Inactive" {% if form.instance.is_active == 'Inactive' %}selected{% endif %}>غير نشط</option>
+            </select>
+        </div>
+    
+        <div class="btn-container">
+            <button type="submit" class="btn btn-darkgreen">تحديث البيانات</button>
+            <a href="{% url 'main:fund_dashboard_view' %}" class="btn btn-secondary">إلغاء</a>
+        </div>
+    </form>
+    {% for field, errors in form.errors.items %}
+    <div class="text-danger">
+        <strong>{{ field }}:</strong>
+        {% for error in errors %}
+            <p>{{ error }}</p>
+
         {% endfor %}
         
         </div>
