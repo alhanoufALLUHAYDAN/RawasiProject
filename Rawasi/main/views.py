@@ -74,9 +74,9 @@ def fund_dashboard_view(request):
             p=Paginator(investments,4)
             page=request.GET.get('page',1)
             investments_list=p.get_page(page)
-        #investorFund=InvestorFund.objects.get(fund=investment_fund)
-        #investors=investorFund
-        #print(investorFund)  
+        investorFund=InvestorFund.objects.filter(fund=investment_fund, investor__user=request.user).exists()
+        #investors=investorFund.investor.objects.all()
+        print(investorFund)  
     except InvestmentFund.DoesNotExist:
         investment_fund = None
 
@@ -112,7 +112,7 @@ def fund_dashboard_view(request):
         "investment_fund": investment_fund,
         "unique_code": new_code,
         "wallet": wallet,
-        "investments":investments_list
+        "investments":investments_list,
         "total_balance": total_balance,
         "total_profit": total_profit,
 
