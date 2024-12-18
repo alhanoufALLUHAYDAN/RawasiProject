@@ -17,7 +17,7 @@ from investment_fund.forms import InvestmentFundForm
 from investments.models import InvestorFund,InvestmentOpportunity,InvestmentFund
 from accounts.models import Investor
 from django.contrib.auth.decorators import login_required
-
+from datetime import date
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -65,7 +65,7 @@ def fund_dashboard_view(request):
     # Fetch the related leader instance
     leader_instance = request.user.leader
     investments_list=[]
-    fund_investors=[]
+    fund_investors_list=[]
     # Check if an investment fund exists for the leader
     try:
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)
@@ -75,8 +75,18 @@ def fund_dashboard_view(request):
             page=request.GET.get('page',1)
             investments_list=p.get_page(page)
         if investment_fund.fund_investments:    
-            fund_investors = investment_fund.fund_investments.all().select_related('investor')       
-            #print(investment.investor.user.full_name)   
+            fund_investors = investment_fund.fund_investments.all().select_related('investor') 
+            p=Paginator(fund_investors,6)
+            page=request.GET.get('page',1)
+            fund_investors_list=p.get_page(page)
+            # Calculate the investor's age
+            # Calculate the investor's age for each investor
+            today = date.today()
+            for investor_fund in fund_investors_list:
+                birth_date = investor_fund.investor.user.date_of_birth
+                age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+                investor_fund.investor.age = age 
+
     except InvestmentFund.DoesNotExist:
         investment_fund = None
 
@@ -115,7 +125,7 @@ def fund_dashboard_view(request):
         "investments":investments_list,
         "total_balance": total_balance,
         "total_profit": total_profit,
-        "fund_investors":fund_investors,
+        "fund_investors":fund_investors_list,
 
     }
 

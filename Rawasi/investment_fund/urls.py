@@ -15,5 +15,6 @@ urlpatterns = [
     path('wallet/withdraw_profit/', views.withdraw_profit, name='withdraw_profit'),
     path('profits/', views.investor_profit_view, name='investor_profit_view'),
     path('profits/withdraw/', views.withdraw_profit, name='withdraw_profit'),
+    path('delete/investor/<investor_id>/',views.delete_investor,name="delete_investor")
 ]
 
