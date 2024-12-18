@@ -6,13 +6,51 @@
 {% block content %}
 <div class="container mt-5">
     <div class="wallet-container p-4 bg-white shadow rounded">
+        <!-- Wallet Title -->
         <h2 class="text-center mb-4" style="color: #761305;">محفظتي</h2>
         <hr>
-        <p class="text-center"><strong>رصيد المحفظة:</strong> {{ wallet.balance }} ريال</p>
-        <p class="text-center"><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
-        <p class="text-center"><strong>تاريخ الإنشاء:</strong> {{ wallet.created_at|date:"Y-m-d H:i:s" }}</p>
+        
+        <!-- Wallet Details -->
+        <div class="text-center">
+            <p><strong>رصيد المحفظة:</strong> {{ wallet.balance }} ريال</p>
+            <p><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
+            <p><strong>تاريخ الإنشاء:</strong> {{ wallet.created_at|date:"Y-m-d H:i:s" }}</p>
+        </div>
+        
+        <!-- Back Button -->
         <div class="text-center mt-4">
-            <a href="{% url 'main:investor_dashboard_view' %}" class="btn btn-darkgreen">العودة إلى لوحة التحكم</a>
+            <a href="{% url 'main:investor_dashboard_view' %}" class="btn btn-primary" >العودة إلى لوحة التحكم</a>
+        </div>
+    </div>
+    
+    <!-- Transaction History Section -->
+    <div class="mt-5">
+        <h3 class="text-center mb-4" style="color: #761305;">سجل العمليات</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>نوع العملية</th>
+                        <th>المبلغ</th>
+                        <th>الوصف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.created_at|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ transaction.get_transaction_type_display }}</td>
+                        <td>{{ transaction.amount }}</td>
+                        <td>{{ transaction.description }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">لا توجد عمليات حالياً.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

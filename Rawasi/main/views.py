@@ -8,6 +8,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import random
 import string
+from django.contrib.auth.decorators import login_required
 from investment_fund.models import InvestmentFund, Wallet 
 from investments.models import InvestmentFund
 from investments.models import InvestorFund , InvestmentOpportunity
@@ -67,8 +68,24 @@ def fund_dashboard_view(request):
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)
     except InvestmentFund.DoesNotExist:
         investment_fund = None
-    # Fetch the user's wallet
+
+    # Fetch the user's wallet or create it if it doesn't exist
     wallet = getattr(request.user, 'wallet', None)  # Safe access to wallet
+    if wallet is None:
+        wallet = Wallet.objects.create(user=request.user)
+        messages.info(request, "تم إنشاء محفظة جديدة لك.")
+
+    # Ensure `total_balance` exists and is correctly updated in your fund model
+    total_balance = investment_fund.total_balance if investment_fund else 0.0
+
+    # Calculate the total profit from investment opportunities
+    total_profit = 0
+    if investment_fund:
+        # Loop through all open opportunities in the fund
+        for opportunity in investment_fund.investment_opportunities.filter(status='Open'):
+            # Calculate profit based on total investment and expected return
+            total_profit += (opportunity.expected_return * total_balance / 100)
+
     # Handle new join code generation
     if request.method == "POST" and "new_code" in request.POST:
         new_code = generate_unique_code()
@@ -77,7 +94,6 @@ def fund_dashboard_view(request):
             investment_fund.save()
             messages.success(request, f"تم إنشاء رمز الانضمام: {new_code}")
     else:
-        print("here inside else")
         new_code = investment_fund.join_code if investment_fund else None
 
     context = {
@@ -85,9 +101,13 @@ def fund_dashboard_view(request):
         "investment_fund": investment_fund,
         "unique_code": new_code,
         "wallet": wallet,
-        "investments":investments
+        "total_balance": total_balance,
+        "total_profit": total_profit,
     }
+
     return render(request, 'dashboard/fund_dashboard.html', context)
+
+from decimal import Decimal
 
 @login_required
 def investor_dashboard_view(request):
@@ -98,7 +118,6 @@ def investor_dashboard_view(request):
     # Ensure wallet exists for the user
     wallet, created = Wallet.objects.get_or_create(user=request.user)
     transactions = wallet.transactions.all()
-    fund = InvestmentFund.objects.filter(leader=request.user.leader).first()
 
     # Fetch funds the investor has joined
     joined_funds = InvestorFund.objects.filter(investor__user=request.user)
@@ -106,11 +125,14 @@ def investor_dashboard_view(request):
     # Prepare profit data for each fund the investor has joined
     profit_data = []
     for investor_fund in joined_funds:
-        # Profit calculation logic based on expected return
+        # Fetch the related investment opportunity for each fund
         opportunity = InvestmentOpportunity.objects.filter(fund=investor_fund.fund).first()
         if opportunity:
+            # Convert expected_return to Decimal to ensure consistency in data types
+            expected_return = Decimal(opportunity.expected_return)
+            # Calculate the investment period (in days) and the profit
             investment_period_days = (opportunity.end_date - opportunity.start_date).days
-            profit = (investor_fund.amount_invested * opportunity.expected_return * investment_period_days) / 365 / 100
+            profit = (investor_fund.amount_invested * expected_return * investment_period_days) / Decimal(365) / Decimal(100)
             profit_data.append({
                 "fund_name": investor_fund.fund.name,
                 "amount_invested": investor_fund.amount_invested,
@@ -118,6 +140,7 @@ def investor_dashboard_view(request):
                 "status": investor_fund.status
             })
         else:
+            # No investment opportunity for this fund
             profit_data.append({
                 "fund_name": investor_fund.fund.name,
                 "amount_invested": investor_fund.amount_invested,
@@ -130,16 +153,17 @@ def investor_dashboard_view(request):
         join_code = request.POST.get('join_code', None)
         if join_code:
             try:
+                # Fetch the investment fund using the join code and check if it's active
                 fund = InvestmentFund.objects.get(join_code=join_code, is_active='Active')
                 if InvestorFund.objects.filter(fund=fund, investor__user=request.user).exists():
                     messages.warning(request, 'أنت بالفعل عضو في هذا الصندوق.', "warning")
                 else:
-                    print("the user is", request.user)
+                    # If the user isn't already a member, allow them to join
                     investor = Investor.objects.get(user=request.user)
                     InvestorFund.objects.create(
                         fund=fund,
                         investor=investor,
-                        amount_invested=0
+                        amount_invested=0  # Default investment of 0 for new join
                     )
                     messages.success(request, f'تم الانضمام بنجاح إلى الصندوق: {fund.name}', "success")
             except InvestmentFund.DoesNotExist:
@@ -152,8 +176,7 @@ def investor_dashboard_view(request):
             "investor": request.user, 
             "wallet": wallet,
             "transactions": transactions,
-            "fund": fund,
-            "joined_funds": joined_funds,
+            "joined_funds": joined_funds,  # Pass the joined funds
             "profit_data": profit_data  
         }
     )
