@@ -122,7 +122,6 @@ def fund_dashboard_view(request):
     return render(request, 'dashboard/fund_dashboard.html', context)
 
 from decimal import Decimal
-
 @login_required
 def investor_dashboard_view(request):
     if not request.user.is_authenticated:
@@ -151,7 +150,7 @@ def investor_dashboard_view(request):
                 "fund_name": investor_fund.fund.name,
                 "amount_invested": investor_fund.amount_invested,
                 "profit": round(profit, 2),
-                "status": investor_fund.status
+                "status": opportunity.status if opportunity else 'No Opportunity'
             })
         else:
             # No investment opportunity for this fund
@@ -159,7 +158,7 @@ def investor_dashboard_view(request):
                 "fund_name": investor_fund.fund.name,
                 "amount_invested": investor_fund.amount_invested,
                 "profit": 0.0,
-                "status": investor_fund.status
+                "status": 'No Opportunity'
             })
 
     # Handle joining a new fund via join_code
@@ -193,6 +192,6 @@ def investor_dashboard_view(request):
             "wallet": wallet,
             "transactions": transactions,
             "joined_funds": joined_funds,  # Pass the joined funds
-            "profit_data": profit_data  
+            "profit_data": profit_data  # Pass the profit data with the correct status
         }
     )
