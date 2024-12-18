@@ -112,7 +112,7 @@ def fund_dashboard_view(request):
         "investment_fund": investment_fund,
         "unique_code": new_code,
         "wallet": wallet,
-        "investments":investments_list
+        "investments":investments_list,
         "total_balance": total_balance,
         "total_profit": total_profit,
 
