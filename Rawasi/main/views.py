@@ -16,6 +16,8 @@ from investment_fund.models import InvestmentFund, Wallet
 from investment_fund.forms import InvestmentFundForm 
 from investments.models import InvestorFund,InvestmentOpportunity,InvestmentFund
 from accounts.models import Investor
+from django.contrib.auth.decorators import login_required
+
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -62,10 +64,19 @@ def fund_dashboard_view(request):
 
     # Fetch the related leader instance
     leader_instance = request.user.leader
-
+    investments_list=[]
+    fund_investors=[]
     # Check if an investment fund exists for the leader
     try:
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)
+        if investment_fund.investment_opportunities:
+            investments=investment_fund.investment_opportunities.all()
+            p=Paginator(investments,4)
+            page=request.GET.get('page',1)
+            investments_list=p.get_page(page)
+        #investorFund=InvestorFund.objects.get(fund=investment_fund)
+        #investors=investorFund
+        #print(investorFund)  
     except InvestmentFund.DoesNotExist:
         investment_fund = None
 
@@ -101,8 +112,10 @@ def fund_dashboard_view(request):
         "investment_fund": investment_fund,
         "unique_code": new_code,
         "wallet": wallet,
+        "investments":investments_list
         "total_balance": total_balance,
         "total_profit": total_profit,
+
     }
 
     return render(request, 'dashboard/fund_dashboard.html', context)

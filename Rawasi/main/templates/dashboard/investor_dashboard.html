@@ -283,6 +283,74 @@ body {
 </div>
 
                 </div>
+                  <div id="section5" class="dashboard-section" style="display: none;">
+                    <div class="container-wrapper-profile">
+                      <div id="alert-container"></div>
+                      <div class="profile-container container">
+                          <div class="profile-image-container row w-100">
+                            <div class="col-md-8 d-flex gap-3 align-items-start ">
+                              <h2 class="mb-3"> بيانات الحساب  </h2>
+                              <div class="mt-2">
+                                <span class="edit-icon" id="edit-image-icon"><i class="fas fa-pencil-alt"></i></span>
+                                <span class="check-icon hidden" id="check-icon"><i class="fas fa-check"></i></span>    
+                              </div>
+                            </div>
+                              <div class=" col-md-4">
+                                <img src="{{ user.profile_picture.url }}" alt="Profile Image" class="profile-image rounded-3 " id="profile-img">
+                              </div>
+      
+                          </div>
+                          
+                          <div class="profile-info mt-3">
+                              <form id="profile-form" method="POST" enctype="multipart/form-data">
+                                  {% csrf_token %}
+                                  
+                                  <div class="form-group">
+                                      <label for="full_name">الاسم الكامل</label>
+                                      <input type="text" class="form-control" value="{{ user.full_name }}" name="full_name" id="full-name" disabled>
+                                  </div>
+                  
+                                  <div class="form-group">
+                                      <label for="username">اسم المستخدم</label>
+                                      <input type="text" class="form-control" value="{{ user.username }}" name="username" id="username" disabled>
+                                  </div>
+                  
+                                  <div class="form-group">
+                                      <label for="email">البريد الإلكتروني</label>
+                                      <input type="email" class="form-control" value="{{ user.email }}" name="email" id="email" disabled>
+                                  </div>
+                  
+                                  <div class="form-group">
+                                      <label for="phone_number">رقم الجوال</label>
+                                      <input type="text" class="form-control" value="{{ user.phone_number }}" name="phone_number" id="phone-number" disabled>
+                                  </div>
+                  
+                                  <div class="form-group">
+                                      <label for="dob">تاريخ الميلاد</label>
+                                      <input type="date" class="form-control" value="{{ user.date_of_birth|date:'Y-m-d' }}" name="date_of_birth" id="dob" disabled>
+                                  </div>
+                  
+                                  <div class="form-group hidden" id="profile-picture-group">
+                                      <label for="profile_picture">الصورة الشخصية</label>
+                                      <input type="file" class="form-control" name="profile_picture" id="profile-picture">
+                                  </div>
+                  
+                                  <div class="form-group hidden" id="password-group">
+                                      <label for="password">كلمة المرور الجديدة</label>
+                                      <input type="password" class="form-control" placeholder="أدخل كلمة المرور الجديدة" name="password" id="password">
+                                  </div>
+                  
+                                  <div class="form-group hidden" id="password-confirm-group">
+                                      <label for="password_confirm">تأكيد كلمة المرور</label>
+                                      <input type="password" class="form-control" placeholder="تأكيد كلمة المرور" name="password_confirm" id="password_confirm">
+                                  </div>
+                              </form>
+                          </div>
+                      </div>
+                  </div>
+               
+                </div>
+
               </div>
               <!-- Withdraw Profit Modal -->
 <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
@@ -323,6 +391,8 @@ body {
                     <button type="submit" class="btn btn-darkgreen w-100">تأكيد السحب</button>
                 </form>                
             </div>
+
+  
         </div>
     </div> 
           <div id="section5" class="dashboard-section" style="display: none;">
@@ -393,10 +463,59 @@ body {
                   </div>   
       </div>
   
+
 </section>
   {%endblock%}
   {%block script%}
-  
+  <script>
+    $(document).ready(function () {
+        $('#edit-image-icon').click(function () {
+            $('input').prop('disabled', false);
+            $('#profile-picture-group, #password-group, #password-confirm-group').removeClass('hidden');
+            $('#save-btn-container').removeClass('hidden'); 
+            $('#check-icon').removeClass('hidden'); 
+            $('#edit-image-icon').hide(); 
+        });
+        $('#check-icon').click(function () {
+            $('#profile-form').submit(); 
+        });
+        $('#profile-form').submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this); 
+            $.ajax({
+                url: '{% url "accounts:update_profile" %}',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    $('#full-name').val(response.full_name);
+                    $('#username').val(response.username);
+                    $('#email').val(response.email);
+                    $('#phone-number').val(response.phone_number);
+                    $('#dob').val(response.date_of_birth);
+                    $('#profile-img').attr('src', response.profile_picture_url);
+                    $('input').prop('disabled', true);
+                    $('#profile-picture-group, #password-group, #password-confirm-group').addClass('hidden');
+                    $('#save-btn-container').addClass('hidden');
+                    $('#edit-image-icon').show();
+                    $('#check-icon').addClass('hidden'); 
+                    $('#alert-container').html('<div class="alert alert-success">تم تحديث البيانات بنجاح!</div>');
+                    setTimeout(function() {
+                        $('.alert').fadeOut();
+                    }, 3000);
+                },
+                error: function(xhr, status, error) {
+                    $('#alert-container').html('<div class="alert alert-danger">حدث خطأ أثناء التحديث.</div>');
+                    setTimeout(function() {
+                        $('.alert').fadeOut();
+                    }, 3000);
+                }
+            });
+        });
+    });
+  </script>
+
   <script>
     // Show relevant payment details based on selected method
     document.getElementById('payment-method').addEventListener('change', function() {

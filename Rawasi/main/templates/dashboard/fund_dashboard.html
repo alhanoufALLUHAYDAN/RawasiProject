@@ -112,20 +112,23 @@
       {% if unique_code %}
       <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#codeModal">
         استعراض الرمز
+        <!--<button id="shareButton">Share Code</button>-->
       </button>
       {%else%}
-      لم يتم إنشاء رمز الانضمام حتى الآن.
+      <div class="d-flex flex-column align-items-center justify-content-center">
+       <p class="text-center">   لم يتم إنشاء رمز الانضمام حتى الآن.</p>
       <form method="POST">
         {% csrf_token %}
-        <button type="submit" name="new_code" class="btn btn-darkgreen">إنشاء كود</button>
+        <button type="submit" name="new_code" class="btn btn-darkgreen">إنشاء الرمز <i class="fa-solid fa-plus"></i></button>
     </form>
+  </div>
       {% endif %}
       {% endif %}
           <!-- Modal Structure -->
           <div class="modal fade" id="codeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content w-100">
-                <div class="modal-header border-white d-flex justify-content-between p-0 py-1 px-2 w-100">
+                <div class="modal-header  d-flex justify-content-between p-0 py-1 px-2 w-100">
                   <h5 class="modal-title" id="exampleModalLabel">الرمز</h5>
                   <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -146,45 +149,67 @@
 
       <!-- Content Area -->
       <div class="col-md-9 p-3">
+        {% if messages %}
+        {% for message in messages %}
+        {% if not request.session.show_message or message.tags != request.session.show_message %}
+        <div class=" w-100">
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} w-100 d-flex justify-content-between align-items-center" role="alert">
+                {{ message }}
+            <button type="button" class="btn-close m-0 px-2" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+      {% endif %}
         <div id="section1" class="dashboard-section">
             {% if investment_fund %}
                 <!-- Display Investment Fund Details -->
-                <div class="p-4 h-100" style="background-color: #faf6ee; border: 2px solid #0f2e29; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
-                    
+                <div class="h-100 container dashboard-section1 d-flex flex-column justify-content-between" >      
                     <!-- Display Fund Data -->
                     <div class="row">
                         <div class="col-md-6">
-                            <p><span>اسم الصندوق:</span> <span class="fs-1">{{ investment_fund.name }}</span></p>
-                            <p><strong>الوصف:</strong> {{ investment_fund.description }}</p>
-                            {% if investment_fund and investment_fund.total_balance %}
-                            <p><strong>الرصيد الكلي:</strong> {{ investment_fund.total_balance }} ر.س</p>
-                        {% else %}
-                            <p><strong>الرصيد الكلي:</strong> غير متاح</p>
-                        {% endif %}
-                        
+                          <div class="d-flex justify-content-start align-items-center gap-3">
+                            <p><span>صندوق : </span> <span class="fs-4">{{ investment_fund.name }}</span></p>
 
+                            {% if investment_fund.is_active == 'Active' %}
+                                 <span class="rounded-pill h-50 text-center mb-2 align-items-center d-flex justify-content-center border border-success px-4 fs-6 " style="background-color: rgb(201, 239, 201);">نشط</span> 
+                              {% elif investment_fund.is_active == 'Inactive' %}
+                              <span class="rounded-pill h-50 text-center mb-2 align-items-center d-flex justify-content-center border border-danger px-4 fs-6 " style="background-color: rgb(239, 201, 201);">غير نشط</span> 
+                              {% else %}
+                              <span class="rounded-pill h-50 text-center mb-2 align-items-center d-flex justify-content-center border border-success px-4 fs-6 " style="background-color: rgb(201, 239, 201);">نشط</span> 
+                              {% endif %}
+                          </div>
+                            <p class="text-muted"><span class="text-dark">الوصف : </span> {{ investment_fund.description }}</p>                                                   
+                          </p>                            
+                          <p>رمز الانضمام :
+                            {%if unique_code != None %} 
+                            <strong id="unique_code">{{ unique_code }}</strong>
+                            <button class="mx-1 copy-btn" onclick="copyFunction()"><i class="fa-regular fa-clone "></i></button>
+                            {%else%}
+                            <strong>
+                             لا يوجد رمز {%endif%}
+                          </strong> </p>
                         </div>
-                        <div class="col-md-6">
-                            <p><strong>الحالة:</strong> 
-                                {% if investment_fund.is_active == 'Active' %}
-                                    نشط
-                                {% elif investment_fund.is_active == 'Inactive' %}
-                                    غير نشط
-                                {% else %}
-                                نشط
-                                {% endif %}
-                            </p>                            
-                            <p><strong>رمز الانضمام:</strong> {{ unique_code }}</p>
+                        <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
+                          
+                            {% if investment_fund and investment_fund.total_balance %}
+                            <p>الرصيد :</p>
+                            <div>
+                              <span class="text-center fs-1 fw-bold">{{ investment_fund.total_balance }} <span class="fs-6 fw-normal">ر.س</span>
+                            </div>
+                        {% else %}
+                            <p>الرصيد : <strong>غير متاح</strong> </p>
+                        {% endif %}
                         </div>
                     </div>
         
                     <!-- Action Buttons -->
-                    <div class="text-center mt-4">
+                    <div class="text-start my-2">
                         <a href="{% url 'investment_fund:update_investment_fund' investment_fund.pk %}" class="btn btn-darkgreen">
-                            تعديل الصندوق
+                          <i class="bi bi-pencil-fill"></i> تعديل الصندوق
                         </a>
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteFundModal">
-                            حذف الصندوق
+                          <i class="bi bi-trash-fill"></i> حذف الصندوق
                         </button>                        
                     </div>
                 </div>
@@ -195,7 +220,7 @@
                     <p class="text-muted">قم بإنشاء الصندوق الآن</p>
                     <!-- Create Fund Button -->
                     <button type="button" class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#createFundModal">
-                        إنشاء الصندوق
+                        إنشاء الصندوق <i class="fa-solid fa-plus"></i>
                     </button>
                 </div>
             {% endif %}
@@ -204,9 +229,9 @@
     <div class="modal fade" id="createFundModal" tabindex="-1" aria-labelledby="createFundModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
-              <div class="modal-header" >
+              <div class="modal-header d-flex justify-content-between p-0 px-3 py-2" >
                   <h5 class="modal-title" id="createFundModalLabel">إنشاء صندوق جديد</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
                 <div class="container mt-5 d-flex justify-content-center">
@@ -249,9 +274,9 @@
     <div class="modal fade" id="deleteFundModal" tabindex="-1" aria-labelledby="deleteFundModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header d-flex justify-content-between p-0 px-3 py-2">
                     <h5 class="modal-title" id="deleteFundModalLabel">تأكيد الحذف</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                 </div>
                 <div class="modal-body">
                     هل أنت متأكد أنك تريد حذف هذا الصندوق الاستثماري؟ لا يمكن التراجع عن هذا الإجراء.
@@ -270,8 +295,8 @@
 {% endif %}
 
 
-
-          <div id="section2" class="dashboard-section" style="display: none;">
+<!-- التصويت-->
+          <div id="section2" class="container dashboard-section" style="display: none;">
             <div class="row gap-3 justify-content-center align-items-center">
               <div  class="col-md-3 investment-card border p-0 rounded-3" >
                 <img src="{%static 'images/building-66375_1280.jpg'%}" class="w-100"/>
@@ -313,6 +338,7 @@
               </div>
             </div>
           </div>
+
           <div id="section3" class="dashboard-section" style="display: none;">
             <div class="container mt-5">
               <div class="investment-summary p-4 bg-white shadow rounded">
@@ -336,35 +362,248 @@
                           {% endfor %}
                       </tbody>
                   </table>
+
               </div>
           </div>          
           </div>
-          <div id="section4" class="dashboard-section" style="display: none;">
+          <!--الفرص-->
+          <div id="section4" class="dashboard-section container" style="display: none;">
+            {%if investments%}
+              
             <div class="d-flex align-items-end justify-content-end">
-              <button class="btn btn-darkgreen">
+              <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#investmentOpportunityModal">
                 فرصة جديدة <i class="fa-solid fa-plus"></i>
               </button>
             </div>
-            <div class="row gap-3">
+          <!--اضافة فرصة-->
+          <div class="modal fade" id="investmentOpportunityModal" tabindex="-1" aria-labelledby="investmentOpportunityModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                      <div class="modal-header d-flex justify-content-between p-0 px-3 py-2">
+                          <h5 class="modal-title" id="investmentOpportunityModalLabel">إضافة فرصة استثمارية جديدة</h5>
+                          <button type="button" class="btn-close m-0 p-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <form method="POST" action="{%url 'investments:add_investment_opportunity'%}" enctype="multipart/form-data">
+                              {% csrf_token %}
+                          
+                              <div class="mb-3">
+                                  <label for="title" class="form-label" style="color: #761305;">عنوان الاستثمار</label>
+                                  <input type="text" class="form-control" id="title" name="title" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="description" class="form-label" style="color: #761305;">وصف الاستثمار</label>
+                                  <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="company_name" class="form-label" style="color: #761305;">اسم الشركة</label>
+                                  <input type="text" class="form-control" id="company_name" name="company_name" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="investment_type" class="form-label" style="color: #761305;">نوع الاستثمار</label>
+                                  <select class="form-select" id="investment_type" name="investment_type" required>
+                                      <option value="Stocks">أسهم</option>
+                                      <option value="Real Estate">عقارات</option>
+                                  </select>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="total_investment" class="form-label" style="color: #761305;">المبلغ الإجمالي للاستثمار</label>
+                                  <input type="number" class="form-control" id="total_investment" name="total_investment" required>
+                              </div>                          
+  
+                              <div class="mb-3">
+                                  <label for="start_date" class="form-label" style="color: #761305;">تاريخ البداية</label>
+                                  <input type="date" class="form-control" id="start_date" name="start_date" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="end_date" class="form-label" style="color: #761305;">تاريخ الانتهاء</label>
+                                  <input type="date" class="form-control" id="end_date" name="end_date" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="expected_return" class="form-label" style="color: #761305;"> الربح المتوقع %</label>
+                                  <input type="number" class="form-control" id="expected_return" name="expected_return" max="100" min="0" required>
+                              </div>
+                              <div class="mb-3">
+                                  <label for="investment_image" class="form-label" style="color: #761305;">صورة الاستثمار</label>
+                                  <input type="file" class="form-control" id="investment_image" name="investment_image" accept="image/*">
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="investment_pdf" class="form-label" style="color: #761305;">تحميل ملف PDF</label>
+                                  <input type="file" class="form-control" id="investment_pdf" name="investment_pdf" accept="application/pdf">
+                              </div>
+  
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                                  <button type="submit" class="btn btn-darkgreen">إضافة الفرصة</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+            <div class="row gap-3 mt-3 w-100 d-flex align-items-center justify-content-center">
               {% for investment in investments%}
-              <div  class="col-md-3 investment-card border p-0 rounded-3" >
+              <a href="{% url 'investments:investment_opportunity_detail' investment.id %}" class="col-md-4 investment-card p-0 rounded-3">
+              <div>
                 {% if investment.image%}
                  <img src="{{investment.image.url}}" class="w-100"/>
                  {%else%}
                  <img src="{%static 'images/building-66375_1280.jpg'%}" class="w-100"/>
                  {%endif%}
                 <div class="p-2">
-                  <h5>{{investment.title}}</h5>
-                  <small>{{investment.description|truncatechars:40}}</small>
-                  <div class="d-flex align-items-end justify-content-end">
-                    <a href="{% url 'investments:investment_opportunity_detail' investment.id %}" class="btn btn-darkgreen p-0 px-1"><small> تفاصيل</small></a>
+                  <div class="investment-description">
+                    <h5>{{investment.title}}</h5>
+                    <small class="text-muted">{{investment.description|truncatechars:40}}</small>  
+                  </div>
+                  <div class="d-flex justify-content-center align-items-center gap-3">
+                    <div class="d-flex flex-column my-2 row-gap-1 justify-content-center align-items-center ">
+                      <strong>{{investment.total_investment}} ر.س</strong>
+                      <small class="text-muted">المبلغ</small>
+                    </div>
+                    <div class="d-flex flex-column row-gap-1 justify-content-center align-items-center ">
+                      <strong>{{investment.expected_return}} %</strong>
+                      <small class="text-muted">الربح المتوقع</small>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    {% if investment.status == 'Open'%}
+                    <div class="p-0 px-3 border border-success text-success rounded-pill  ">مفتوحة</div>
+                    {%elif investment.status == 'Closed'%}
+                    <div class="p-0 px-3 border border-danger text-danger rounded-pill  ">مغلقة</div>
+                    {%else%}
+                    <div class="p-0 px-3 border border-warning text-warning rounded-pill  ">مكتملة </div>
+                    {%endif%}
                   </div>
                   </div>
               </div>
+            </a>
               {%endfor%}
+              <!--pagination-->
+              <br/>
+              <navbar aria-label="Page navigation example">
+                  <ul class="pagination justify-content-center gap-4">
+                      {% if investments.has_next %}
+                          <li class="page-item">
+                              <a class="page-link rounded-3 px-3 py-2" href="?page={{ investments.next_page_number }}&section=section4" aria-label="Next">
+                                <span aria-hidden="true"><i class="fa-solid fa-chevron-right "></i></span>
+                              </a>
+                          </li>
+                      {% else %}
+                          <li class="page-item disabled">
+                            <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+                          </li>
+                      {% endif %}
+
+                      {% if investments.has_previous %}
+                      <li class="page-item">
+                          <a class="page-link rounded-3 px-3 py-2" href="?page={{ investments.previous_page_number }}&section=section4" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+                          </a>
+                      </li>
+                  {% else %}
+
+                      <li class="page-item disabled ">
+                        <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+
+                      </li>
+                  {% endif %}
+                  </ul>
+              </navbar>    
             </div>
+      {%else%}
+            <div class="text-center dashboard-section1 d-flex flex-column justify-content-center align-items-center">
+              <h3>لا يوجد فرص حاليا</h3>
+              <p class="text-muted">قم بإنشاء الفرص الآن</p>
+              <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#investmentOpportunityModal">
+                فرصة جديدة <i class="fa-solid fa-plus"></i>
+              </button>
           </div>
-          <div id="section5" class="dashboard-section" style="display: none;">
+            <!--اضافة فرصة-->
+            <div class="modal fade" id="investmentOpportunityModal" tabindex="-1" aria-labelledby="investmentOpportunityModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                      <div class="modal-header d-flex justify-content-between p-0 px-3 py-2">
+                          <h5 class="modal-title" id="investmentOpportunityModalLabel">إضافة فرصة استثمارية جديدة</h5>
+                          <button type="button" class="btn-close m-0 p-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <form method="POST" action="{%url 'investments:add_investment_opportunity'%}" enctype="multipart/form-data">
+                              {% csrf_token %}
+                          
+                              <div class="mb-3">
+                                  <label for="title" class="form-label" style="color: #761305;">عنوان الاستثمار</label>
+                                  <input type="text" class="form-control" id="title" name="title" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="description" class="form-label" style="color: #761305;">وصف الاستثمار</label>
+                                  <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="company_name" class="form-label" style="color: #761305;">اسم الشركة</label>
+                                  <input type="text" class="form-control" id="company_name" name="company_name" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="investment_type" class="form-label" style="color: #761305;">نوع الاستثمار</label>
+                                  <select class="form-select" id="investment_type" name="investment_type" required>
+                                      <option value="Stocks">أسهم</option>
+                                      <option value="Real Estate">عقارات</option>
+                                  </select>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="total_investment" class="form-label" style="color: #761305;">المبلغ الإجمالي للاستثمار</label>
+                                  <input type="number" class="form-control" id="total_investment" name="total_investment" required>
+                              </div>                          
+  
+                              <div class="mb-3">
+                                  <label for="start_date" class="form-label" style="color: #761305;">تاريخ البداية</label>
+                                  <input type="date" class="form-control" id="start_date" name="start_date" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="end_date" class="form-label" style="color: #761305;">تاريخ الانتهاء</label>
+                                  <input type="date" class="form-control" id="end_date" name="end_date" required>
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="expected_return" class="form-label" style="color: #761305;"> الربح المتوقع %</label>
+                                  <input type="number" class="form-control" id="expected_return" name="expected_return" max="100" min="0" required>
+                              </div>
+                              <div class="mb-3">
+                                  <label for="investment_image" class="form-label" style="color: #761305;">صورة الاستثمار</label>
+                                  <input type="file" class="form-control" id="investment_image" name="investment_image" accept="image/*">
+                              </div>
+  
+                              <div class="mb-3">
+                                  <label for="investment_pdf" class="form-label" style="color: #761305;">تحميل ملف PDF</label>
+                                  <input type="file" class="form-control" id="investment_pdf" name="investment_pdf" accept="application/pdf">
+                              </div>
+  
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                                  <button type="submit" class="btn btn-darkgreen">إضافة الفرصة</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      {%endif%}
+
+          </div>
+          <!--الحساب-->
+          <div id="section5" class="container dashboard-section" style="display: none;">
             <div class="row gap-2">
               <div  class="col-md-5 person-card d-flex border p-0 rounded-3" >
                 <img src="{%static 'images/building-66375_1280.jpg'%}" style="height: 30px; width:80px; object-fit: cover;"  class="h-100"/>
@@ -390,7 +629,7 @@
               </div>
             </div>
           </div>
-          <div id="section6" class="dashboard-section" style="display: none;">
+          <div id="section6" class="container dashboard-section" style="display: none;">
             <div class="container p-0">
                 <div class="row justify-content-center">
                     <!-- Wallet Section -->
@@ -422,15 +661,60 @@
 {%endblock%}
   {%block script%}
   <script>
+    document.getElementById("shareButton").addEventListener("click", function() {
+        var shareText = document.getElementById("unique_code").textContent;
+
+        // Check if Web Share API is available in the browser
+        if (navigator.share) {
+            navigator.share({
+                title: 'Share this Code',
+                text: shareText,
+                url: window.location.href  // Optionally, add the current page URL
+            })
+            .then(() => console.log('Code shared successfully!'))
+            .catch((error) => console.error('Error sharing code: ', error));
+        } else {
+            alert("Your browser doesn't support the Web Share API.");
+        }
+    });
+</script>
+  <script>
+    function copyFunction() {
+        // Get the element containing the text you want to copy
+        var copyText = document.getElementById("unique_code");
+
+        // Get the text content of the element
+        var textToCopy = copyText.textContent || copyText.innerText; // Use textContent for modern browsers
+
+        // Copy the text to the clipboard
+        navigator.clipboard.writeText(textToCopy)
+    }
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
     // Handle the section content change
     const navLinks = document.querySelectorAll('.nav-link-dashboard');
     const sections = document.querySelectorAll('.dashboard-section');
 
-    // Set the default visible section
-    const defaultSection = 'section1'; // This can be any section you want to show by default
-    document.getElementById(defaultSection).style.display = 'block';
-    document.querySelector(`.nav-link-dashboard[data-content="${defaultSection}"]`).classList.add('active');
-    
+    window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeSection = urlParams.get('section');  // الحصول على القسم من معلمة الـ URL
+
+    if (activeSection) {
+        document.getElementById(activeSection).classList.add('active');
+        document.getElementById(activeSection).style.display = 'block'; // إظهار القسم الافتراضي
+        document.querySelector(`.nav-link-dashboard[data-content="${activeSection}"]`).classList.add('active');
+        const defaultSection = 'section1'; 
+        document.getElementById(defaultSection).style.display = 'none'; 
+        document.querySelector(`.nav-link-dashboard[data-content="${defaultSection}"]`).classList.remove('active');
+
+    } else {  
+        const defaultSection = 'section1'; 
+        document.getElementById(defaultSection).style.display = 'block'; 
+        document.querySelector(`.nav-link-dashboard[data-content="${defaultSection}"]`).classList.add('active');
+    }
+}
+
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -453,4 +737,6 @@
     });
 
 </script>
+
+
 {%endblock%}

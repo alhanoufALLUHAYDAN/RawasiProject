@@ -24,13 +24,13 @@ body {
     padding-left: 20px;
 }
 
-.btn-darkgreen {
-    background-color: #0f2e29;
-    color: white;
+.btn-darkgreen{
+  background-color: #0f2e29 !important;
+  color: white !important;
 }
-
-.btn-darkgreen:hover {
-    opacity: 0.8;
+.btn-darkgreen:hover{
+  background-color: #194d45  !important;
+  color: white !important;
 }
 
 .alert {
