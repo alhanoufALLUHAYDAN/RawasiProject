@@ -4,42 +4,29 @@
 {% block head %}
 <style>
     body{
-       background-image: url("/static/images/Background.png");;
+       background-image: url("/static/images/Background.png");
+       background-size: cover;
+       background-repeat: no-repeat;
     }
-    .investment-card {
-        background: rgba(255, 255, 255, 0.8);  
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    .investment-wrapper{
+        background: #f9f6ef;  
+        border-radius: 15px;
         padding: 3rem;
-        margin-top: 15rem;
+        margin-top: 5rem;
     }
     .investment-container {
-        display: flex;
-        flex-direction: row-reverse; 
-        gap: 2rem;
-        align-items: flex-start;
-        justify-content: space-between;
         width: 100%;
     }
 
     .investment-image-container {
-        position: relative; 
-        top: 0;
-        flex: 1;
-        max-width: 600px; 
+       height: 24rem;
     }
 
-    .investment-details-container {
-        flex: 2;
-        color: #555;
-        max-width: 100%;
-    }
+ 
 
     .investment-image {
         width: 100%;
-        max-height: 500px; 
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
         object-fit: cover; 
         cursor: pointer; 
     }
@@ -49,59 +36,56 @@
         font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 1.5rem;
-        word-wrap: break-word; 
     }
 
     .investment-description {
         font-size: 1.2rem;
         margin-bottom: 2rem;
-        color: #666;
-        word-wrap: break-word; 
+        color: #5e5e5e;
+
     }
 
     .investment-detail-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2rem;
         margin-top: 1.5rem;
-        justify-content: flex-start;
     }
 
     .investment-detail-item {
-        flex: 1;
-        min-width: 250px;
         font-size: 1.2rem;
-        color: #333;
+        color: #f7f7f7;
+        margin-top: 1rem;
         margin-bottom: 1rem;
-        padding: 0.5rem;
-        background-color: #f2f2f2;
-        border-radius: 10px;
-    }
+        padding: 0.2rem;
+        background-color: #E4b42d;
 
-    .investment-detail-item span {
-        font-weight: bold;
-        color: #761305;
     }
-
-    .file-download-btn, .delete-btn, .update-btn, .publish-btn {
+    .investment-details-container{
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        background-color: #f9f6ef;  
+    }
+    .invesment-icon{
+        background-color: #761305;
+        color: #f7f7f7;
+        font-size:x-small;
+        padding: 0.4rem;
+    }
+    .file-download-btn, .delete-btn {
         background-color: #761305;
         color: white;
-        border-radius: 10px;
+        border-radius: 6px;
         padding: 12px 20px;
         font-size: 1.1rem;
         transition: background-color 0.3s ease;
         display: inline-block;
-        margin-top: 20px;
         text-decoration: none;
     }
 
-    .file-download-btn:hover, .delete-btn:hover, .update-btn:hover, .publish-btn:hover {
+    .file-download-btn:hover, .delete-btn:hover{
         background-color: #9e2b1c;
     }
-
+    .update-btn:hover{
+        background-color: #3b6e4e;
+    }
     .delete-btn { background-color: #d9534f; }
-    .update-btn { background-color: #3b6e4e; }
-    .publish-btn { background-color: #3b496e; }
 
     .meta-info {
         margin-top: 20px;
@@ -188,17 +172,6 @@
         box-shadow: 0 0 5px rgba(118, 19, 5, 0.5);
     }
 
-    .btn-darkgreen {
-        background-color: #3b6e4e;
-        border-color: #3b6e4e;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-darkgreen:hover {
-        background-color: #2a4a35;
-        border-color: #2a4a35;
-    }
-
     .modal-footer .btn-secondary {
         background-color: #ccc;
         border-color: #ccc;
@@ -218,84 +191,126 @@
 
 {% block content %}
 <div class="container">
-    <div class="investment-card">
+    <div class="investment-wrapper h-100">
         {% if messages %}
         {% for message in messages %}
-           {% if not request.session.show_message or message.tags != request.session.show_message %}
-               <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}" role="alert">
-                   {{ message }}
-               </div>
-               {% endif %}
-           {% endfor %}
-       {% endif %}
-        <div class="investment-container">
-            <div class="investment-image-container">
-                {% if investment_opportunity.image %}
-                    <img src="{{ investment_opportunity.image.url }}" alt="Investment Image" class="investment-image img-fluid" onclick="openPopup('{{ investment_opportunity.image.url }}')">
-                {% else %}
-                    <p style="color: red; font-weight: bold;">لم يتم إرفاق صورة</p>
-                {% endif %}
+        {% if not request.session.show_message or message.tags != request.session.show_message %}
+        <div class=" w-100">
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} w-100 d-flex justify-content-between align-items-center" role="alert">
+                {{ message }}
+            <button type="button" class="btn-close m-0 px-2" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
             </div>
-            
-            <div class="investment-details-container">
-                <h2 class="investment-title">{{ investment_opportunity.title }}</h2>
-                <p class="investment-description">{{ investment_opportunity.description }}</p>
-
-                <div class="investment-detail-row">
-                    <div class="investment-detail-item">
-                        <span>نوع الاستثمار:</span> 
-                        {% if investment_opportunity.investment_type == 'Stocks' %}
-                            أسهم
-                        {% elif investment_opportunity.investment_type == 'Real Estate' %}
-                            عقارات
-                        {% else %}
-                            {{ investment_opportunity.investment_type }}
-                        {% endif %}
+            {% endif %}
+        {% endfor %}
+      {% endif %}
+       <h2 class="investment-title px-3">{{ investment_opportunity.title }}</h2>
+        <div class="investment-container container p-0 m-0">
+            <div class="row w-100 container p-0 m-0">
+                <div class="first-side-details col-md-7 row">
+                    <div class="col-12" >
+                        <div class="investment-image-container">
+                            {% if investment_opportunity.image %}
+                                <img src="{{ investment_opportunity.image.url }}" alt="Investment Image" class="investment-image img-fluid h-100" onclick="openPopup('{{ investment_opportunity.image.url }}')">
+                            {% else %}
+                                <p style="color: red; font-weight: bold;">لم يتم إرفاق صورة</p>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="investment-detail-item">
-                        <span>المبلغ الإجمالي للاستثمار:</span> {{ investment_opportunity.total_investment }} ريال سعودي
+                    <div class="col-12" >
+                        <div class="investment-detail-item text-center col-3 rounded-pill border px-3 ">
+                            {% if investment_opportunity.investment_type == 'Stocks' %}
+                                أسهم
+                            {% elif investment_opportunity.investment_type == 'Real Estate' %}
+                                عقارات
+                            {% else %}
+                                {{ investment_opportunity.investment_type }}
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="investment-detail-item">
-                        <span>العائد المتوقع:</span> {{ investment_opportunity.expected_return }}
+                        <div class="col-12 my-2" >
+                        <p class="investment-description">{{ investment_opportunity.description }}</p>
                     </div>
-                    <div class="investment-detail-item">
-                        <span>تاريخ البدء:</span> {{ investment_opportunity.start_date|date:"d M Y" }}
-                    </div>
-                    <div class="investment-detail-item">
-                        <span>تاريخ الانتهاء:</span> {{ investment_opportunity.end_date|date:"d M Y" }}
-                    </div>
-                    {% if investment_opportunity.votes.count > 0 %}
-                        <p><strong>نسبة الموافقة: </strong>{{ investment_opportunity.approval_percentage|floatformat:2 }}%</p>
-                    {% else %}
-                        <p>لا توجد تصويتات حتى الآن.</p>
-                    {% endif %}
-
-
                 </div>
+                <div class="second-side-details col-md-5">
+                    <div class="investment-details-container rounded-3 py-3 px-3">
+                        <h5 class="text-end fw-bold">تفاصيل الاستثمار</h5>
+                        <hr/>
+                        <div class="investment-detail-row d-flex flex-column row-gap-3 align-items-strat justify-content-center">    
+                            <div class="">
+                                <i class="fa-solid fa-sack-dollar rounded-circle  invesment-icon"></i> 
+                                <strong>
+                                    <span class="text-muted fw-normal"> مبلغ الاستثمار </span>{{ investment_opportunity.total_investment }} ر.س
+                                </strong>
+                            </div>
+                            <div class="">
+                                <i class="fa-solid fa-hand-holding-dollar rounded-circle  invesment-icon"> </i>
+                                <strong><span class="text-muted fw-normal"> الربح المتوقع</span> {{ investment_opportunity.expected_return }} %</strong> 
+                            </div>
+                            <div class="">
+                                <i class="fa-solid fa-calendar-day rounded-circle  invesment-icon"></i>
+                                <strong> <span class="text-muted fw-normal"> يبدأ</span> {{ investment_opportunity.start_date|date:"d M Y" }}</strong>
+                            </div>
+                            <div class="">
+                                <i class="fa-solid fa-calendar-xmark rounded-circle  invesment-icon"></i>
+                                <strong>
+                                    <span class="text-muted fw-normal"> ينتهي </span> {{ investment_opportunity.end_date|date:"d M Y" }}
+                                </strong>
+                            </div>
+                            <div class="">
+                                <i class="fa-regular fa-clock rounded-circle  invesment-icon"></i>
+                                <strong>  <span class="text-muted fw-normal"> يوم متبقي </span> {{ investment_opportunity.end_date|date:"d M Y" }} </strong>
+                            </div>
+                            <div>
+                            {% if investment_opportunity.votes.count > 0 %}
+                            <i class="fa-solid fa-bullhorn rounded-circle  invesment-icon"></i>
+                                <strong> <span class="text-muted fw-normal"> نسبة الموافقة </span</strong>{{ investment_opportunity.approval_percentage|floatformat:2 }} %
+                            {% else %}
+                            <i class="fa-solid fa-bullhorn rounded-circle  invesment-icon"></i>
+                                <strong> لا توجد تصويتات حتى الآن. </strong>
+                            {% endif %}
+                        </div>
+        
+        
+                        </div>
 
-                {% if investment_opportunity.pdf_file %}
-                    <a href="{{ investment_opportunity.pdf_file.url }}" class="file-download-btn" download>
-                        <i class="bi bi-cloud-arrow-down-fill"></i> تحميل ملف PDF
+                    </div>
+                    {% if investment_opportunity.fund.leader.user == request.user %}
+                    <a href="#" class="btn btn-darkgreen w-100 my-3" data-bs-toggle="modal">
+                        بيع
                     </a>
-                {% endif %}
-                
-                {% if investment_opportunity.fund.leader.user == request.user %}
-                <a href="#" class="delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                    <i class="bi bi-trash-fill"></i> حذف الفرصة
-                </a>
-
-                <a href="#" class="update-btn" data-bs-toggle="modal" data-bs-target="#editModal">
-                    <i class="bi bi-pencil-fill"></i> تعديل الفرصة
-                </a>
-                <a href="#" class="delete-btn" data-bs-toggle="modal">
-                    بيع
-                </a>
-
-                <a href="#" class="update-btn" data-bs-toggle="modal">
-                    شراء
-                </a>
-                {% endif %}
+    
+                    <a href="#" class="btn btn-darkgreen w-100 my-3" data-bs-toggle="modal">
+                        شراء
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="col-12 d-flex justify-content-between ">
+                    
+                        {% if investment_opportunity.pdf_file %}
+                        <div>
+                        <a href="{{ investment_opportunity.pdf_file.url }}" class="file-download-btn" download>
+                            <i class="bi bi-cloud-arrow-down-fill"></i> تحميل ملف PDF
+                        </a>
+                    </div>
+                    {% endif %}
+                 
+                    {% if investment_opportunity.fund.leader.user == request.user %}
+                    <div class="d-flex gap-3 px-4">
+                        <a href="#" class="delete-btn btn-darkred" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="bi bi-trash-fill"></i> حذف الفرصة
+                        </a>
+        
+                        <a href="#" class="btn btn-darkgreen d-flex gap-2 justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editModal">
+                            <i class="bi bi-pencil-fill"></i> تعديل الفرصة
+                        </a>    
+                    </div>
+                    {% endif %}
+                </div>
             </div>
+           
+            
+          
         </div>
     </div>
 </div>

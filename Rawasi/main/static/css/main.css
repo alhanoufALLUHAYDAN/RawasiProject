@@ -391,8 +391,8 @@ main{
     color: white !important;
 }
 .btn-darkgreen:hover{
-    background-color: #194d45;
-    color: white;
+    background-color: #194d45  !important;
+    color: white !important;
 }
 .btn-darkred{
     background-color: #761305;
