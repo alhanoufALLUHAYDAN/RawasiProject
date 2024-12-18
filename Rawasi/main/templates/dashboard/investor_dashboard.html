@@ -83,45 +83,35 @@ body {
     <!-- Content Area -->
     <div class="col-md-9 p-3">
         <div id="section1" class="dashboard-section">
-            <div class="container fund-container">
-                <div class="row">
-                    <!-- Half Table -->
-                    <div class="col-md-6">
-                        <h3>الصناديق الاستثمارية</h3>
-                        <table class="table table-striped fund-table">
-                            <thead>
-                                <tr>
-                                    <th>اسم الصندوق</th>
-                                    <th>المبلغ المستثمر</th>
-                                    <th>الحالة</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if joined_funds %}
-                                    {% for investor_fund in joined_funds %}
-                                        <tr class="fund-row" data-fund-id="{{ investor_fund.fund.id }}">
-                                            <td>{{ investor_fund.fund.name }}</td>
-                                            <td>{{ investor_fund.amount_invested }} ر.س</td>
-                                            <td>
-                                                {% if investor_fund.fund.is_active == 'Active' %}
-                                                    <span class="text-success">نشط</span>
-                                                {% else %}
-                                                    <span class="text-danger">غير نشط</span>
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                {% else %}
-                                    <tr>
-                                        <td colspan="3" class="text-center">لم تنضم إلى أي صندوق بعد.</td>
-                                    </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <div class="container mt-5">
+                <!-- Investor Dashboard Header -->
+                <h3>صناديق الاستثمار التي انضممت إليها</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>اسم الصندوق</th>
+                            <th>المبلغ المستثمر</th>
+                            <th>الأرباح</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fund in profit_data %}
+                            <tr>
+                                <td>{{ fund.fund_name }}</td>
+                                <td>{{ fund.amount_invested }} ريال</td>
+                                <td>{{ fund.profit }} ريال</td>
+                                <td>{{ fund.status }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4">لا توجد صناديق استثمار للعرض.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>            
+        </div>        
           <div id="section2" class="dashboard-section" style="display: none;">
             <div class="row">
                 <div  class="col-md-3 investment-card border p-0 rounded-3" >
@@ -161,34 +151,34 @@ body {
                             </tr>
                         </thead>
                         <tbody>
-                            {% if profit_data %}
-                                {% for data in profit_data %}
-                                <tr>
-                                    <td>{{ data.fund_name }}</td>
-                                    <td>{{ data.amount_invested }} ر.س</td>
-                                    <td>{{ data.profit }} ر.س</td>
-                                    <td>{{ data.status }}</td>
-                                    <td>
-                                        <form method="POST" action="{% url 'investment_fund:withdraw_profit' %}">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="fund_name" value="{{ data.fund_name }}">
-                                            <input type="hidden" name="profit" value="{{ data.profit }}">
-                                            <button type="submit" class="btn btn-darkgreen">سحب الأرباح</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="5" class="text-center">لا توجد بيانات أرباح حاليا.</td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
+                            {% for fund in profit_data %}
+                            <tr>
+                                <td>{{ fund.fund_name }}</td>
+                                <td>{{ fund.amount_invested }} ر.س</td>
+                                <td>{{ fund.profit }} ر.س</td>
+                                <td>{{ fund.status }}</td>  
+                                <td>
+                                    {% if fund.status == 'Pending' %}
+                                    <form method="POST" action="{% url 'investment_fund:withdraw_profit' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="fund_id" value="{{ fund.fund_id }}">
+                                        <input type="hidden" name="profit" value="{{ fund.profit }}">
+                                       
+                                    </form> 
+                                    <button class="btn btn-action btn-darkred withdraw mb-2" data-bs-toggle="modal" data-bs-target="#withdrawModal">
+                                        سحب الأرباح
+                                    </button>                                   
+                                    {% else %}
+                                    <button type="button" class="btn btn-disabled" disabled>غير متاح</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>                                                                                                    
                     </table>
                 </div>
             </div>
-        </div>
-        
+        </div>        
           <div id="section4" class="dashboard-section" style="display: none;">
             
             <div class="container p-0">
@@ -218,59 +208,80 @@ body {
                     <button class="btn btn-action btn-darkred withdraw mb-2" data-bs-toggle="modal" data-bs-target="#withdrawModal">
                         سحب الأرباح
                     </button>
-                </div>                        
-                 <!-- <a href="{% url 'investment_fund:withdraw_profit' %}" class="btn btn-darkgreen">سحب الأرباح</a> -->
+                </div> 
+                <a href="{% url 'investment_fund:wallet_view' %}" class="btn btn-darkgreen">عرض المحفظة</a>                       
             </div>
-            <!-- Deposit Modal -->
-            <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header d-flex justify-content-between">
-                        <h5 class="modal-title" id="depositModalLabel">إضافة أموال إلى المحفظة</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                    <form method="POST" action="{% url 'investment_fund:deposit_to_wallet' %}">
+<!-- Deposit Modal -->
+<div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header d-flex justify-content-between">
+              <h5 class="modal-title" id="depositModalLabel">إضافة أموال إلى المحفظة</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form method="POST" action="{% url 'investment_fund:deposit_to_wallet' %}">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                      <label for="amount" class="form-label">المبلغ</label>
+                      <input type="number" name="amount" id="amount" class="form-control" placeholder="أدخل المبلغ" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="description" class="form-label">الوصف</label>
+                      <input type="text" name="description" id="description" class="form-control" placeholder="اختياري">
+                  </div>
+                  <button type="submit" class="btn btn-darkgreen w-100 mt-3">إتمام الإيداع</button>
+              </form>
+          </div>
+      </div>
+    </div>
+  </div>
+  
+
+<!-- Transfer Modal -->
+<div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between">
+                <h5 class="modal-title" id="transferModalLabel">تحويل أموال إلى الصندوق</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Check if joined funds are available -->
+                {% if joined_funds %}
+                    <form method="POST" action="{% url 'investment_fund:transfer_to_fund' pk=joined_funds.first.fund.id %}">
                         {% csrf_token %}
+                        
                         <div class="mb-3">
                             <label for="amount" class="form-label">المبلغ</label>
-                            <input type="number" name="amount" id="amount" class="form-control" placeholder="أدخل المبلغ" required>
+                            <input type="number" name="amount" class="form-control" id="amount" placeholder="أدخل المبلغ" required>
                         </div>
                         <div class="mb-3">
-                            <label for="description" class="form-label">الوصف</label>
-                            <input type="text" name="description" id="description" class="form-control" placeholder="اختياري">
+                            <label for="description" class="form-label">الوصف (اختياري)</label>
+                            <input type="text" name="description" id="description" class="form-control" placeholder="أدخل وصف التحويل">
                         </div>
-                        <button type="submit" class="btn btn-darkgreen w-100 mt-3">إتمام الإيداع</button>
-                    </form>
-                                    
-                    </div>
-                </div>
-            </div>
-        </div>
-        
 
-        <div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header d-flex justify-content-between">
-                        <h5 class="modal-title" id="withdrawModalLabel">تحويل أموال إلى الصندوق</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    {% if fund %}
-    <form method="POST" action="{% url 'investment_fund:transfer_to_fund' pk=fund.id %}">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="withdraw-amount" class="form-label">المبلغ</label>
-            <input type="number" name="amount" class="form-control" id="withdraw-amount" placeholder="أدخل المبلغ" required>
-        </div>
-        <button type="submit" class="btn btn-darkred w-100">إتمام التحويل</button>
-    </form>
-{% else %}
-    <p class="text-center">لم يتم العثور على صندوق الاستثمار الخاص بك.</p>
-{% endif %}
-                </div>
+                        <div class="mb-3">
+                            <label for="fund_id" class="form-label">اختر صندوق الاستثمار</label>
+                            <select name="fund_id" id="fund_id" class="form-control" required>
+                                <option value="" disabled selected>اختر صندوق الاستثمار</option>
+                                {% for fund in joined_funds %}
+                                    <option value="{{ fund.fund.id }}">{{ fund.fund.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-darkred w-100">إتمام التحويل</button>
+                    </form>
+                {% else %}
+                    <p class="text-center">لم تقم بالانضمام إلى أي صناديق استثمار بعد.</p>
+                {% endif %}
             </div>
         </div>
+    </div>
+</div>
+
                 </div>
                   <div id="section5" class="dashboard-section" style="display: none;">
                     <div class="container-wrapper-profile">
@@ -343,36 +354,116 @@ body {
               </div>
               <!-- Withdraw Profit Modal -->
 <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h5 class="modal-title" id="withdrawModalLabel">سحب الأرباح</h5>
+            <div class="modal-header d-flex justify-content-between">
+                <h5 class="modal-title" id="withdrawProfitModalLabel">سحب الأرباح</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <!-- Modal Body -->
             <div class="modal-body">
                 <form method="POST" action="{% url 'investment_fund:withdraw_profit' %}">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="amount" class="form-label">المبلغ المراد سحبه</label>
-                        <input type="number" name="amount" id="amount" class="form-control" placeholder="أدخل المبلغ" required>
+                        <input type="number" name="profit" id="amount" class="form-control" placeholder="أدخل المبلغ" required>
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">الوصف (اختياري)</label>
                         <input type="text" name="description" id="description" class="form-control" placeholder="أدخل وصف السحب">
                     </div>
+                    <div class="mb-3">
+                        <label for="fund" class="form-label">اختار صندوق الاستثمار</label>
+                        <select name="fund_id" class="form-control">
+                            {% for fund in joined_funds %}
+                                <option value="{{ fund.fund_id }}">
+                                    {{ fund.fund.name }} - ربح: {{ fund.profit }} ريال
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="action" class="form-label">العملية</label>
+                        <select name="action" class="form-control">
+                            <option value="withdraw_to_wallet">سحب إلى المحفظة</option>
+                            <option value="reinvest_in_fund">إعادة استثمار في الصندوق</option>
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-darkgreen w-100">تأكيد السحب</button>
-                </form>
+                </form>                
             </div>
-            
-          </div>   
-        </div>        
-         
-        </div>        
-    </div>
-          
-        
+
+  
+        </div>
+    </div> 
+          <div id="section5" class="dashboard-section" style="display: none;">
+                        <div class="container-wrapper-profile">
+                          <div id="alert-container"></div>
+                          <div class="profile-container container">
+                              <div class="profile-image-container row w-100">
+                                <div class="col-md-8 d-flex gap-3 align-items-start ">
+                                  <h2 class="mb-3"> بيانات الحساب  </h2>
+                                  <div class="mt-2">
+                                    <span class="edit-icon" id="edit-image-icon"><i class="fas fa-pencil-alt"></i></span>
+                                    <span class="check-icon hidden" id="check-icon"><i class="fas fa-check"></i></span>    
+                                  </div>
+                                </div>
+                                  <div class=" col-md-4">
+                                    <img src="{{ user.profile_picture.url }}" alt="Profile Image" class="profile-image rounded-3 " id="profile-img">
+                                  </div>
+    
+                              </div>
+                              
+                              <div class="profile-info mt-3">
+                                  <form id="profile-form" method="POST" enctype="multipart/form-data">
+                                      {% csrf_token %}
+                                      
+                                      <div class="form-group">
+                                          <label for="full_name">الاسم الكامل</label>
+                                          <input type="text" class="form-control" value="{{ user.full_name }}" name="full_name" id="full-name" disabled>
+                                      </div>
+                      
+                                      <div class="form-group">
+                                          <label for="username">اسم المستخدم</label>
+                                          <input type="text" class="form-control" value="{{ user.username }}" name="username" id="username" disabled>
+                                      </div>
+                      
+                                      <div class="form-group">
+                                          <label for="email">البريد الإلكتروني</label>
+                                          <input type="email" class="form-control" value="{{ user.email }}" name="email" id="email" disabled>
+                                      </div>
+                      
+                                      <div class="form-group">
+                                          <label for="phone_number">رقم الجوال</label>
+                                          <input type="text" class="form-control" value="{{ user.phone_number }}" name="phone_number" id="phone-number" disabled>
+                                      </div>
+                      
+                                      <div class="form-group">
+                                          <label for="dob">تاريخ الميلاد</label>
+                                          <input type="date" class="form-control" value="{{ user.date_of_birth|date:'Y-m-d' }}" name="date_of_birth" id="dob" disabled>
+                                      </div>
+                      
+                                      <div class="form-group hidden" id="profile-picture-group">
+                                          <label for="profile_picture">الصورة الشخصية</label>
+                                          <input type="file" class="form-control" name="profile_picture" id="profile-picture">
+                                      </div>
+                      
+                                      <div class="form-group hidden" id="password-group">
+                                          <label for="password">كلمة المرور الجديدة</label>
+                                          <input type="password" class="form-control" placeholder="أدخل كلمة المرور الجديدة" name="password" id="password">
+                                      </div>
+                      
+                                      <div class="form-group hidden" id="password-confirm-group">
+                                          <label for="password_confirm">تأكيد كلمة المرور</label>
+                                          <input type="password" class="form-control" placeholder="تأكيد كلمة المرور" name="password_confirm" id="password_confirm">
+                                      </div>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>
+                  </div>   
+      </div>
+  
+
 </section>
   {%endblock%}
   {%block script%}
