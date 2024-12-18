@@ -14,19 +14,22 @@ class InvestorFund(models.Model):
 
     def calculate_profit(self):
         """Calculates profit based on associated opportunities and expected returns."""
-        total_profit = 0.0
-        opportunities = self.fund.investment_opportunities.filter(status='Open')
+        total_profit = Decimal(0.0)  # Use Decimal for precise calculations
+        opportunities = self.fund.investment_opportunities.filter(status='Closed')  # Consider only closed opportunities
+        
         for opportunity in opportunities:
-            invested_period = (opportunity.end_date - opportunity.start_date).days or 1
-            profit = float(self.amount_invested) * (opportunity.expected_return / 100)
+            # Calculate the investment period (in days)
+            invested_period_days = (opportunity.end_date - opportunity.start_date).days or 1
+            # Calculate profit considering investment duration
+            profit = self.amount_invested * (opportunity.expected_return / 100) * (invested_period_days / 365)  # Pro-rate the return over the investment duration
             total_profit += profit
-
-        # Update status after calculating profit
+        
+        # Optionally update the status after calculating the profit
         if total_profit > 0:
             self.status = 'Completed'
             self.save()
 
-        return round(total_profit, 2)
+        return round(total_profit, 2)  # Return profit rounded to 2 decimal places
 
 
 class InvestmentOpportunity(models.Model):
