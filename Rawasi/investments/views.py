@@ -18,6 +18,8 @@ def add_investment_opportunity(request):
     leader = Leader.objects.filter(user=request.user).first()
     active_section = 'section4' 
 
+
+
     if not leader:
         messages.error(request, "فقط المسؤول يمكنه إضافة فرص استثمارية.")
         return redirect('dashboard:fund_dashboard_view') 
@@ -39,7 +41,8 @@ def add_investment_opportunity(request):
             messages.error(request, "جميع الحقول مطلوبة.")
             return redirect(f'/dashboard/fund/?section={active_section}')
 
-        fund = InvestmentFund.objects.first()
+        fund = leader.managed_fund
+        print(fund.is_active)
         if not fund:
             messages.error(request, "لا يوجد صندوق استثماري في النظام. يرجى إضافة صندوق استثماري أولاً.")
             return redirect(f'/dashboard/fund/?section={active_section}')

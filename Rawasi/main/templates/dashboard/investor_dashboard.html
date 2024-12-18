@@ -67,11 +67,11 @@ body {
                     <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST">
+                    <form method="POST" action="{%url 'main:investor_dashboard_view'%}">
                         {% csrf_token %}
                         <input type="text" name="join_code" maxlength="10" class="form-control" placeholder="أدخل رمز الانضمام" required/>
                         <div class="modal-footer border-white">
-                            <button type="submit" name="submit_code" class="btn btn-darkgreen">ارسال</button>
+                            <button type="submit" class="btn btn-darkgreen">ارسال</button>
                         </div>
                     </form>
                 </div>
@@ -82,6 +82,18 @@ body {
     </div>
     <!-- Content Area -->
     <div class="col-md-9 p-3">
+        {% if messages %}
+        {% for message in messages %}
+        {% if not request.session.show_message or message.tags != request.session.show_message %}
+        <div class=" w-100">
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} w-100 d-flex justify-content-between align-items-center" role="alert">
+                {{ message }}
+            <button type="button" class="btn-close m-0 px-2" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+      {% endif %}
         <div id="section1" class="dashboard-section">
             <div class="container mt-5">
                 <!-- Investor Dashboard Header -->

@@ -648,14 +648,30 @@ main{
 }
 
 .delete-member-btn{
-    font-size: smaller;
-    padding-right: 0.2rem;
-    padding-left: 0.2rem;
-    padding-top:  0.1rem;
-    padding-bottom:  0.1rem;
+    font-size: 0.7rem;
+    padding-right: 0.15rem;
+    padding-left: 0.15rem;
+    padding-top:  0.02rem;
+    padding-bottom:  0.02rem;
+    border-radius: 3px;
+    margin-bottom: 0.2rem;
 
 }
+.investor-communication1{
+  color: #143e37;
+  transition: color ease 0.3s;
+}
+.investor-communication1:hover{
+  color: #1b4740;
+}
 
+.investor-communication2{
+  color: #E4b42d;
+  transition: color ease 0.3s;
+}
+.investor-communication2:hover{
+  color: #e2c472;
+}
 
   .card-wallet {
     border-radius: 15px;

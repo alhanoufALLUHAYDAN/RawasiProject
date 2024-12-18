@@ -74,9 +74,9 @@ def fund_dashboard_view(request):
             p=Paginator(investments,4)
             page=request.GET.get('page',1)
             investments_list=p.get_page(page)
-        investorFund=InvestorFund.objects.filter(fund=investment_fund, investor__user=request.user).exists()
-        #investors=investorFund.investor.objects.all()
-        print(investorFund)  
+        if investment_fund.fund_investments:    
+            fund_investors = investment_fund.fund_investments.all().select_related('investor')       
+            #print(investment.investor.user.full_name)   
     except InvestmentFund.DoesNotExist:
         investment_fund = None
 
@@ -115,6 +115,7 @@ def fund_dashboard_view(request):
         "investments":investments_list,
         "total_balance": total_balance,
         "total_profit": total_profit,
+        "fund_investors":fund_investors,
 
     }
 
@@ -167,7 +168,9 @@ def investor_dashboard_view(request):
         if join_code:
             try:
                 # Fetch the investment fund using the join code and check if it's active
-                fund = InvestmentFund.objects.get(join_code=join_code, is_active='Active')
+                fund = InvestmentFund.objects.get(join_code=join_code)
+                if fund.is_active=='Inactive':
+                    messages.warning(request, 'الصندوق غير نشط حاليا, لا يمكنك الانضمام', "warning")
                 if InvestorFund.objects.filter(fund=fund, investor__user=request.user).exists():
                     messages.warning(request, 'أنت بالفعل عضو في هذا الصندوق.', "warning")
                 else:

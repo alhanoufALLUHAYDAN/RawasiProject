@@ -255,8 +255,8 @@
                         <div class="mb-3">
                             <label for="is_active" class="form-label" style="color: #761305;">الحالة</label>
                             <select class="form-select" id="is_active" name="is_active" required>
-                                <option value="True">نشط</option>
-                                <option value="False">غير نشط</option>
+                                <option value="Active">نشط</option>
+                                <option value="Inactive">غير نشط</option>
                             </select>
                         </div>
                         <div class="modal-footer">
@@ -605,28 +605,28 @@
           <!--الحساب-->
           <div id="section5" class="container dashboard-section" style="display: none;">
             <div class="row gap-2">
+              {% for investor_fund in fund_investors%}
               <div  class="col-md-5 person-card d-flex border p-0 rounded-3" >
-                <img src="{%static 'images/building-66375_1280.jpg'%}" style="height: 30px; width:80px; object-fit: cover;"  class="h-100"/>
+                <img src="{{investor_fund.investor.user.profile_picture.url}}" style="height: 30px; width:80px; object-fit: cover;"  class="h-100"/>
                 <div class="p-2 w-100 ">
-                  <div class="d-flex justify-content-between  ">
                     <div class="d-flex flex-column">
-                      <h6>العضو: </h6>
+                      <h6>{{investor_fund.investor.user.full_name}}</h6>
+                      <h6>العمر: {{investor_fund.investor.user.full_name}}</h6>
+                      <div class="d-flex justify-content-between align-items-center w-100">
+                      <div class="d-flex gap-3 justify-content-start align-items-center">
+                        <a href="tel:{{investor_fund.investor.user.phone_number}}"><i class="fa-solid fa-square-phone fs-4 investor-communication1"></i></a>
+                        <a href="mailto:{{investor_fund.investor.user.email}}"><i class="fa-solid fa-square-envelope fs-4 investor-communication2"></i></a>
+                      </div>
+                       <div>
+                        <a class="btn btn-darkred delete-member-btn" ><i class="fa-solid fa-user-xmark"></i></a>
+                      </div>
                     </div>
-                      <a class="btn btn-darkred delete-member-btn" ><small><i class="fa-solid fa-user-xmark"></i></small></a>
-                  </div>
+                    </div>
+                 
                   </div>
               </div>
-              <div  class="col-md-5 person-card d-flex border p-0 rounded-3" >
-                <img src="{%static 'images/building-66375_1280.jpg'%}" style="height: 30px; width:80px; object-fit: cover;"  class="h-100"/>
-                <div class="p-2 w-100 ">
-                  <div class="d-flex justify-content-between  ">
-                    <div class="d-flex flex-column">
-                      <h6>العضو: </h6>
-                    </div>
-                      <a class="btn btn-darkred delete-member-btn" ><small><i class="fa-solid fa-user-xmark"></i></small></a>
-                  </div>
-                  </div>
-              </div>
+              {%endfor%}
+             
             </div>
           </div>
           <div id="section6" class="container dashboard-section" style="display: none;">
