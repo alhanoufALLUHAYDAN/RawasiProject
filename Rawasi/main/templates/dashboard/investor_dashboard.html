@@ -94,36 +94,35 @@ body {
             {% endif %}
         {% endfor %}
       {% endif %}
-        <div id="section1" class="dashboard-section">
-            <div class="container mt-5">
-                <!-- Investor Dashboard Header -->
-                <h3>صناديق الاستثمار التي انضممت إليها</h3>
-                <table class="table">
-                    <thead>
+      <div id="section1" class="dashboard-section">
+        <div class="container mt-5">
+            <!-- Investor Dashboard Header -->
+            <h3>صناديق الاستثمار التي انضممت إليها</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>اسم الصندوق</th>
+                        <th>المبلغ المستثمر</th>
+                        <th>الأرباح</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fund in profit_data %}
                         <tr>
-                            <th>اسم الصندوق</th>
-                            <th>المبلغ المستثمر</th>
-                            <th>الأرباح</th>
-                            <th>الحالة</th>
+                            <td>{{ fund.fund_name }}</td>
+                            <td>{{ fund.amount_invested }} ريال</td>
+                            <td>{{ fund.profit }} ريال</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {% for fund in profit_data %}
-                            <tr>
-                                <td>{{ fund.fund_name }}</td>
-                                <td>{{ fund.amount_invested }} ريال</td>
-                                <td>{{ fund.profit }} ريال</td>
-                                <td>{{ fund.status }}</td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="4">لا توجد صناديق استثمار للعرض.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>            
-        </div>        
+                    {% empty %}
+                        <tr>
+                            <td colspan="3">لا توجد صناديق استثمار للعرض.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>            
+    </div>
+    
           <div id="section2" class="dashboard-section" style="display: none;">
             <div class="row">
                 <div  class="col-md-3 investment-card border p-0 rounded-3" >
@@ -150,65 +149,58 @@ body {
                     <p>سحب الأرباح المحققة من استثماراتك</p>
                 </div>
         
-                <!-- Profit Table -->
-                <div class="profit-container p-4 bg-white shadow-sm rounded">
-                    <table class="table table-striped text-center">
-                        <thead>
-                            <tr>
-                                <th>اسم الصندوق</th>
-                                <th>المبلغ المستثمر</th>
-                                <th>الأرباح المحققة</th>
-                                <th>الحالة</th>
-                                <th>إجراء</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for fund in profit_data %}
-                            <tr>
-                                <td>{{ fund.fund_name }}</td>
-                                <td>{{ fund.amount_invested }} ر.س</td>
-                                <td>{{ fund.profit }} ر.س</td>
-                                <td>{{ fund.status }}</td>  
-                                <td>
-                                    {% if fund.status == 'Pending' %}
-                                    <form method="POST" action="{% url 'investment_fund:withdraw_profit' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="fund_id" value="{{ fund.fund_id }}">
-                                        <input type="hidden" name="profit" value="{{ fund.profit }}">
-                                       
-                                    </form> 
-                                    <button class="btn btn-action btn-darkred withdraw mb-2" data-bs-toggle="modal" data-bs-target="#withdrawModal">
-                                        سحب الأرباح
-                                    </button>                                   
-                                    {% else %}
-                                    <button type="button" class="btn btn-disabled" disabled>غير متاح</button>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>                                                                                                    
-                    </table>
-                </div>
+<!-- Profit Table -->
+<div class="profit-container p-4 bg-white shadow-sm rounded">
+    <table class="table table-striped text-center">
+        <thead>
+            <tr>
+                <th>اسم الصندوق</th>
+                <th>المبلغ المستثمر</th>
+                <th>الأرباح المحققة</th>
+                <th>الحالة</th>
+                <th>إجراء</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fund in profit_data %}
+            <tr>
+                <td>{{ fund.fund_name }}</td>
+                <td>{{ fund.amount_invested }} ر.س</td>
+                <td>{{ fund.profit }} ر.س</td>
+                <td>{{ fund.status }}</td>  
+                <td>
+                    {% if fund.transfer_enabled %}
+                    <button class="btn btn-action btn-darkred withdraw mb-2" data-bs-toggle="modal" data-bs-target="#withdrawModal">
+                        سحب الأرباح
+                    </button>
+                    {% else %}
+                    <button type="button" class="btn btn-disabled" disabled>غير متاح</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>                                                                                                    
+    </table>
+</div>
             </div>
         </div>        
-          <div id="section4" class="dashboard-section" style="display: none;">
-            
+        <div id="section4" class="dashboard-section" style="display: none;">
             <div class="container p-0">
                 <!-- Section 4 Header -->
                 <div class="wallet-header">
                     <h2>محفظتي الرقمية</h2>
                     <p>التحكم في أموالك بطريقة بسيطة وآمنة</p>
-                  </div>
-                <!-- Wallet Container -->
-                <div class="wallet-container mt-4 p-3 bg-white shadow-sm rounded">
-                    {% if wallet %}
-                    <p><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
-                    <p><strong>رصيد الأرباح:</strong> {{ wallet.profit_balance }} ريال</p>
-                    <p><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
-                {% else %}
-                    <p>سيتم انشاء محفظتك خلال ثواني...</p>
-                {% endif %}
                 </div>
+                <!-- Wallet Container -->
+<div class="wallet-container mt-4 p-3 bg-white shadow-sm rounded">
+    {% if wallet %}
+        <p><strong>الرصيد:</strong> {{ wallet.balance }} ريال</p>
+        <p><strong>آخر تحديث:</strong> {{ wallet.last_updated|date:"Y-m-d H:i:s" }}</p>
+    {% else %}
+        <p>سيتم انشاء محفظتك خلال ثواني...</p>
+    {% endif %}
+</div>
+
                 <button class="btn btn-action btn-darkgreen add-funds mb-2" data-bs-toggle="modal" data-bs-target="#depositModal">
                     إضافة أموال
                 </button>
@@ -385,9 +377,9 @@ body {
                     </div>
                     <div class="mb-3">
                         <label for="fund" class="form-label">اختار صندوق الاستثمار</label>
-                        <select name="fund_id" class="form-control">
+                        <select name="fund_id" class="form-control" required>
                             {% for fund in joined_funds %}
-                                <option value="{{ fund.fund_id }}">
+                                <option value="{{ fund.fund.id }}">
                                     {{ fund.fund.name }} - ربح: {{ fund.profit }} ريال
                                 </option>
                             {% endfor %}
@@ -403,10 +395,9 @@ body {
                     <button type="submit" class="btn btn-darkgreen w-100">تأكيد السحب</button>
                 </form>                
             </div>
-
-  
         </div>
-    </div> 
+    </div>
+    
           <div id="section5" class="dashboard-section" style="display: none;">
                         <div class="container-wrapper-profile">
                           <div id="alert-container"></div>
