@@ -619,10 +619,15 @@ main{
 }
 .dashboard-section{
     height: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 .dashboard-section1{
     height: 100%;
 }
+
 .investment-card{
  color: #000000;
  text-decoration: none;
