@@ -314,20 +314,30 @@
             </div>
           </div>
           <div id="section3" class="dashboard-section" style="display: none;">
-            <div class="row">
-              <div class="col-md-6">
-                <h5>اجمالي قيمة الاستثمار: SAR</h5>
-                <h5>اجمالي الارباح : SAR</h5>
-                <h5>حصص المسثمرين:  </h5>
-                <ul>
-                  <li> اسم الشخص : حصته</li>
-                  <li> اسم الشخص : حصته</li>
-
-                </ul>
+            <div class="container mt-5">
+              <div class="investment-summary p-4 bg-white shadow rounded">
+                  <h3>اجمالي قيمة الاستثمار: {{ investment_fund.total_balance }} SAR</h3>
+                  <h3>اجمالي الأرباح: {{ total_profit|floatformat:2 }} SAR</h3>
+                  <hr>
+                  <h4>حصص المستثمرين:</h4>
+                  <table class="table table-bordered table-striped">
+                      <thead class="thead-dark">
+                          <tr>
+                              <th>اسم الشخص</th>
+                              <th>حصته</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {% for investor in investors %}
+                              <tr>
+                                  <td>{{ investor.investor.user.username }}</td>
+                                  <td>{{ investor.amount_invested }} SAR</td>
+                              </tr>
+                          {% endfor %}
+                      </tbody>
+                  </table>
               </div>
-              <div class="col-md-6">chart</div>
-
-            </div>
+          </div>          
           </div>
           <div id="section4" class="dashboard-section" style="display: none;">
             <div class="d-flex align-items-end justify-content-end">

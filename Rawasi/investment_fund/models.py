@@ -40,32 +40,31 @@ class InvestmentFund(models.Model):
 # Base Wallet Model
 class Wallet(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wallet")
-    balance = models.FloatField(default=0.0)
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)  # Using DecimalField for accuracy
     last_updated = models.DateTimeField(auto_now=True)  # Tracks the last modification date
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    profit_balance = models.FloatField(default=0.0)  # Profit available for the user
+    profit_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)  # Profit available for the user
     
     def __str__(self):
         return f"{self.user.username}'s Wallet"
 
+# Transactions Model
 class Transactions(models.Model):
-    fund = models.ForeignKey('InvestmentFund', on_delete=models.CASCADE, related_name="transactions")
+    fund = models.ForeignKey('InvestmentFund',null=True, blank=True, on_delete=models.CASCADE, related_name="transactions")
     wallet = models.ForeignKey('Wallet', null=True, blank=True, on_delete=models.SET_NULL, related_name="transactions")
     transaction_type = models.CharField(
         max_length=50,
-        choices=[('Deposit', 'ايداع'), ('Transfer', 'تحويل')],
+        choices=[('Deposit', 'إيداع'), ('Transfer', 'تحويل'), ('Withdrawal', 'سحب')],
         default='Deposit',
     )
-    amount = models.FloatField()
+    amount = models.DecimalField(max_digits=12, decimal_places=2)  # Changed to DecimalField for accuracy
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.transaction_type} - {self.amount}"
+        return f"{self.transaction_type} - {self.amount} - {self.created_at}"
 
-
-
-
-
+    class Meta:
+        ordering = ['-created_at']  # Ensure that transactions are ordered by date (most recent first)
