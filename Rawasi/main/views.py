@@ -73,9 +73,9 @@ def fund_dashboard_view(request):
             p=Paginator(investments,4)
             page=request.GET.get('page',1)
             investments_list=p.get_page(page)
-        #investorFund=InvestorFund.objects.get(fund=investment_fund)
-        #investors=investorFund
-        #print(investorFund)  
+        investorFund=InvestorFund.objects.filter(fund=investment_fund, investor__user=request.user).exists()
+        #investors=investorFund.investor.objects.all()
+        print(investorFund)  
     except InvestmentFund.DoesNotExist:
         investment_fund = None
     # Fetch the user's wallet
