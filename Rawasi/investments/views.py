@@ -8,7 +8,9 @@ from investments.forms import InvestmentOpportunityForm
 from datetime import datetime
 from .models import InvestorFund, Voting , BuySellTransaction
 from django.core.exceptions import PermissionDenied
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from decimal import Decimal
+
 
 
 # Create your views here.
@@ -108,6 +110,15 @@ def investment_opportunity_detail(request, id):
     else:
         approval_percentage = 0  
 
+    buy_votes_accepted = investment_opportunity.votes.filter(vote_type='Buy', vote='Accepted').count()
+    sell_votes_accepted = investment_opportunity.votes.filter(vote_type='Sell', vote='Accepted').count()
+    total_investors = InvestorFund.objects.filter(fund=fund).count()
+
+    approval_percentage_buy = (buy_votes_accepted / total_investors) * 100 if total_investors else 0
+    approval_percentage_sell = (sell_votes_accepted / total_investors) * 100 if total_investors else 0
+    
+
+
     user_vote = None
     if request.user.is_authenticated:
         user_vote = investment_opportunity.votes.filter(user=request.user).first()
@@ -116,6 +127,8 @@ def investment_opportunity_detail(request, id):
     if not is_leader and not is_investor:
         messages.error(request, "ليس لديك صلاحية للوصول إلى تفاصيل هذه الفرصة الاستثمارية.")
         return redirect('/')
+    
+    
 
     return render(request, 'investments/investment_opportunity_detail.html', {
         'investment_opportunity': investment_opportunity,
@@ -155,6 +168,13 @@ def update_investment_opportunity(request, id):
     if investment_opportunity.fund.leader != leader:
         messages.error(request, "لا يمكنك تحديث هذه الفرصة الاستثمارية لأنك لست المسؤول عن هذا الصندوق.")
         return redirect('/')  
+    try:
+        voting_start_time = datetime.strptime(voting_start_time, '%Y-%m-%d')
+        voting_end_time = datetime.strptime(voting_end_time, '%Y-%m-%d')
+        if voting_start_time >= voting_end_time:
+         messages.error(request, "تاريخ البدء يجب أن يكون قبل تاريخ الانتهاء.")
+    except ValueError:
+         messages.error(request, "تاريخ البدء والانتهاء غير صحيح.")
     
     if request.method == 'POST':
         form = InvestmentOpportunityForm(request.POST, request.FILES, instance=investment_opportunity)
@@ -170,9 +190,20 @@ def update_investment_opportunity(request, id):
 
 @login_required
 def add_voting(request):
-    fund = InvestmentFund.objects.filter(leader__user=request.user).first()
+    active_section = 'section2' 
+    try:
+        leader = request.user.leader 
+        fund = leader.managed_fund
+    except Leader.DoesNotExist:
+        fund = None
     if not fund:
         raise PermissionDenied("ليس لديك صلاحية للوصول إلى هذا الصندوق الاستثماري.")
+    
+    '''try:
+            investor_fund = InvestorFund.objects.get(investor__user=request.user, fund=fund)
+        except InvestorFund.DoesNotExist:
+            messages.error(request, "لم تقم بالاستثمار في هذا الصندوق بعد. لا يمكنك التصويت.")
+            return redirect('investments:opportunity_list')'''
 
     if request.method == "POST":
         opportunity_id = request.POST.get('opportunity')
@@ -180,18 +211,18 @@ def add_voting(request):
         voting_start_time = request.POST.get('voting_start_time')
         voting_end_time = request.POST.get('voting_end_time')
         total_amount = request.POST.get('total_amount')
-        vote_type = request.POST.get('vote_type') 
+        vote_type = 'Buy'
 
         try:
             opportunity = InvestmentOpportunity.objects.get(id=opportunity_id)
             
             if opportunity.fund != fund:
-                raise PermissionDenied("ليس لديك صلاحية للتصويت على هذه الفرصة الاستثمارية.")
+                raise PermissionDenied("ليس لديك صلاحية لوضع تصويت على هذه الفرصة الاستثمارية.")
 
             if Voting.objects.filter(opportunity=opportunity, vote_type='Sell', vote='Accepted').exists():
                 messages.error(request, "تمت الموافقة على تصويت البيع لهذه الفرصة. لا يمكن إضافة تصويت جديد للبيع.")
                 return redirect('investments:add_voting')
-
+            
             voting = Voting(
                 opportunity=opportunity,
                 user=request.user,
@@ -204,8 +235,11 @@ def add_voting(request):
             voting.save()
             print(f"قبل إضافة التصويت، حالة الفرصة: {opportunity.status}")
 
+            print(f"فرصة الاستثمار: {opportunity}")
+            print(f"البيانات الخاصة بالتصويت: {voting}")            
+
             messages.success(request, "تم إضافة التصويت بنجاح!")
-            return redirect('investments:opportunity_list') 
+            return redirect(f'/dashboard/fund/?section={active_section}') 
 
         except InvestmentOpportunity.DoesNotExist:
             messages.error(request, "الفرصة الاستثمارية المحددة غير موجودة.")
@@ -220,17 +254,30 @@ def add_voting(request):
 
 @login_required
 def opportunity_list(request):
-    opportunities = InvestmentOpportunity.objects.filter()
+    opportunities = []
+    user_investor = False  
+
+    if hasattr(request.user, 'leader'):  
+        leader = request.user.leader
+        opportunities = InvestmentOpportunity.objects.filter(fund__leader=leader)
+    
+    elif hasattr(request.user, 'investor'):
+        investor = request.user.investor
+        funds_invested_in = InvestorFund.objects.filter(investor=investor).values_list('fund', flat=True)
+        opportunities = InvestmentOpportunity.objects.filter(fund__in=funds_invested_in)
+        
+        user_investor = True 
 
     for opportunity in opportunities:
-        user_investor = InvestorFund.objects.filter(fund=opportunity.fund, investor__user=request.user).exists()
-        total_investors = InvestorFund.objects.filter(fund=opportunity.fund).count()
+        if hasattr(request.user, 'leader'):
+            total_investors = InvestorFund.objects.filter(fund=opportunity.fund).exclude(investor__user=request.user).count()
+        else:
+            total_investors = InvestorFund.objects.filter(fund=opportunity.fund).count()
 
         total_accepted = Voting.objects.filter(opportunity=opportunity, vote='Accepted').count()
         total_rejected = Voting.objects.filter(opportunity=opportunity, vote='Rejected').count()
-
         approval_percentage = (total_accepted / total_investors) * 100 if total_investors else 0
-
+        
         try:
             required_percentage = Voting.objects.filter(opportunity=opportunity).first().required_approval_percentage
         except AttributeError:
@@ -241,19 +288,25 @@ def opportunity_list(request):
         opportunity.pending_votes = Voting.objects.filter(opportunity=opportunity, vote='Pending').count()
         opportunity.accepted_votes = total_accepted
         opportunity.rejected_votes = total_rejected
-
         
         if approval_percentage >= required_percentage:
-            opportunity.status = 'Closed'
+            opportunity.status = 'Closed'  
         else:
             opportunity.status = 'Open'
 
+        opportunity.buy_vote_completed = approval_percentage >= required_percentage
+        opportunity.sell_vote_completed = Voting.objects.filter(opportunity=opportunity, vote_type='Sell', vote='Accepted').exists()
+
+
+        opportunity.sell_vote_opened = (opportunity.status == 'Open' and
+                                        Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists())
+        
         if opportunity.status == 'Closed' and request.user == opportunity.fund.leader.user:
-            if 'reopen_vote' in request.POST:  
-                opportunity.status = 'Open' 
+            if 'reopen_vote' in request.POST:
+                opportunity.status = 'Open'
                 opportunity.save()
 
-                Voting.objects.filter(opportunity=opportunity).update(vote='Pending')
+                Voting.objects.filter(opportunity=opportunity).delete()
 
                 if not Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists():
                     Voting.objects.create(
@@ -263,24 +316,8 @@ def opportunity_list(request):
                         vote='Pending',
                         required_approval_percentage=opportunity.required_approval_percentage,
                     )
-
+                
                 messages.success(request, "تم إعادة فتح التصويت وإضافة تصويت البيع بنجاح.")
-                return redirect('investments:opportunity_list')
-
-        if request.method == 'POST' and 'vote_choice' in request.POST:
-            vote_choice = request.POST['vote_choice']
-            vote_id = request.POST['vote_id']
-
-            existing_vote = Voting.objects.filter(opportunity=opportunity, user=request.user).first()
-            if existing_vote:
-                messages.error(request, "لقد قمت بالتصويت مسبقًا.")
-            else:
-                Voting.objects.create(
-                    user=request.user,
-                    opportunity=opportunity,
-                    vote=vote_choice
-                )
-                messages.success(request, "تم التصويت بنجاح!")
                 return redirect('investments:opportunity_list')
 
     return render(request, 'investments/opportunity_list.html', {
@@ -288,93 +325,122 @@ def opportunity_list(request):
         'user_investor': user_investor, 
     })
 
+
 @login_required
 def vote_on_opportunity(request, id):
+    active_section = 'section2'
     try:
         opportunity = InvestmentOpportunity.objects.get(id=id)
     except InvestmentOpportunity.DoesNotExist:
         messages.error(request, "الفرصة الاستثمارية غير موجودة.")
         return redirect('investments:opportunity_list')
-    if opportunity.status not in ['Open', 'Reopened']:
+    
+    if opportunity.status != 'Open':
         messages.error(request, "التصويت مغلق لهذه الفرصة.")
         return redirect('investments:opportunity_list')
-    existing_vote = Voting.objects.filter(opportunity=opportunity, user=request.user).first()
+    
+    existing_vote = Voting.objects.filter(opportunity=opportunity, user=request.user).first()  
+    
     if existing_vote:
         if existing_vote.vote == 'Pending':
-            pass 
+            pass  
         else:
             messages.error(request, "لقد قمت بالتصويت مسبقًا.")
             return redirect('investments:opportunity_list')
+
     vote_choice = request.POST.get('vote_choice')
     if vote_choice not in ['Accepted', 'Rejected']:
         messages.error(request, "التصويت غير صالح.")
         return redirect('investments:opportunity_list')
    
     if existing_vote:
-        existing_vote.vote = vote_choice
+        existing_vote.vote = vote_choice  
         existing_vote.save()
         messages.success(request, f"تم تحديث التصويت بنجاح: {vote_choice}")
     else:
-     
         Voting.objects.create(
             opportunity=opportunity,
             user=request.user,
             vote=vote_choice
         )
         messages.success(request, f"تم التصويت بنجاح: {vote_choice}")
-    return redirect('investments:opportunity_list')
+    
+    return redirect(f'/dashboard/fund/?section={active_section}')
 
+
+def update_voting_time(request, id):
+    vote = get_object_or_404(Voting, id=id)
+
+    if request.method == 'POST':
+        new_end_time = request.POST.get('new_end_time')
+        
+        if new_end_time:
+            vote.end_time = new_end_time
+            vote.save()
+            messages.success(request, "تم تحديث وقت التصويت بنجاح.")
+        else:
+            messages.error(request, "الوقت غير صالح.")
+
+        return redirect('investments:opportunity_list')
+
+    return render(request, 'investments/update_voting_time.html', {'vote': vote})
+
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.core.exceptions import PermissionDenied
+from decimal import Decimal
+from .models import InvestmentFund, InvestmentOpportunity, BuySellTransaction
 
 @login_required
 def buy_opportunity(request, opportunity_id):
-    fund = InvestmentFund.objects.filter(leader__user=request.user).first()
-    if not fund:
-        raise PermissionDenied("ليس لديك صلاحية للوصول.")
-
     try:
+        fund = InvestmentFund.objects.get(leader__user=request.user)
+
+        if not fund:
+            raise PermissionDenied("ليس لديك صلاحية للوصول.")
+        
         opportunity = InvestmentOpportunity.objects.get(id=opportunity_id)
 
-        fund = InvestmentFund.objects.get(id=opportunity.fund.id)
+        if BuySellTransaction.objects.filter(opportunity=opportunity, transaction_type='Buy', status='Approved').exists():
+            messages.add_message(request, messages.ERROR, 'تم شراء هذه الفرصة بالفعل.')
+            return redirect('investments:investment_opportunity_detail', id=opportunity.id)
 
-        if fund.total_balance >= opportunity.total_investment:
-            fund.total_balance -= opportunity.total_investment
+        total_balance = Decimal(fund.total_balance)
+        total_investment = Decimal(opportunity.total_investment)
+
+        if total_balance >= total_investment:
+            fund.total_balance = total_balance - total_investment
             fund.save()
 
             BuySellTransaction.objects.create(
                 opportunity=opportunity,
                 transaction_type='Buy',
                 amount=opportunity.total_investment,
-                status='Approved' 
+                status='Approved'
             )
 
-            return JsonResponse({
-                'status': 'success',
-                'message': f'تم شراء الفرصة {opportunity.title} بنجاح.'
-            })
+            messages.add_message(request, messages.SUCCESS, f"تم شراء الفرصة {opportunity.title} بنجاح.")
+
+            return redirect('investments:investment_opportunity_detail', id=opportunity.id)
         else:
-         
             BuySellTransaction.objects.create(
                 opportunity=opportunity,
                 transaction_type='Buy',
                 amount=opportunity.total_investment,
-                status='Rejected'  
+                status='Rejected'
             )
 
-            return JsonResponse({
-                'status': 'error',
-                'message': 'رصيد الصندوق غير كافٍ لإتمام عملية الشراء.'
-            })
+            messages.add_message(request, messages.ERROR, 'رصيد الصندوق غير كافٍ لإتمام عملية الشراء.')
+
+            return redirect('investments:investment_opportunity_detail', id=opportunity.id)
 
     except InvestmentOpportunity.DoesNotExist:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'الفرصة الاستثمارية غير موجودة.',
-        })
-
+        messages.add_message(request, messages.ERROR, 'الفرصة الاستثمارية غير موجودة.')
+        return redirect('investments:opportunity_list')
 
 @login_required
 def sell_opportunity(request, opportunity_id):
-    fund = InvestmentFund.objects.filter(leader__user=request.user).first()
+    fund = InvestmentFund.objects.get(leader__user=request.user)
     
     if not fund:
         raise PermissionDenied("ليس لديك صلاحية للوصول.")
@@ -382,47 +448,52 @@ def sell_opportunity(request, opportunity_id):
     try:
         opportunity = InvestmentOpportunity.objects.get(id=opportunity_id)
 
-        investment = InvestorFund.objects.filter(fund=fund, amount_invested__gte=opportunity.total_investment).first()
+        if BuySellTransaction.objects.filter(opportunity=opportunity, transaction_type='Sell', status='Approved').exists():
+            messages.add_message(request, messages.ERROR, 'تم بيع هذه الفرصة بالفعل.')
+            return redirect('investments:investment_opportunity_detail', id=opportunity.id)
+
+        investment = InvestorFund.objects.filter(fund=fund, amount_invested__gte=opportunity.total_investment)
 
         if investment:
             profit = calculate_profit_for_sale(opportunity.total_investment, opportunity.expected_return)
 
-            fund.total_balance += opportunity.total_investment
+            fund.total_balance = Decimal(fund.total_balance) + Decimal(opportunity.total_investment)
             fund.save()
 
             BuySellTransaction.objects.create(
                 opportunity=opportunity,
                 transaction_type='Sell',  
-                amount=opportunity.total_investment,  
+                amount=Decimal(opportunity.total_investment),  
                 status='Approved' 
             )
 
-          
-            return JsonResponse({
-                'status': 'success',
-                'message': f'تم بيع الفرصة {opportunity.title} بنجاح. الربح المحقق: {profit} ريـال.',
-                'profit': profit 
-            })
+            messages.add_message(request, messages.SUCCESS, f"تم بيع الفرصة {opportunity.title} بنجاح. الربح المحقق: {profit} ريـال.")
+
+            return redirect('investments:investment_opportunity_detail', id=opportunity.id)
         else:
-          
             BuySellTransaction.objects.create(
                 opportunity=opportunity,
                 transaction_type='Sell', 
-                amount=opportunity.total_investment,
+                amount=Decimal(opportunity.total_investment),
                 status='Rejected' 
             )
 
-            
+            messages.add_message(request, messages.ERROR, 'ليس لديك استثمار كافي لإتمام عملية البيع.')
+
+            return redirect('investments:investment_opportunity_detail', id=opportunity.id)
 
     except InvestmentOpportunity.DoesNotExist:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'الفرصة الاستثمارية غير موجودة.',
-        })
+        messages.add_message(request, messages.ERROR, 'الفرصة الاستثمارية غير موجودة.')
+        return redirect('investments:opportunity_list')
+
 
 def calculate_profit_for_sale(amount_invested, expected_return):
-   
-    profit = float(amount_invested) * (expected_return / 100)
+
+    amount_invested = Decimal(amount_invested)
+    expected_return = Decimal(expected_return)
+    
+    profit = amount_invested * (expected_return / Decimal(100))
+    
     return round(profit, 2)
 
 

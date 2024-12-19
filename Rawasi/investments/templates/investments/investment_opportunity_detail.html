@@ -276,13 +276,10 @@
 
                     </div>
                     {% if investment_opportunity.fund.leader.user == request.user %}
-                    <a href="#" class="btn btn-darkgreen w-100 my-3" data-bs-toggle="modal">
-                        بيع
-                    </a>
+                    <a href="{% url 'investments:buy_opportunity' investment_opportunity.id %}" class="btn btn-darkgreen w-100 my-3">شراء</a>
     
-                    <a href="#" class="btn btn-darkgreen w-100 my-3" data-bs-toggle="modal">
-                        شراء
-                    </a>
+                    <a href="{% url 'investments:sell_opportunity' investment_opportunity.id %}" class="btn btn-darkgreen w-100 my-3">بيع</a>
+                   
                     {% endif %}
                 </div>
                 <div class="col-12 d-flex justify-content-between ">
