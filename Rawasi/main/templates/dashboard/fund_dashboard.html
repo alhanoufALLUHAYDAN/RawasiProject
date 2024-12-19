@@ -318,104 +318,6 @@
       </button>
   </div>
   
-  <div class="row gap-3 mt-3 w-100 d-flex align-items-center justify-content-center">
-      {% for investment in investments %}
-      <div class="col-md-4 investment-card p-0 rounded-3">
-          <div class="card">
-              {% if investment.image %}
-              <img src="{{ investment.image.url }}" class="w-100"/>
-              {% else %}
-              <img src="{% static 'images/building-66375_1280.jpg' %}" class="w-100"/>
-              {% endif %}
-              <div class="p-2">
-                  <div class="investment-description">
-                      <h5>{{ investment.title }}</h5>
-                      <small class="text-muted">{{ investment.description|truncatechars:40 }}</small>
-                  </div>
-
-                  <div class="d-flex justify-content-between mt-2">
-                      <p><strong>النسبة المطلوبة للموافقة:</strong> {{ investment.required_approval_percentage }}%</p>
-                      <p><strong>النسبة الحالية:</strong> {{ investment.approval_percentage }}%</p>
-                  </div>
-
-                  <div class="d-flex justify-content-between">
-                      <p><strong>قبول:</strong> {{ investment.accepted_votes }}</p>
-                      <p><strong>رفض:</strong> {{ investment.rejected_votes }}</p>
-                  </div>
-
-                  <div class="d-flex justify-content-between">
-                      {% if investment.status == 'Open' %}
-                          {% if user_investor %}
-                              <form method="POST" action="{% url 'investments:vote_on_opportunity' id=investment.id %}">
-                                  {% csrf_token %}
-                                  <button type="submit" name="vote_choice" value="Accepted" class="btn btn-success">أوافق</button>
-                                  <button type="submit" name="vote_choice" value="Rejected" class="btn btn-danger">أرفض</button>
-                              </form>
-                          {% endif %}
-                      {% elif investment.status == 'Closed' %}
-                          {% if request.user == investment.fund.leader.user %}
-                              {% if investment.approval_percentage < investment.required_approval_percentage %}
-                                  <form method="POST" action="{% url 'investments:reopen_vote' id=investment.id %}">
-                                      {% csrf_token %}
-                                      <button type="submit" name="reopen_vote" value="Reopen" class="btn btn-warning">إعادة فتح التصويت</button>
-                                  </form>
-                              {% else %}
-                                  <span class="badge bg-success">تم اكتمال التصويت بنجاح</span>
-                              {% endif %}
-                          {% else %}
-                              <span class="badge bg-dark">تم إغلاق التصويت</span>
-                          {% endif %}
-                      {% elif investment.status == 'Not Started' %}
-                          <span class="badge bg-secondary">لم يبدأ التصويت بعد</span>
-                      {% endif %}
-                  </div>
-                  
-                  <div class="d-flex justify-content-between mt-2">
-                      <a href="{% url 'investments:investment_opportunity_detail' id=investment.id %}" class="btn btn-darkgreen">تفاصيل الفرصة</a>
-                  </div>
-              </div>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-  <br/>
-  <navbar aria-label="Page navigation example">
-      <ul class="pagination justify-content-center gap-4">
-          {% if investments.has_next %}
-              <li class="page-item">
-                  <a class="page-link rounded-3 px-3 py-2" href="?page={{ investments.next_page_number }}&section=section4" aria-label="Next">
-                      <span aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
-                  </a>
-              </li>
-          {% else %}
-              <li class="page-item disabled">
-                  <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
-              </li>
-          {% endif %}
-
-          {% if investments.has_previous %}
-          <li class="page-item">
-              <a class="page-link rounded-3 px-3 py-2" href="?page={{ investments.previous_page_number }}&section=section4" aria-label="Previous">
-                  <span aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
-              </a>
-          </li>
-          {% else %}
-          <li class="page-item disabled">
-              <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
-          </li>
-          {% endif %}
-      </ul>
-  </navbar>
-  {% else %}
-  <div class="text-center dashboard-section1 d-flex flex-column justify-content-center align-items-center">
-      <h3>لا يوجد فرص حاليا</h3>
-      <p class="text-muted">قم بإنشاء الفرص الآن</p>
-      <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#votingModal">
-          إضافة تصويت جديد <i class="fa-solid fa-plus"></i>
-      </button>
-  </div>
-  {% endif %}
-</div>
 
 <div class="modal fade" id="votingModal" tabindex="-1" aria-labelledby="votingModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -459,10 +361,6 @@
                   <input type="datetime-local" class="form-control" id="voting_end_time" name="voting_end_time" required>
               </div>
   
-              <div class="mb-3">
-                  <label for="total_amount" class="form-label" style="color: #761305;">المبلغ الإجمالي</label>
-                  <input type="number" class="form-control" id="total_amount" name="total_amount">
-              </div>
   
               <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
@@ -472,6 +370,115 @@
       </div>
   </div>
 </div>
+</div>
+<div class="row my-2 ">
+  {% for opportunity in opportunities %}
+  <div class="card mb-3">
+      <div class="card-body container">
+        <div class="row">
+          <div class="col-md-6">
+            <h5 class="card-title" style="color: #761305;">{{ opportunity.title }}</h5>
+            <p class="card-text"><strong>المبلغ الإجمالي:</strong> {{ opportunity.total_investment }} ريال</p>
+            <p class="card-text"><strong>العائد المتوقع:</strong> {{ opportunity.expected_return }}%</p>
+            <p class="card-text"><strong>تاريخ البداية:</strong> {{ opportunity.start_date|date:"Y-m-d" }}</p>
+            <p class="card-text"><strong>تاريخ الانتهاء:</strong> {{ opportunity.end_date|date:"Y-m-d" }}</p>
+  
+          </div>
+          <div class="col-md-6">
+            <p class="card-text"><strong>النسبة المطلوبة للموافقة:</strong> {{ opportunity.required_approval_percentage }}%</p>
+            <p class="card-text"><strong>نسبة الموافقه:</strong> {{ opportunity.approval_percentage }}%</p>
+            <p class="card-text"><strong>قبول :</strong> {{ opportunity.accepted_votes }}</p>
+            <p class="card-text"><strong>رفض :</strong> {{ opportunity.rejected_votes }}</p>
+  
+          </div>
+        </div>
+
+          <p class="card-text">
+              {% if opportunity.status == 'Closed' %}
+                  <span class="badge bg-dark">تم إغلاق التصويت</span>
+              {% elif opportunity.status == 'Open' %}
+                  {% if opportunity.pending_votes > 0 %}
+                      <span class="badge bg-warning">التصويت قيد الانتظار</span>
+                  {% else %}
+                      <span class="badge bg-success">التصويت مكتمل</span>
+                  {% endif %}
+              {% elif opportunity.status == 'Not Started' %}
+                  <span class="badge bg-secondary">لم يتم بدء التصويت</span> 
+              {% endif %}
+          </p>
+
+          <div class="d-flex justify-content-between ">
+            <div class="d-flex flex-column align-items-end justify-content-end "> 
+              <a href="{% url 'investments:investment_opportunity_detail' id=opportunity.id %}" class="btn btn-darkgreen">تفاصيل الفرصة</a>
+            </div>
+
+              {% if opportunity.status == 'Open' and user_investor %}
+                  <form method="POST" action="{% url 'investments:vote_on_opportunity' id=opportunity.id %}">
+                      {% csrf_token %}
+                      <button type="submit" name="vote_choice" value="Accepted" class="btn btn-success">أوافق</button>
+                      <button type="submit" name="vote_choice" value="Rejected" class="btn btn-danger">أرفض</button>
+                  </form>
+              {% elif opportunity.status == 'Closed' %}
+              {% if opportunity.status == 'Closed' and request.user == opportunity.fund.leader.user %}
+              <form method="POST" class=" row-gap-1">
+                  {% csrf_token %}
+                  
+                  <label for="new_start_time" class="form-label" style="color: #761305;">تاريخ بداية التصويت الجديد</label>
+                  <input type="datetime-local" class="form-control" id="new_start_time" name="new_start_time" value="{{ opportunity.start_date|date:'Y-m-d\TH:i' }}" required>
+          
+                  <label for="new_end_time" class="form-label" style="color: #761305;">تاريخ نهاية التصويت الجديد</label>
+                  <input type="datetime-local" class="form-control" id="new_end_time" name="new_end_time" value="{{ opportunity.end_date|date:'Y-m-d\TH:i' }}" required>
+          
+                  <button type="submit" name="reopen_vote" class="btn btn-warning mt-2">إعادة فتح التصويت</button>
+              </form>
+          {% endif %}
+        
+              {% endif %}
+
+          </div>
+      </div>
+  </div>
+  {% endfor %}
+</div>
+<br/>
+<navbar aria-label="Page navigation example">
+    <ul class="pagination justify-content-center gap-4">
+        {% if opportunities.has_next %}
+            <li class="page-item">
+                <a class="page-link rounded-3 px-3 py-2" href="?page={{ opportunities.next_page_number }}&section=section2" aria-label="Next">
+                    <span aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+            </li>
+        {% endif %}
+
+        {% if opportunities.has_previous %}
+        <li class="page-item">
+            <a class="page-link rounded-3 px-3 py-2" href="?page={{ opportunities.previous_page_number }}&section=section2" aria-label="Previous">
+                <span aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+        </li>
+        {% endif %}
+    </ul>
+</navbar>
+  {% else %}
+  <div class="text-center dashboard-section1 d-flex flex-column justify-content-center align-items-center">
+      <h3>لا يوجد فرص حاليا</h3>
+      <p class="text-muted">قم بإنشاء الفرص الآن</p>
+      <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#votingModal">
+          إضافة تصويت جديد <i class="fa-solid fa-plus"></i>
+      </button>
+  </div>
+  {% endif %}
+</div>
+
 
           <div id="section3" class="dashboard-section" style="display: none;">
             <div class="container mt-5">
@@ -863,6 +870,8 @@
       </div>
   </div>
 </section>
+
+
 
 {%endblock%}
   {%block script%}
