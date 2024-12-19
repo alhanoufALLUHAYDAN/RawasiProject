@@ -157,8 +157,9 @@ def investor_dashboard_view(request):
 
 
     joined_funds = InvestorFund.objects.filter(investor__user=request.user)
-
+    
     # Prepare profit data for each fund the investor has joined
+    transactions= []
     profit_data = []
     for investor_fund in joined_funds:
         # Fetch the related investment opportunity for each fund
