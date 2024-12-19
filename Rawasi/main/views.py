@@ -231,13 +231,11 @@ def investor_dashboard_view(request):
     wallet, created = Wallet.objects.get_or_create(user=request.user)
     CHlables_funds=[]
     CHdata_funds=[]
-
-    transactions=[]
     if wallet.transactions.exists():
         transactions = wallet.transactions.order_by('-created_at')[:3]
 
-
-
+    CHlables_funds = []
+    CHdata_funds = []
     joined_funds = InvestorFund.objects.filter(investor__user=request.user)
     
     # Prepare profit data for each fund the investor has joined
@@ -277,7 +275,7 @@ def investor_dashboard_view(request):
             try:
                 # Fetch the investment fund using the join code and check if it's active
                 fund = InvestmentFund.objects.get(join_code=join_code)
-                if fund.is_active=='Inactive':
+                if fund.is_active == 'Inactive':
                     messages.warning(request, 'الصندوق غير نشط حاليا, لا يمكنك الانضمام', "warning")
                 if InvestorFund.objects.filter(fund=fund, investor__user=request.user).exists():
                     messages.warning(request, 'أنت بالفعل عضو في هذا الصندوق.', "warning")
@@ -383,8 +381,5 @@ def investor_dashboard_view(request):
             "profit_data": profit_data,  # Pass the profit data with the correct status
             "CHlables_funds":CHlables_funds,
             "CHdata_funds":CHdata_funds,
-            'opportunities': opportunities,
-            'user_investor': user_investor, 
-
         }
     )

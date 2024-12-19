@@ -2,7 +2,7 @@ from django.db import models
 from accounts.models import CustomUser, Investor
 from investment_fund.models import InvestmentFund
 from datetime import datetime
-
+from decimal import Decimal
 # Create your models here.
 
 class InvestorFund(models.Model):
