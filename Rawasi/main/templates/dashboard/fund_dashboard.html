@@ -2,7 +2,7 @@
 {%load static%}
 {% block head %}
 <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="{% static 'css/accounts.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -431,12 +431,12 @@
   
                               <div class="mb-3">
                                   <label for="start_date" class="form-label" style="color: #761305;">تاريخ البداية</label>
-                                  <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                  <input type="date" class="form-control date-input" id="start_date" name="start_date" required>
                               </div>
   
                               <div class="mb-3">
                                   <label for="end_date" class="form-label" style="color: #761305;">تاريخ الانتهاء</label>
-                                  <input type="date" class="form-control" id="end_date" name="end_date" required>
+                                  <input type="date" class="form-control date-input" id="end_date" name="end_date" required>
                               </div>
   
                               <div class="mb-3">
@@ -581,13 +581,13 @@
                               </div>                          
   
                               <div class="mb-3">
-                                  <label for="start_date" class="form-label" style="color: #761305;">تاريخ البداية</label>
-                                  <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                  <label for="start_date" class="form-label " style="color: #761305;">تاريخ البداية</label>
+                                  <input type="date" class="form-control date-input" id="start_date" name="start_date" required>
                               </div>
   
                               <div class="mb-3">
-                                  <label for="end_date" class="form-label" style="color: #761305;">تاريخ الانتهاء</label>
-                                  <input type="date" class="form-control" id="end_date" name="end_date" required>
+                                  <label for="end_date" class="form-label " style="color: #761305;">تاريخ الانتهاء</label>
+                                  <input type="date" class="form-control date-input" id="end_date" name="end_date" required>
                               </div>
   
                               <div class="mb-3">
@@ -819,7 +819,7 @@
         navigator.clipboard.writeText(textToCopy)
     }
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
   <script>
     // Handle the section content change
     const navLinks = document.querySelectorAll('.nav-link-dashboard');
@@ -866,6 +866,22 @@
     });
 
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Select all elements that should have the date picker
+    const dateInputs = document.querySelectorAll('.date-input');  // Add a class to each input you want to apply it to
 
+    // Initialize flatpickr for each selected element
+    dateInputs.forEach(function(input) {
+        flatpickr(input, {
+            dateFormat: "Y-m-d", // Set the date format
+            locale: "ar", // Set the locale to Arabic
+            maxDate: "today", // Restrict to today's date or earlier
+        });
+    });
+});
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 {%endblock%}
