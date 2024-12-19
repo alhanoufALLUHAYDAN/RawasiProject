@@ -166,9 +166,8 @@ body {
             <tr>
                 <th>اسم الصندوق</th>
                 <th>المبلغ المستثمر</th>
-                <th>الأرباح المحققة</th>
+                <th>الأرباح المتوقعة</th>
                 <th>الحالة</th>
-                <th>إجراء</th>
             </tr>
         </thead>
         <tbody>
@@ -178,7 +177,7 @@ body {
                 <td>{{ fund.amount_invested }} ر.س</td>
                 <td>{{ fund.profit }} ر.س</td>
                 <td>{{ fund.status }}</td>  
-                <td>
+                <!-- <td>
                     {% if fund.transfer_enabled %}
                     <button class="btn btn-action btn-darkred withdraw mb-2" data-bs-toggle="modal" data-bs-target="#withdrawModal">
                         سحب الأرباح
@@ -186,7 +185,7 @@ body {
                     {% else %}
                     <button type="button" class="btn btn-disabled" disabled>غير متاح</button>
                     {% endif %}
-                </td>
+                </td> -->
             </tr>
             {% endfor %}
         </tbody>                                                                                                    
