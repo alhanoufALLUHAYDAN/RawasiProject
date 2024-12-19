@@ -10,7 +10,8 @@ from .models import InvestorFund, Voting , BuySellTransaction
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse, HttpResponse
 from decimal import Decimal
-
+from datetime import timedelta
+from django.utils import timezone
 
 
 # Create your views here.
@@ -255,7 +256,6 @@ def add_voting(request):
     opportunities = InvestmentOpportunity.objects.filter(fund=fund)
     return render(request, 'investments/add_voting.html', {'opportunities': opportunities})
 
-
 @login_required
 def opportunity_list(request):
     opportunities = []
@@ -301,28 +301,38 @@ def opportunity_list(request):
         opportunity.buy_vote_completed = approval_percentage >= required_percentage
         opportunity.sell_vote_completed = Voting.objects.filter(opportunity=opportunity, vote_type='Sell', vote='Accepted').exists()
 
-
         opportunity.sell_vote_opened = (opportunity.status == 'Open' and
-                                        Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists())
-        
+                                         Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists())
+
         if opportunity.status == 'Closed' and request.user == opportunity.fund.leader.user:
             if 'reopen_vote' in request.POST:
-                opportunity.status = 'Open'
-                opportunity.save()
+                new_start_time = request.POST.get('new_start_time')
+                new_end_time = request.POST.get('new_end_time')
 
-                Voting.objects.filter(opportunity=opportunity).delete()
+                if new_start_time and new_end_time:
+                    try:
+                        opportunity.start_date = timezone.datetime.fromisoformat(new_start_time)
+                        opportunity.end_date = timezone.datetime.fromisoformat(new_end_time)
 
-                if not Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists():
-                    Voting.objects.create(
-                        opportunity=opportunity,
-                        user=request.user,
-                        vote_type='Sell',
-                        vote='Pending',
-                        required_approval_percentage=opportunity.required_approval_percentage,
-                    )
-                
-                messages.success(request, "تم إعادة فتح التصويت وإضافة تصويت البيع بنجاح.")
-                return redirect('investments:opportunity_list')
+                        opportunity.status = 'Open'
+                        opportunity.save()
+
+                        Voting.objects.filter(opportunity=opportunity).delete()
+
+                        if not Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists():
+                            Voting.objects.create(
+                                opportunity=opportunity,
+                                user=request.user,
+                                vote_type='Sell',
+                                vote='Pending',
+                                required_approval_percentage=opportunity.required_approval_percentage,
+                            )
+
+                        messages.success(request, "تم إعادة فتح التصويت مع تحديث التواريخ بنجاح.")
+                        return redirect('investments:opportunity_list') 
+                    except ValueError:
+                        messages.error(request, "التواريخ المدخلة غير صالحة. يرجى المحاولة مرة أخرى.")
+                        return redirect('investments:opportunity_list')
 
     return render(request, 'investments/opportunity_list.html', {
         'opportunities': opportunities,
@@ -388,12 +398,6 @@ def update_voting_time(request, id):
         return redirect('investments:opportunity_list')
 
     return render(request, 'investments/update_voting_time.html', {'vote': vote})
-
-from django.contrib import messages
-from django.shortcuts import redirect
-from django.core.exceptions import PermissionDenied
-from decimal import Decimal
-from .models import InvestmentFund, InvestmentOpportunity, BuySellTransaction
 
 @login_required
 def buy_opportunity(request, opportunity_id):
@@ -500,4 +504,19 @@ def calculate_profit_for_sale(amount_invested, expected_return):
     
     return round(profit, 2)
 
+@login_required
+def delete_vote(request, vote_id):
+    vote = get_object_or_404(Voting, id=vote_id)
 
+    if vote.user != request.user:
+        messages.error(request, "لا يمكنك حذف هذا التصويت. التصويت ليس من قبلك.")
+        return redirect('investments:opportunity_list')
+
+    if request.method == 'POST':
+        vote.delete()
+        messages.success(request, "تم حذف التصويت بنجاح.")
+        return redirect('investments:opportunity_list')
+
+    return render(request, 'investments/delete_vote_confirm.html', {
+        'vote': vote
+    })

@@ -45,19 +45,32 @@
                 <div class="d-flex justify-content-between">
                     <a href="{% url 'investments:investment_opportunity_detail' id=opportunity.id %}" class="btn btn-darkgreen">تفاصيل الفرصة</a>
 
-                    {% if opportunity.status == 'Open' and user_investor %}
+                    {% if opportunity.status == 'Open' %}
                         <form method="POST" action="{% url 'investments:vote_on_opportunity' id=opportunity.id %}">
                             {% csrf_token %}
                             <button type="submit" name="vote_choice" value="Accepted" class="btn btn-success">أوافق</button>
                             <button type="submit" name="vote_choice" value="Rejected" class="btn btn-danger">أرفض</button>
                         </form>
                     {% elif opportunity.status == 'Closed' %}
-                        {% if request.user == opportunity.fund.leader.user %}
-                            <form method="POST">
-                                {% csrf_token %}
-                                <button type="submit" name="reopen_vote" value="Sell" class="btn btn-warning">إعادة فتح التصويت للبيع</button>
-                            </form>
-                        {% endif %}
+                    {% if opportunity.status == 'Closed' and request.user == opportunity.fund.leader.user %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <!-- حقل لتعديل تاريخ بداية التصويت -->
+                        <label for="new_start_time" class="form-label" style="color: #761305;">تاريخ بداية التصويت الجديد</label>
+                        <input type="datetime-local" class="form-control" id="new_start_time" name="new_start_time" value="{{ opportunity.start_date|date:'Y-m-d\TH:i' }}" required>
+                
+                        <!-- حقل لتعديل تاريخ نهاية التصويت -->
+                        <label for="new_end_time" class="form-label" style="color: #761305;">تاريخ نهاية التصويت الجديد</label>
+                        <input type="datetime-local" class="form-control" id="new_end_time" name="new_end_time" value="{{ opportunity.end_date|date:'Y-m-d\TH:i' }}" required>
+                
+                        <!-- زر إعادة فتح التصويت -->
+                        <button type="submit" name="reopen_vote" class="btn btn-warning">إعادة فتح التصويت</button>
+                    </form>
+                {% endif %}
+                
+                    
+                    
                         <span class="badge bg-dark">تم إغلاق التصويت</span>
                     {% endif %}
 
@@ -67,33 +80,4 @@
         {% endfor %}
     </div>
 </div>
-
-<div class="modal fade" id="updateTimeModal" tabindex="-1" aria-labelledby="updateTimeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="updateTimeModalLabel">تحديث الوقت</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="new_end_time" class="form-label">تاريخ نهاية التصويت الجديد</label>
-                        <input type="datetime-local" class="form-control" id="new_end_time" name="new_end_time" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                        <button type="submit" class="btn btn-primary">تحديث الوقت</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-{% endblock %}
-
-{% block script %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
