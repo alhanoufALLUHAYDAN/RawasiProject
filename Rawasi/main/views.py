@@ -66,9 +66,16 @@ def fund_dashboard_view(request):
     leader_instance = request.user.leader
     investments_list=[]
     fund_investors_list=[]
+    CHlables_fund=[]
+    CHdata_fund=[]
     # Check if an investment fund exists for the leader
     try:
         investment_fund = InvestmentFund.objects.get(leader=leader_instance)
+        CHlables_fund.append('الاجمالي')
+        CHlables_fund.append('الربح')
+        CHdata_fund.append(investment_fund.total_balance)
+        CHdata_fund.append(investment_fund.profit_balance)
+
         if investment_fund.investment_opportunities:
             investments=investment_fund.investment_opportunities.all()
             p=Paginator(investments,4)
@@ -86,7 +93,7 @@ def fund_dashboard_view(request):
                 birth_date = investor_fund.investor.user.date_of_birth
                 age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
                 investor_fund.investor.age = age 
-
+        
     except InvestmentFund.DoesNotExist:
         investment_fund = None
 
@@ -126,6 +133,8 @@ def fund_dashboard_view(request):
         "total_balance": total_balance,
         "total_profit": total_profit,
         "fund_investors":fund_investors_list,
+        "CHlables_fund":CHlables_fund,
+        "CHdata_fund":CHdata_fund,
 
     }
 
@@ -140,9 +149,13 @@ def investor_dashboard_view(request):
 
     # Ensure wallet exists for the user
     wallet, created = Wallet.objects.get_or_create(user=request.user)
-    transactions = wallet.transactions.all()
+    CHlables_funds=[]
+    CHdata_funds=[]
+    if wallet.transactions.exists():
+        transactions = wallet.transactions.order_by('-created_at')[:3]
 
-    # Fetch funds the investor has joined
+
+
     joined_funds = InvestorFund.objects.filter(investor__user=request.user)
 
     # Prepare profit data for each fund the investor has joined
@@ -170,6 +183,9 @@ def investor_dashboard_view(request):
                 "profit": 0.0,
                 "status": 'No Opportunity'
             })
+        for data in profit_data:
+            CHlables_funds.append(data['fund_name'])
+        CHdata_funds = [float(data['profit']) for data in profit_data]
 
     # Handle joining a new fund via join_code
     if request.method == 'POST':
@@ -202,6 +218,8 @@ def investor_dashboard_view(request):
             "wallet": wallet,
             "transactions": transactions,
             "joined_funds": joined_funds,  # Pass the joined funds
-            "profit_data": profit_data  # Pass the profit data with the correct status
+            "profit_data": profit_data,  # Pass the profit data with the correct status
+            "CHlables_funds":CHlables_funds,
+            "CHdata_funds":CHdata_funds,
         }
     )

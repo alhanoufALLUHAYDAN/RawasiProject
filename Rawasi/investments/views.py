@@ -25,7 +25,7 @@ def add_investment_opportunity(request):
         return redirect('dashboard:fund_dashboard_view') 
 
     if request.method == "POST":
-
+        
         title = request.POST.get('title')
         description = request.POST.get('description')
         company_name = request.POST.get('company_name')
@@ -116,11 +116,13 @@ def investment_opportunity_detail(request, id):
     if not is_leader and not is_investor:
         messages.error(request, "ليس لديك صلاحية للوصول إلى تفاصيل هذه الفرصة الاستثمارية.")
         return redirect('/')
-
+    # calculates days
+    left_days = (investment_opportunity.end_date - investment_opportunity.start_date).days
     return render(request, 'investments/investment_opportunity_detail.html', {
         'investment_opportunity': investment_opportunity,
         'approval_percentage': approval_percentage,
         'user_vote': user_vote,
+        "left_days":left_days,
     })
 
 @login_required

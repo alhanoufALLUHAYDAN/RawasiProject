@@ -238,6 +238,11 @@
                         <hr/>
                         <div class="investment-detail-row d-flex flex-column row-gap-3 align-items-strat justify-content-center">    
                             <div class="">
+                                <i class="fa-solid fa-building  rounded-circle  invesment-icon"></i>
+                                <strong>
+                                    <span class="text-muted fw-normal"> شركة </span>{{ investment_opportunity.company_name }}                             </strong>
+                            </div>
+                            <div class="">
                                 <i class="fa-solid fa-sack-dollar rounded-circle  invesment-icon"></i> 
                                 <strong>
                                     <span class="text-muted fw-normal"> مبلغ الاستثمار </span>{{ investment_opportunity.total_investment }} ر.س
@@ -259,7 +264,7 @@
                             </div>
                             <div class="">
                                 <i class="fa-regular fa-clock rounded-circle  invesment-icon"></i>
-                                <strong>  <span class="text-muted fw-normal"> يوم متبقي </span> {{ investment_opportunity.end_date|date:"d M Y" }} </strong>
+                                <strong>  <span class="text-muted fw-normal"> يوم متبقي </span> {{left_days }} </strong>
                             </div>
                             <div>
                             {% if investment_opportunity.votes.count > 0 %}
