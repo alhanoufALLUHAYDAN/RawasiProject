@@ -390,6 +390,11 @@ main{
     background-color: #0f2e29 !important;
     color: white !important;
 }
+.btn-darkgreen:focus{
+  box-shadow: 0 0 0 0.20rem #1d574e67; 
+  border-color: #22665ba9; 
+
+}
 .btn-darkgreen:hover{
     background-color: #194d45  !important;
     color: white !important;
@@ -401,6 +406,10 @@ main{
 .btn-darkred:hover{
     background-color: #991908;
     color: white;
+}
+.btn-darkred:focus{
+  box-shadow: 0 0 0 0.20rem #7612057a; 
+  border-color: #761305; 
 }
 .form-control:focus {
     box-shadow: 0 0 0 0.20rem #1d574e67; 
@@ -619,10 +628,15 @@ main{
 }
 .dashboard-section{
     height: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 .dashboard-section1{
     height: 100%;
 }
+
 .investment-card{
  color: #000000;
  text-decoration: none;
@@ -681,9 +695,7 @@ main{
   }
   .wallet-header {
     text-align: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 30px;
+    margin-bottom: 3rem;
   }
   .balance {
     text-align: center;
@@ -913,4 +925,50 @@ main{
 }
 .page-link:focus{
   box-shadow: 0 0 5px #76120596;
+}
+
+
+/* Custom styles for calenders */
+
+.flatpickr-months {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top:  0.5rem;
+  padding-bottom:  0.5rem;
+
+}
+.flatpickr-monthDropdown-months{
+  margin-top: -2px !important;
+}
+.flatpickr-days .flatpickr-day {
+  color: #bf9625;
+}
+
+.flatpickr-days .flatpickr-day:hover {
+  background-color: #761305;
+  color: #ffffff;
+}
+
+.flatpickr-day.selected {
+  background-color: #761305;
+  border: none;
+  color: #ffffff;
+}
+
+/* Specific styles for month and year selector */
+.flatpickr-prev-month, .flatpickr-next-month {
+  padding-top: 1.3rem !important;
+}
+
+.flatpickr-months select {
+  background-color: #0f2e29;
+  color: #E4b42d;
+  border: 1px solid #761305;
+  border-radius: 5px;
+}
+
+.flatpickr-clear {
+  background-color: #761305;
+  color: #fff;
+  border-radius: 5px;
 }

@@ -391,3 +391,12 @@ def investor_profit_view(request):
     }
     
     return render(request, "dashboard/investor_dashboard.html", context)
+
+
+def delete_investor(request,investor_id):
+    active_section = 'section5' 
+    current_fund = InvestmentFund.objects.get(leader_id=request.user.id)
+    relationship = InvestorFund.objects.get(investor_id=investor_id,fund_id = current_fund.id)
+    relationship.delete()
+    messages.success(request, f" تم حذف المستثمر بنجاح")
+    return redirect(f'/dashboard/fund/?section={active_section}')

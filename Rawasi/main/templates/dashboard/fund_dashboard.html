@@ -2,7 +2,9 @@
 {%load static%}
 {% block head %}
 <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="{% static 'css/accounts.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
     .modal-content {
         border-radius: 15px;
@@ -162,6 +164,7 @@
         {% endfor %}
       {% endif %}
         <div id="section1" class="dashboard-section">
+          
             {% if investment_fund %}
                 <!-- Display Investment Fund Details -->
                 <div class="h-100 container dashboard-section1 d-flex flex-column justify-content-between" >      
@@ -202,16 +205,27 @@
                         {% endif %}
                         </div>
                     </div>
-        
+                    <!--Chart fund total , amount of investment , profits-->
+                    <div class="container my-4" >
+                      <div class="row">
+                        <div class="col-md-6"><canvas id="fundChart" width="100" height="200"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                          <div class=" my-2 d-flex gap-2 align-items-end justify-content-center h-100">
+                            <a href="{% url 'investment_fund:update_investment_fund' investment_fund.pk %}" class="btn btn-darkgreen">
+                              <i class="bi bi-pencil-fill"></i>  تعديل الصندوق
+                            </a>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteFundModal">
+                              <i class="bi bi-trash-fill"></i> حذف الصندوق
+                            </button>                        
+                        </div>
+                        </div>
+
+                      </div>
+                      <!-- Your chart will be rendered here -->
+                  </div>
                     <!-- Action Buttons -->
-                    <div class="text-start my-2">
-                        <a href="{% url 'investment_fund:update_investment_fund' investment_fund.pk %}" class="btn btn-darkgreen">
-                          <i class="bi bi-pencil-fill"></i> تعديل الصندوق
-                        </a>
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteFundModal">
-                          <i class="bi bi-trash-fill"></i> حذف الصندوق
-                        </button>                        
-                    </div>
+                  
                 </div>
             {% else %}
                 <!-- If No Fund Exists -->
@@ -417,12 +431,12 @@
   
                               <div class="mb-3">
                                   <label for="start_date" class="form-label" style="color: #761305;">تاريخ البداية</label>
-                                  <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                  <input type="date" class="form-control date-input" id="start_date" name="start_date" required>
                               </div>
   
                               <div class="mb-3">
                                   <label for="end_date" class="form-label" style="color: #761305;">تاريخ الانتهاء</label>
-                                  <input type="date" class="form-control" id="end_date" name="end_date" required>
+                                  <input type="date" class="form-control date-input" id="end_date" name="end_date" required>
                               </div>
   
                               <div class="mb-3">
@@ -430,13 +444,13 @@
                                   <input type="number" class="form-control" id="expected_return" name="expected_return" max="100" min="0" required>
                               </div>
                               <div class="mb-3">
-                                  <label for="investment_image" class="form-label" style="color: #761305;">صورة الاستثمار</label>
-                                  <input type="file" class="form-control" id="investment_image" name="investment_image" accept="image/*">
+                                  <label for="image" class="form-label" style="color: #761305;">صورة الاستثمار</label>
+                                  <input type="file" class="form-control" id="image" name="image" accept="image/*">
                               </div>
   
                               <div class="mb-3">
-                                  <label for="investment_pdf" class="form-label" style="color: #761305;">تحميل ملف PDF</label>
-                                  <input type="file" class="form-control" id="investment_pdf" name="investment_pdf" accept="application/pdf">
+                                  <label for="pdf_file" class="form-label" style="color: #761305;">تحميل ملف PDF</label>
+                                  <input type="file" class="form-control" id="pdf_file" name="pdf_file" accept="application/pdf">
                               </div>
   
                               <div class="modal-footer">
@@ -567,13 +581,13 @@
                               </div>                          
   
                               <div class="mb-3">
-                                  <label for="start_date" class="form-label" style="color: #761305;">تاريخ البداية</label>
-                                  <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                  <label for="start_date" class="form-label " style="color: #761305;">تاريخ البداية</label>
+                                  <input type="date" class="form-control date-input" id="start_date" name="start_date" required>
                               </div>
   
                               <div class="mb-3">
-                                  <label for="end_date" class="form-label" style="color: #761305;">تاريخ الانتهاء</label>
-                                  <input type="date" class="form-control" id="end_date" name="end_date" required>
+                                  <label for="end_date" class="form-label " style="color: #761305;">تاريخ الانتهاء</label>
+                                  <input type="date" class="form-control date-input" id="end_date" name="end_date" required>
                               </div>
   
                               <div class="mb-3">
@@ -604,30 +618,101 @@
           </div>
           <!--الحساب-->
           <div id="section5" class="container dashboard-section" style="display: none;">
-            <div class="row gap-2">
-              {% for investor_fund in fund_investors%}
-              <div  class="col-md-5 person-card d-flex border p-0 rounded-3" >
-                <img src="{{investor_fund.investor.user.profile_picture.url}}" style="height: 30px; width:80px; object-fit: cover;"  class="h-100"/>
-                <div class="p-2 w-100 ">
-                    <div class="d-flex flex-column">
-                      <h6>{{investor_fund.investor.user.full_name}}</h6>
-                      <h6>العمر: {{investor_fund.investor.user.full_name}}</h6>
-                      <div class="d-flex justify-content-between align-items-center w-100">
-                      <div class="d-flex gap-3 justify-content-start align-items-center">
-                        <a href="tel:{{investor_fund.investor.user.phone_number}}"><i class="fa-solid fa-square-phone fs-4 investor-communication1"></i></a>
-                        <a href="mailto:{{investor_fund.investor.user.email}}"><i class="fa-solid fa-square-envelope fs-4 investor-communication2"></i></a>
+            {%if fund_investors%}
+            <div class="d-flex flex-column justify-content-between h-100">
+              <div>
+                <div class="row gap-2 justify-content-center">
+                  {% for investor_fund in fund_investors%}
+                  <div  class="col-md-5 person-card d-flex border p-0 rounded-3" >
+                    <img src="{{investor_fund.investor.user.profile_picture.url}}" style="height: 30px; width:80px; object-fit: cover;"  class="h-100"/>
+                    <div class="p-2 w-100 ">
+                        <div class="d-flex flex-column">
+                          <h6>{{investor_fund.investor.user.full_name}}</h6>
+                          <h6>العمر: {{investor_fund.investor.age}} <small class="text-muted fw-light">عام</small> </h6>
+                          <div class="d-flex justify-content-between align-items-center w-100">
+                          <div class="d-flex gap-3 justify-content-start align-items-center">
+                            <a href="tel:{{investor_fund.investor.user.phone_number}}"><i class="fa-solid fa-square-phone fs-4 investor-communication1"></i></a>
+                            <a href="mailto:{{investor_fund.investor.user.email}}"><i class="fa-solid fa-square-envelope fs-4 investor-communication2"></i></a>
+                          </div>
+                           <div>
+                            <button type="button" class="btn btn-darkred delete-member-btn" data-bs-toggle="modal" data-bs-target="#deleteInvestorModal">
+                              <i class="fa-solid fa-user-xmark"></i>
+                            </button>                            
+                          </div>
+                        </div>
+                        </div>
+                     
                       </div>
-                       <div>
-                        <a class="btn btn-darkred delete-member-btn" ><i class="fa-solid fa-user-xmark"></i></a>
-                      </div>
-                    </div>
-                    </div>
-                 
                   </div>
+
+                   <!-- delete modal for investors-->
+              <div class="modal fade" id="deleteInvestorModal" tabindex="-1" aria-labelledby="deleteInvestorModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header d-flex justify-content-between p-0 px-3 py-2">
+                            <h5 class="modal-title" id="deleteInvestorModalLabel">تأكيد الحذف</h5>
+                            <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                        </div>
+                        <div class="modal-body">
+                            هل أنت متأكد أنك تريد حذف هذا العضو المستثمر؟ .
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                            <form method="POST" action="{% url 'investment_fund:delete_investor' investor_fund.investor.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">نعم، حذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                  {%endfor%}
+                </div>
+
               </div>
-              {%endfor%}
+              <div>
+                <br/>
+                <navbar aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center gap-4">
+                        {% if fund_investors.has_next %}
+                            <li class="page-item">
+                                <a class="page-link rounded-3 px-3 py-2" href="?page={{ fund_investors.next_page_number }}&section=section5" aria-label="Next">
+                                  <span aria-hidden="true"><i class="fa-solid fa-chevron-right "></i></span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                              <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+                            </li>
+                        {% endif %}
+  
+                        {% if fund_investors.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link rounded-3 px-3 py-2" href="?page={{ fund_investors.previous_page_number }}&section=section5" aria-label="Previous">
+                              <span aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+                            </a>
+                        </li>
+                    {% else %}
+  
+                        <li class="page-item disabled ">
+                          <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+  
+                        </li>
+                    {% endif %}
+                    </ul>
+                </navbar> 
+              </div>
              
             </div>
+           
+            
+            {%else%}
+            <div class="text-center dashboard-section1 d-flex flex-column justify-content-center align-items-center">
+              <h3>لا يوجد مستثمرين منضمين حتى الان</h3>
+              <p class="text-muted">قم بمشاركة الرمز حتى يتمكن الاعضاء من المشاركة في الصندوق</p>
+          </div>
+            <div>  </div>
+            {%endif%}
           </div>
           <div id="section6" class="container dashboard-section" style="display: none;">
             <div class="container p-0">
@@ -658,8 +743,52 @@
       </div>
   </div>
 </section>
+
 {%endblock%}
   {%block script%}
+
+
+  <script>
+    const ctx = document.getElementById('fundChart');
+    new Chart(ctx, {
+      type: 'pie', // Pie chart type
+      data: {
+        labels: {{ CHlables_fund|safe }}, // Labels (e.g., Total, Profit)
+        datasets: [{
+          label: '# الرصيد', // Dataset label (optional)
+          data: {{ CHdata_fund|safe }}, // Data values (e.g., Total Balance, Profit)
+          backgroundColor: [
+            'rgba(15, 46, 41, 0.6)', // Green color (first segment)
+            'rgba(204, 153, 68, 0.2)'  // Red color (second segment)
+          ], // Set green and red as background colors
+          borderColor: [
+            '#0f2e29',  // Green border
+            'rgb(204, 153, 68)',  // Darker yellow
+
+          ], 
+          borderWidth: 1 // Border width around each segment
+        }]
+      },
+      options: {
+        responsive: true, // Ensure the chart is responsive (scales based on screen size)
+        plugins: {
+          legend: {
+            position: 'top', // Position of the legend (optional)
+          },
+          tooltip: {
+            callbacks: {
+              label: function(tooltipItem) {
+                // Customize tooltip display if needed
+                return tooltipItem.label + ': ' + tooltipItem.raw + ' ر.س'; // Example formatting
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+
   <script>
     document.getElementById("shareButton").addEventListener("click", function() {
         var shareText = document.getElementById("unique_code").textContent;
@@ -690,7 +819,7 @@
         navigator.clipboard.writeText(textToCopy)
     }
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
   <script>
     // Handle the section content change
     const navLinks = document.querySelectorAll('.nav-link-dashboard');
@@ -737,6 +866,22 @@
     });
 
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Select all elements that should have the date picker
+    const dateInputs = document.querySelectorAll('.date-input');  // Add a class to each input you want to apply it to
 
+    // Initialize flatpickr for each selected element
+    dateInputs.forEach(function(input) {
+        flatpickr(input, {
+            dateFormat: "Y-m-d", // Set the date format
+            locale: "ar", // Set the locale to Arabic
+            maxDate: "today", // Restrict to today's date or earlier
+        });
+    });
+});
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 {%endblock%}
