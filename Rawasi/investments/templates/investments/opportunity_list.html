@@ -56,15 +56,12 @@
                     <form method="POST">
                         {% csrf_token %}
                         
-                        <!-- حقل لتعديل تاريخ بداية التصويت -->
                         <label for="new_start_time" class="form-label" style="color: #761305;">تاريخ بداية التصويت الجديد</label>
                         <input type="datetime-local" class="form-control" id="new_start_time" name="new_start_time" value="{{ opportunity.start_date|date:'Y-m-d\TH:i' }}" required>
                 
-                        <!-- حقل لتعديل تاريخ نهاية التصويت -->
                         <label for="new_end_time" class="form-label" style="color: #761305;">تاريخ نهاية التصويت الجديد</label>
                         <input type="datetime-local" class="form-control" id="new_end_time" name="new_end_time" value="{{ opportunity.end_date|date:'Y-m-d\TH:i' }}" required>
                 
-                        <!-- زر إعادة فتح التصويت -->
                         <button type="submit" name="reopen_vote" class="btn btn-warning">إعادة فتح التصويت</button>
                     </form>
                 {% endif %}
