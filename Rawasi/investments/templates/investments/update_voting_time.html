@@ -75,7 +75,7 @@
 {% endblock %}
 
 {% block title %}
-<title>إضافة تصويت للفرصة الاستثمارية</title>
+<title>إضافة تصويت للبيع للفرصة الاستثمارية</title>
 {% endblock %}
 
 {% block content %}
@@ -90,43 +90,24 @@
               {% endif %}
           {% endfor %}
         {% endif %}
-        <h2 class="text-center mb-4" style="color: #761305;">إضافة تصويت للفرصة الاستثمارية</h2>
+        <h2 class="text-center mb-4" style="color: #761305;">إضافة تصويت للبيع للفرصة الاستثمارية</h2>
 
         <button type="button" class="btn btn-darkgreen w-100" data-bs-toggle="modal" data-bs-target="#votingModal">
-            إضافة تصويت جديد
+            إضافة تصويت للبيع
         </button>
 
         <div class="modal fade" id="votingModal" tabindex="-1" aria-labelledby="votingModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="votingModalLabel">إضافة تصويت جديد</h5>
+                        <h5 class="modal-title" id="votingModalLabel">إضافة تصويت للبيع</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form method="POST">
                             {% csrf_token %}
                         
-                            <div class="mb-3">
-                                <label for="opportunity" class="form-label" style="color: #761305;">اختَر الفرصة الاستثمارية</label>
-                                <select class="form-select" id="opportunity" name="opportunity" required>
-                                    <option value="">-- اختر الفرصة --</option>
-                                    {% for opportunity in opportunities %}
-                                        <option value="{{ opportunity.id }}">{{ opportunity.title }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="vote_type" class="form-label" style="color: #761305;">نوع التصويت</label>
-                                <label class="form-control" style="background-color: #f1f1f1;">شراء</label>
-                                <input type="hidden" name="vote_type" value="buy">
-                            </div>
-                        
-                            <div class="mb-3">
-                                <label for="required_approval_percentage" class="form-label" style="color: #761305;">النسبة المطلوبة للموافقة</label>
-                                <input type="number" class="form-control" id="required_approval_percentage" name="required_approval_percentage" required min="0" max="100">
-                            </div>
+                            <input type="hidden" name="vote_type" value="بيع">
 
                             <div class="mb-3">
                                 <label for="voting_start_time" class="form-label" style="color: #761305;">تاريخ بداية التصويت</label>
@@ -136,11 +117,6 @@
                             <div class="mb-3">
                                 <label for="voting_end_time" class="form-label" style="color: #761305;">تاريخ نهاية التصويت</label>
                                 <input type="datetime-local" class="form-control" id="voting_end_time" name="voting_end_time" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="total_amount" class="form-label" style="color: #761305;">المبلغ الإجمالي</label>
-                                <input type="number" class="form-control" id="total_amount" name="total_amount">
                             </div>
 
                             <div class="modal-footer">

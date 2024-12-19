@@ -13,5 +13,7 @@ urlpatterns = [
     path('vote/<int:id>/', views.vote_on_opportunity, name='vote_on_opportunity'),
     path('buy_opportunity/<opportunity_id>/',views.buy_opportunity, name='buy_opportunity'),
     path('sell_opportunity/<opportunity_id>/',views.sell_opportunity, name='sell_opportunity'),
+    path('update-voting-time/<int:id>/', views.update_voting_time, name='update_voting_time'),
+
 ]
 
