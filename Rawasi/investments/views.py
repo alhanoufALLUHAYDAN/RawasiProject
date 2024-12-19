@@ -347,11 +347,11 @@ def vote_on_opportunity(request, id):
         opportunity = InvestmentOpportunity.objects.get(id=id)
     except InvestmentOpportunity.DoesNotExist:
         messages.error(request, "الفرصة الاستثمارية غير موجودة.")
-        return redirect('investments:opportunity_list')
+        return redirect(f'/dashboard/investor/?section={active_section}')
     
     if opportunity.status != 'Open':
         messages.error(request, "التصويت مغلق لهذه الفرصة.")
-        return redirect('investments:opportunity_list')
+        return redirect(f'/dashboard/investor/?section={active_section}')
     
     existing_vote = Voting.objects.filter(opportunity=opportunity, user=request.user).first()  
     
@@ -360,12 +360,12 @@ def vote_on_opportunity(request, id):
             pass  
         else:
             messages.error(request, "لقد قمت بالتصويت مسبقًا.")
-            return redirect('investments:opportunity_list')
+            return redirect(f'/dashboard/investor/?section={active_section}')
 
     vote_choice = request.POST.get('vote_choice')
     if vote_choice not in ['Accepted', 'Rejected']:
         messages.error(request, "التصويت غير صالح.")
-        return redirect('investments:opportunity_list')
+        return redirect(f'/dashboard/investor/?section={active_section}')
    
     if existing_vote:
         existing_vote.vote = vote_choice  
@@ -379,7 +379,7 @@ def vote_on_opportunity(request, id):
         )
         messages.success(request, f"تم التصويت بنجاح: {vote_choice}")
     
-    return redirect(f'/dashboard/fund/?section={active_section}')
+    return redirect(f'/dashboard/investor/?section={active_section}')
 
 
 def update_voting_time(request, id):

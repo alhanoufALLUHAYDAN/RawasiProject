@@ -11,13 +11,14 @@ import string
 from django.contrib.auth.decorators import login_required
 from investment_fund.models import InvestmentFund, Wallet 
 from investments.models import InvestmentFund
-from investments.models import InvestorFund , InvestmentOpportunity
+from investments.models import InvestorFund , InvestmentOpportunity, Voting
 from investment_fund.models import InvestmentFund, Wallet
 from investment_fund.forms import InvestmentFundForm 
 from investments.models import InvestorFund,InvestmentOpportunity,InvestmentFund
 from accounts.models import Investor
 from django.contrib.auth.decorators import login_required
 from datetime import date
+from django.utils import timezone 
 # Create your views here.
 
 def home_view(request:HttpRequest):
@@ -124,6 +125,83 @@ def fund_dashboard_view(request):
     else:
         new_code = investment_fund.join_code if investment_fund else None
 
+    active_section='section2'
+    opportunities = []
+    user_investor = False  
+
+    if hasattr(request.user, 'leader'):  
+        leader = request.user.leader
+        opportunities = InvestmentOpportunity.objects.filter(fund__leader=leader)
+    
+    elif hasattr(request.user, 'investor'):
+        investor = request.user.investor
+        funds_invested_in = InvestorFund.objects.filter(investor=investor).values_list('fund', flat=True)
+        opportunities = InvestmentOpportunity.objects.filter(fund__in=funds_invested_in)
+        
+        user_investor = True 
+
+    for opportunity in opportunities:
+        if hasattr(request.user, 'leader'):
+            total_investors = InvestorFund.objects.filter(fund=opportunity.fund).exclude(investor__user=request.user).count()
+        else:
+            total_investors = InvestorFund.objects.filter(fund=opportunity.fund).count()
+
+        total_accepted = Voting.objects.filter(opportunity=opportunity, vote='Accepted').count()
+        total_rejected = Voting.objects.filter(opportunity=opportunity, vote='Rejected').count()
+        approval_percentage = (total_accepted / total_investors) * 100 if total_investors else 0
+        
+        try:
+            required_percentage = Voting.objects.filter(opportunity=opportunity).first().required_approval_percentage
+        except AttributeError:
+            required_percentage = 0  
+
+        opportunity.approval_percentage = approval_percentage
+        opportunity.required_approval_percentage = required_percentage
+        opportunity.pending_votes = Voting.objects.filter(opportunity=opportunity, vote='Pending').count()
+        opportunity.accepted_votes = total_accepted
+        opportunity.rejected_votes = total_rejected
+        
+        if approval_percentage >= required_percentage:
+            opportunity.status = 'Closed'  
+        else:
+            opportunity.status = 'Open'
+
+        opportunity.buy_vote_completed = approval_percentage >= required_percentage
+        opportunity.sell_vote_completed = Voting.objects.filter(opportunity=opportunity, vote_type='Sell', vote='Accepted').exists()
+
+        opportunity.sell_vote_opened = (opportunity.status == 'Open' and
+                                         Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists())
+
+        if opportunity.status == 'Closed' and request.user == opportunity.fund.leader.user:
+            if 'reopen_vote' in request.POST:
+                new_start_time = request.POST.get('new_start_time')
+                new_end_time = request.POST.get('new_end_time')
+
+                if new_start_time and new_end_time:
+                    try:
+                        opportunity.start_date = timezone.datetime.fromisoformat(new_start_time)
+                        opportunity.end_date = timezone.datetime.fromisoformat(new_end_time)
+
+                        opportunity.status = 'Open'
+                        opportunity.save()
+
+                        Voting.objects.filter(opportunity=opportunity).delete()
+
+                        if not Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists():
+                            Voting.objects.create(
+                                opportunity=opportunity,
+                                user=request.user,
+                                vote_type='Sell',
+                                vote='Pending',
+                                required_approval_percentage=opportunity.required_approval_percentage,
+                            )
+
+                        messages.success(request, "تم إعادة فتح التصويت مع تحديث التواريخ بنجاح.")
+                        return redirect(f'/dashboard/fund/?section={active_section}') 
+                    except ValueError:
+                        messages.error(request, "التواريخ المدخلة غير صالحة. يرجى المحاولة مرة أخرى.")
+                        return redirect(f'/dashboard/fund/?section={active_section}')
+
     context = {
         "leader": leader_instance,
         "investment_fund": investment_fund,
@@ -135,6 +213,8 @@ def fund_dashboard_view(request):
         "fund_investors":fund_investors_list,
         "CHlables_fund":CHlables_fund,
         "CHdata_fund":CHdata_fund,
+        'opportunities': opportunities,
+        'user_investor': user_investor, 
 
     }
 
@@ -149,18 +229,17 @@ def investor_dashboard_view(request):
 
     # Ensure wallet exists for the user
     wallet, created = Wallet.objects.get_or_create(user=request.user)
-    
-    # Initialize transactions to an empty list to avoid UnboundLocalError
-    transactions = []
-
+    CHlables_funds=[]
+    CHdata_funds=[]
     if wallet.transactions.exists():
         transactions = wallet.transactions.order_by('-created_at')[:3]
 
     CHlables_funds = []
     CHdata_funds = []
     joined_funds = InvestorFund.objects.filter(investor__user=request.user)
-
+    
     # Prepare profit data for each fund the investor has joined
+    transactions= []
     profit_data = []
     for investor_fund in joined_funds:
         # Fetch the related investment opportunity for each fund
@@ -212,6 +291,85 @@ def investor_dashboard_view(request):
             except InvestmentFund.DoesNotExist:
                 messages.error(request, 'كود الانضمام غير صحيح أو الصندوق غير نشط.', "danger")
 
+    
+    active_section='section2'
+    opportunities = []
+    user_investor = False  
+
+    if hasattr(request.user, 'leader'):  
+        leader = request.user.leader
+        opportunities = InvestmentOpportunity.objects.filter(fund__leader=leader)
+    
+    elif hasattr(request.user, 'investor'):
+        investor = request.user.investor
+        funds_invested_in = InvestorFund.objects.filter(investor=investor).values_list('fund', flat=True)
+        opportunities = InvestmentOpportunity.objects.filter(fund__in=funds_invested_in)
+        
+        user_investor = True 
+
+    for opportunity in opportunities:
+        if hasattr(request.user, 'leader'):
+            total_investors = InvestorFund.objects.filter(fund=opportunity.fund).exclude(investor__user=request.user).count()
+        else:
+            total_investors = InvestorFund.objects.filter(fund=opportunity.fund).count()
+
+        total_accepted = Voting.objects.filter(opportunity=opportunity, vote='Accepted').count()
+        total_rejected = Voting.objects.filter(opportunity=opportunity, vote='Rejected').count()
+        approval_percentage = (total_accepted / total_investors) * 100 if total_investors else 0
+        
+        try:
+            required_percentage = Voting.objects.filter(opportunity=opportunity).first().required_approval_percentage
+        except AttributeError:
+            required_percentage = 0  
+
+        opportunity.approval_percentage = approval_percentage
+        opportunity.required_approval_percentage = required_percentage
+        opportunity.pending_votes = Voting.objects.filter(opportunity=opportunity, vote='Pending').count()
+        opportunity.accepted_votes = total_accepted
+        opportunity.rejected_votes = total_rejected
+        
+        if approval_percentage >= required_percentage:
+            opportunity.status = 'Closed'  
+        else:
+            opportunity.status = 'Open'
+
+        opportunity.buy_vote_completed = approval_percentage >= required_percentage
+        opportunity.sell_vote_completed = Voting.objects.filter(opportunity=opportunity, vote_type='Sell', vote='Accepted').exists()
+
+        opportunity.sell_vote_opened = (opportunity.status == 'Open' and
+                                         Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists())
+
+        if opportunity.status == 'Closed' and request.user == opportunity.fund.leader.user:
+            if 'reopen_vote' in request.POST:
+                new_start_time = request.POST.get('new_start_time')
+                new_end_time = request.POST.get('new_end_time')
+
+                if new_start_time and new_end_time:
+                    try:
+                        opportunity.start_date = timezone.datetime.fromisoformat(new_start_time)
+                        opportunity.end_date = timezone.datetime.fromisoformat(new_end_time)
+
+                        opportunity.status = 'Open'
+                        opportunity.save()
+                        
+                        Voting.objects.filter(opportunity=opportunity).delete()
+                        
+                        if not Voting.objects.filter(opportunity=opportunity, vote_type='Sell').exists():
+                            Voting.objects.create(
+                                opportunity=opportunity,
+                                user=request.user,
+                                vote_type='Sell',
+                                vote='Pending',
+                                required_approval_percentage=opportunity.required_approval_percentage,
+                            )
+
+                        messages.success(request, "تم إعادة فتح التصويت مع تحديث التواريخ بنجاح.")
+                        return redirect(f'/dashboard/fund/?section={active_section}') 
+                    except ValueError:
+                        messages.error(request, "التواريخ المدخلة غير صالحة. يرجى المحاولة مرة أخرى.")
+                        return redirect(f'/dashboard/fund/?section={active_section}')
+                    
+                    
     return render(
         request, 
         'dashboard/investor_dashboard.html', 
@@ -221,7 +379,7 @@ def investor_dashboard_view(request):
             "transactions": transactions,
             "joined_funds": joined_funds,  # Pass the joined funds
             "profit_data": profit_data,  # Pass the profit data with the correct status
-            "CHlables_funds": CHlables_funds,
-            "CHdata_funds": CHdata_funds,
+            "CHlables_funds":CHlables_funds,
+            "CHdata_funds":CHdata_funds,
         }
     )

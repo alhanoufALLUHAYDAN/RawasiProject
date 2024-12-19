@@ -133,24 +133,217 @@ body {
         </div>            
     </div>
     
-          <div id="section2" class="dashboard-section" style="display: none;">
-            <div class="row">
-                <div  class="col-md-3 investment-card border p-0 rounded-3" >
-                  <img src="{%static 'images/building-66375_1280.jpg'%}" class="w-100"/>
-                  <div class="p-2">
-                    <h5>اسم الاستثمار</h5>
-                    <small>وصف الاستثمار</small>
-                    <div class="d-flex justify-content-between">
-                      <div class="d-flex gap-1">
-                        <a href="" class="  p-0 text-success fs-5"> <i class="fa-solid fa-square-check"></i></a>
-                        <a href="" class=" text-danger p-0 fs-5 "> <i class="fa-solid fa-square-xmark"></i></a>
-                      </div>  
-                      <a class="btn btn-darkgreen p-0 px-1 mx-1"><small> تفاصيل</small></a>
-                    </div>
-                    </div>
+    <!-- التصويت-->
+<div id="section2" class="dashboard-section container" style="display: none;">
+    {% if opportunities %}
+    <div class="d-flex align-items-end justify-content-end">
+        <button class="btn btn-darkgreen" data-bs-toggle="modal" data-bs-target="#votingModal">
+            إضافة تصويت جديد <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+    
+  
+  <div class="modal fade" id="votingModal" tabindex="-1" aria-labelledby="votingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header d-flex justify-content-between p-0 px-3 py-2">
+            <h5 class="modal-title" id="votingModalLabel">إضافة تصويت جديد</h5>
+            <button type="button" class="btn-close m-0 p-0" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="{% url 'investments:add_voting' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+  
+                <div class="mb-3">
+                    <label for="opportunity" class="form-label" style="color: #761305;">اختَر الفرصة الاستثمارية</label>
+                    <select class="form-select" id="opportunity" name="opportunity" required>
+                        <option value="">-- اختر الفرصة --</option>
+                        {% for opportunity in opportunities %}
+                            <option value="{{ opportunity.id }}">{{ opportunity.title }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-              </div>
+    
+                <div class="mb-3">
+                    <label for="vote_type" class="form-label" style="color: #761305;">نوع التصويت</label>
+                    <label class="form-control" style="background-color: #f1f1f1;">شراء</label>
+                    <input type="hidden" name="vote_type" value="buy">
+                </div>
+    
+                <div class="mb-3">
+                    <label for="required_approval_percentage" class="form-label" style="color: #761305;">النسبة المطلوبة للموافقة</label>
+                    <input type="number" class="form-control" id="required_approval_percentage" name="required_approval_percentage" required min="0" max="100">
+                </div>
+    
+                <div class="mb-3">
+                    <label for="voting_start_time" class="form-label" style="color: #761305;">تاريخ بداية التصويت</label>
+                    <input type="datetime-local" class="form-control" id="voting_start_time" name="voting_start_time" required>
+                </div>
+    
+                <div class="mb-3">
+                    <label for="voting_end_time" class="form-label" style="color: #761305;">تاريخ نهاية التصويت</label>
+                    <input type="datetime-local" class="form-control" id="voting_end_time" name="voting_end_time" required>
+                </div>
+    
+    
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="submit" class="btn btn-darkgreen">إضافة التصويت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+  </div>
+  </div>
+  <div class="row my-2 ">
+    {% for opportunity in opportunities %}
+    <div class="card mb-3">
+        <div class="card-body container">
+          <div class="row">
+            <div class="col-md-6">
+              <h5 class="card-title" style="color: #761305;">{{ opportunity.title }}</h5>
+              <p class="card-text"><strong>المبلغ الإجمالي:</strong> {{ opportunity.total_investment }} ريال</p>
+              <p class="card-text"><strong>العائد المتوقع:</strong> {{ opportunity.expected_return }}%</p>
+              <p class="card-text"><strong>تاريخ البداية:</strong> {{ opportunity.start_date|date:"Y-m-d" }}</p>
+              <p class="card-text"><strong>تاريخ الانتهاء:</strong> {{ opportunity.end_date|date:"Y-m-d" }}</p>
+    
+            </div>
+            <div class="col-md-6">
+              <p class="card-text"><strong>النسبة المطلوبة للموافقة:</strong> {{ opportunity.required_approval_percentage }}%</p>
+              <p class="card-text"><strong>نسبة الموافقه:</strong> {{ opportunity.approval_percentage }}%</p>
+              <p class="card-text"><strong>قبول :</strong> {{ opportunity.accepted_votes }}</p>
+              <p class="card-text"><strong>رفض :</strong> {{ opportunity.rejected_votes }}</p>
+    
+            </div>
           </div>
+  
+            <p class="card-text">
+                {% if opportunity.status == 'Closed' %}
+                    <span class="badge bg-dark">تم إغلاق التصويت</span>
+                {% elif opportunity.status == 'Open' %}
+                    {% if opportunity.pending_votes > 0 %}
+                        <span class="badge bg-warning">التصويت قيد الانتظار</span>
+                    {% else %}
+                        <span class="badge bg-success">التصويت مكتمل</span>
+                    {% endif %}
+                {% elif opportunity.status == 'Not Started' %}
+                    <span class="badge bg-secondary">لم يتم بدء التصويت</span> 
+                {% endif %}
+            </p>
+  
+            <div class="d-flex justify-content-between ">
+              <div class="d-flex flex-column align-items-end justify-content-end "> 
+                <a href="{% url 'investments:investment_opportunity_detail' id=opportunity.id %}" class="btn btn-darkgreen">تفاصيل الفرصة</a>
+              </div>
+  
+                {% if opportunity.status == 'Open' and user_investor %}
+                    <form method="POST" action="{% url 'investments:vote_on_opportunity' id=opportunity.id %}">
+                        {% csrf_token %}
+                        <button type="submit" name="vote_choice" value="Accepted" class="btn btn-success">أوافق</button>
+                        <button type="submit" name="vote_choice" value="Rejected" class="btn btn-danger">أرفض</button>
+                    </form>
+                {% elif opportunity.status == 'Closed' %}
+               
+          
+                {% endif %}
+  
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+  </div>
+    <br/>
+    <navbar aria-label="Page navigation example">
+        <ul class="pagination justify-content-center gap-4">
+            {% if opportunities.has_next %}
+                <li class="page-item">
+                    <a class="page-link rounded-3 px-3 py-2" href="?page={{ opportunities.next_page_number }}&section=section2" aria-label="Next">
+                        <span aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+                </li>
+            {% endif %}
+  
+            {% if opportunities.has_previous %}
+            <li class="page-item">
+                <a class="page-link rounded-3 px-3 py-2" href="?page={{ opportunities.previous_page_number }}&section=section2" aria-label="Previous">
+                    <span aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link rounded-3 px-3 py-2" aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+            </li>
+            {% endif %}
+        </ul>
+    </navbar>
+    {% else %}
+    <div class="text-center dashboard-section1 d-flex flex-column justify-content-center align-items-center">
+        <h3>لا يوجد فرص للتصويت حاليا</h3>
+        <p class="text-muted">قم بانتظار المسؤول لاضافة الفرصة</p>
+    </div>
+    {% endif %}
+  </div>
+      
+      <div class="modal fade" id="votingModal" tabindex="-1" aria-labelledby="votingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between p-0 px-3 py-2">
+                <h5 class="modal-title" id="votingModalLabel">إضافة تصويت جديد</h5>
+                <button type="button" class="btn-close m-0 p-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'investments:add_voting' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+      
+                    <div class="mb-3">
+                        <label for="opportunity" class="form-label" style="color: #761305;">اختَر الفرصة الاستثمارية</label>
+                        <select class="form-select" id="opportunity" name="opportunity" required>
+                            <option value="">-- اختر الفرصة --</option>
+                            {% for opportunity in opportunities %}
+                                <option value="{{ opportunity.id }}">{{ opportunity.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+        
+                    <div class="mb-3">
+                        <label for="vote_type" class="form-label" style="color: #761305;">نوع التصويت</label>
+                        <label class="form-control" style="background-color: #f1f1f1;">شراء</label>
+                        <input type="hidden" name="vote_type" value="buy">
+                    </div>
+        
+                    <div class="mb-3">
+                        <label for="required_approval_percentage" class="form-label" style="color: #761305;">النسبة المطلوبة للموافقة</label>
+                        <input type="number" class="form-control" id="required_approval_percentage" name="required_approval_percentage" required min="0" max="100">
+                    </div>
+        
+                    <div class="mb-3">
+                        <label for="voting_start_time" class="form-label" style="color: #761305;">تاريخ بداية التصويت</label>
+                        <input type="datetime-local" class="form-control" id="voting_start_time" name="voting_start_time" required>
+                    </div>
+        
+                    <div class="mb-3">
+                        <label for="voting_end_time" class="form-label" style="color: #761305;">تاريخ نهاية التصويت</label>
+                        <input type="datetime-local" class="form-control" id="voting_end_time" name="voting_end_time" required>
+                    </div>
+        
+                    <div class="mb-3">
+                        <label for="total_amount" class="form-label" style="color: #761305;">المبلغ الإجمالي</label>
+                        <input type="number" class="form-control" id="total_amount" name="total_amount">
+                    </div>
+        
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                        <button type="submit" class="btn btn-darkgreen">إضافة التصويت</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+      </div>
+      </div>
           <div id="section3" class="dashboard-section" style="display: none;">
             <div class="container p-0">
                 <!-- Section 3 Header -->
